@@ -1,0 +1,37 @@
+name: hw0
+
+on:
+  push:
+    branches:
+      - '**hw0**'
+  pull_request:
+    branches:
+      - hw0
+
+jobs:
+  build:
+
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+        matrix:
+          os: [ubuntu-20.04]
+
+        fail-fast: false
+
+    steps:
+
+    - uses: actions/checkout@v1
+      with:
+        fetch-depth: 1
+
+    - name: dependency (ubuntu)
+      run: |
+        sudo apt-get -qy install python python3
+
+    - name: grade
+      run: |
+        username=$( [ -z "${{ github.event.pull_request.user.login }}" ] && echo $GITHUB_REPOSITORY | cut -d '/' -f 1 || echo ${{ github.event.pull_request.user.login }})
+        echo "cd hw0/$username"
+        cd hw0/$username
+        ../validate.sh
