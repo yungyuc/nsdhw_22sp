@@ -37,8 +37,8 @@ Question
 Grading guideline
 =================
 
-This homework assignment has 5 points.  On the latest NSD AMI, the grader will
-run the following commands:
+This homework assignment has 5 points.  The grader shall run the following
+commands:
 
 .. code-block:: bash
 
