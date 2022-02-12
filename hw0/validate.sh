@@ -1,9 +1,9 @@
 #!/bin/bash
 
-test_path="${BASH_SOURCE[0]}"
-solution_path="$(realpath .)"
-tmp_dir=$(mktemp -d -t hw0-XXXXXXXXXX)
+solution_path="$(pwd)"
+echo "solution path: $solution_path"
 
+tmp_dir=$(mktemp -d -t hw0-XXXXXXXXXX)
 echo "working directory: $tmp_dir"
 cd $tmp_dir
 
