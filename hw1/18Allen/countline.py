@@ -4,7 +4,7 @@ import sys
 import os
 py_ver = os.environ.get('PYTHON_BIN')
 
-if py_ver == "python3" and py_ver != "python2" and len(py_ver) != 0:
+if py_ver != "python3" and py_ver != "python2" and len(py_ver) != 0:
     sys.exit(1)
 if len(sys.argv) < 2:
     sys.stdout.write('missing file name\n')
