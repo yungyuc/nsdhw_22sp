@@ -6,7 +6,7 @@ else
     export FNAME=$1
 fi
 
-exec ${PB} << EOF
+exec $PYTHON_BIN << EOF
 
 import sys
 import os
