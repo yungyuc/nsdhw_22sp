@@ -6,7 +6,7 @@ else
     export FNAME=$1
 fi
 
-exec ${PB} << HERE
+exec ${PB} << EOF
 
 import sys
 import os
@@ -18,5 +18,3 @@ if os.path.exists(fname):
     sys.stdout.write('{} lines in {}\n'.format(len(lines), fname))
 else:
     sys.stdout.write('{} not found\n'.format(fname))
-
-HERE
