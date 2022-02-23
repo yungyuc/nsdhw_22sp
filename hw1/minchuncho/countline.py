@@ -1,6 +1,10 @@
-if [[ $# < 1 ]] ; then
+#!/bin/bash
+
+if [[ $# < 1 ]]
+then
     echo -e "missing file name"
-elif [[ $# > 1 ]] ; then
+elif [[ $# > 1 ]]
+then
     echo -e "only one argument is allowed"
 else
     export FNAME=$1
@@ -15,6 +19,7 @@ fname = os.environ.get("FNAME")
 if os.path.exists(fname):
     with open(fname) as fobj:
         lines = fobj.readlines()
-    sys.stdout.write('{} lines in {}\n'.format(len(lines), fname))
+    sys.stdout.write('{} lines in {}\n'.format(len(lines)-1, fname))
 else:
     sys.stdout.write('{} not found\n'.format(fname))
+EOF

@@ -7,7 +7,7 @@ elif [[ $# > 1 ]] ; then
 else
 	filename=$1
 	if [[ -f "$filename" ]] ; then
-		lines=$(wc -l <$filename | sed -e 's/^[ \t]*//')
+		lines=$(wc -l $filename | tr -dc '0-9')
 		printf "$lines lines in $filename\n"
 	else
 		echo -e "$filename not found"
