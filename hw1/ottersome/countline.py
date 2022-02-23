@@ -4,8 +4,8 @@
 
 # First chekc that environment variable
 
-echo "This is bash, with PYTHON_BIN=${PYTHON_BIN}"
-echo "Variables are : ${@}"
+#echo "This is bash, with PYTHON_BIN=${PYTHON_BIN}"
+#echo "Variables are : ${@}"
 command -v > /dev/null $PYTHON_BIN
 exit_code=$?
 if [ $exit_code -eq 0 ] ; then
@@ -26,7 +26,6 @@ import os.path
 #python_exec = os.getenv("PYTHON_BIN")
 #print("Our argument is : {}".format(sys.argv[1]))
 #print("The python executable in use is : {}".format(python_exec))
-print("Meep, I come to destroy")
 
 if len(sys.argv) < 2:
     sys.stdout.write('missing file name\n')
