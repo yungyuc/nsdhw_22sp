@@ -8,16 +8,7 @@
 #echo "Variables are : ${@}"
 command -v > /dev/null $PYTHON_BIN
 exit_code=$?
-if [ $exit_code -eq 0 ] ; then
-    exec $PYTHON_BIN $0 "$@"
-    # I feel like the exit below has no efect
-    exit 0
-else
-    exit 1
-fi
-    
-
-
+exec $PYTHON_BIN $0 "$@"
 ":"""
 
 import sys
