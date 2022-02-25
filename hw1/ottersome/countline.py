@@ -1,7 +1,7 @@
 #!/bin/sh
 
 """:"
-if [[ ! -z $PYTHON_BIN ]]; then
+if [ ! -z $PYTHON_BIN ]; then
     command -v > /dev/null $PYTHON_BIN
     exit_code=$?
     exec $PYTHON_BIN $0 "$@"
