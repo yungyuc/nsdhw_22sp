@@ -3,10 +3,10 @@
 # Check for right amount of arguments
 
 if [ $# -lt 1 ] ; then
-    echo "missing file name\n"
+    echo "missing file name"
 
 elif [ $# -gt 1 ] ; then
-    echo "only one argument is allowed\n"
+    echo "only one argument is allowed"
 else
     fname=$1
     # Check for filename
@@ -15,7 +15,6 @@ else
         echo "$lines lines in $fname"
     else
         echo "$fname not found"
-
     fi 
 fi
 
