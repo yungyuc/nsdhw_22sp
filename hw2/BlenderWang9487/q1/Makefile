@@ -6,7 +6,7 @@ Line: Line.cpp Line.hpp
 
 .PHONY: clean
 clean:
-	rm -rf Line result.txt
+	rm -rf Line
 
 .PHONY: run
 run: Line
