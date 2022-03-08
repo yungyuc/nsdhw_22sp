@@ -4,5 +4,5 @@ run:
 	./line
 check:
 	./line > result.txt
-rm:
+clean:
 	rm -f line
