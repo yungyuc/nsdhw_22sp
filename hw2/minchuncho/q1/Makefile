@@ -19,4 +19,4 @@ check:
 
 .PHONY: clean
 clean:
-	$(RM) $(OBJS) $(EXEC)
+	$(RM) $(OBJS) $(EXEC) $(OUTPUT)
