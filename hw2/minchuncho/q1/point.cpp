@@ -8,26 +8,22 @@
 #include "point.hpp"
 
 Point::Point(Point const& obj){
-    std::cout << "cp\n";
     this->x_ = obj.x_;
     this->y_ = obj.y_;
 }
 
 Point & Point::operator=(Point const& obj){
-    std::cout << "cp as\n";
     this->x_ = obj.x_;
     this->y_ = obj.y_;
     return *this;
 }
 
 Point::Point(Point && obj){
-    std::cout << "mv\n";
     std::swap(this->x_, obj.x_);
     std::swap(this->y_, obj.y_);
 }
 
 Point & Point::operator=(Point && obj){
-    std::cout << "mv as\n";
     std::swap(this->x_, obj.x_);
     std::swap(this->y_, obj.y_);
     return *this;

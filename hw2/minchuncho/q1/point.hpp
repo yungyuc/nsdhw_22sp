@@ -8,7 +8,6 @@
 #ifndef point_hpp
 #define point_hpp
 
-#include <iostream>
 #include <algorithm>
 #include <utility>
 

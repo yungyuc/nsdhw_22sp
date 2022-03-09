@@ -12,17 +12,6 @@
 
 int main(int, char **)
 {
-//    Point x(1,2);
-//    Point* px=&x;
-//    px->x_;
-//    Point& rx=x;
-//    rx.x_;
-//    // rx=*px
-    
-//    int &i=1; // 1 has no initiate
-//    int const &i=1; // 1 has no initiate
-//    int &&j=1;
-    
     Line line(3);
     line[0] = Point(0, 1);
     line[1] = Point(1, 3);
