@@ -25,7 +25,7 @@ double calcAngle(const Vector2D& v1,const Vector2D& v2)
     return acos(v1.dotProduct(v2) / (v1.getLength() * v2.getLength()));
 }
 
-PYBIND11_MODULE(Angle, m)
+PYBIND11_MODULE(_vector, m)
 {
     m.doc() = "Calculates the angle (in radians) between two vectors in the 2-dimensional Cartesian coordinate system";
     py::class_<Vector2D>(m, "Vector2D")
