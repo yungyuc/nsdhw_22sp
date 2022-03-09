@@ -1,0 +1,6 @@
+/Users/ianlienfa/Coding/NumericSoftware/hw2/nsdhw_22sp/hw2/ianlienfa/q2/CMakeFiles/_vector.dir
+/Users/ianlienfa/Coding/NumericSoftware/hw2/nsdhw_22sp/hw2/ianlienfa/q2/CMakeFiles/test.dir
+/Users/ianlienfa/Coding/NumericSoftware/hw2/nsdhw_22sp/hw2/ianlienfa/q2/CMakeFiles/edit_cache.dir
+/Users/ianlienfa/Coding/NumericSoftware/hw2/nsdhw_22sp/hw2/ianlienfa/q2/CMakeFiles/rebuild_cache.dir
+/Users/ianlienfa/Coding/NumericSoftware/hw2/nsdhw_22sp/hw2/ianlienfa/q2/pybind11/CMakeFiles/edit_cache.dir
+/Users/ianlienfa/Coding/NumericSoftware/hw2/nsdhw_22sp/hw2/ianlienfa/q2/pybind11/CMakeFiles/rebuild_cache.dir
