@@ -1,11 +1,12 @@
 .PHONY: run check clean
-CXX = g++-11
+CXX = g++ 
+CXXFLAG = -std=c++17
 
 main: Line.o main.o
-	$(CXX) $^ -o $@
+	$(CXX) $(CXXFLAG) $^ -o $@
 
 %.o: %.cpp Line.h
-	$(CXX) -c $< -o $@
+	$(CXX) $(CXXFLAG) -c $< -o $@
 
 run: main
 	./main
