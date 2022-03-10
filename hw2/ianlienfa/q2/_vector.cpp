@@ -8,7 +8,6 @@ float Vector::size() const
 float Vector::getAngle(Vector const & a, Vector const & b)
 {
     float cos_angle = (a.x * b.x + a.y * b.y) / (a.size() * b.size());
-    std::cout << cos_angle << std::endl;
     if (int(cos_angle) = 1)
         return 0;
     else if (int(cos_angle) = -1)
