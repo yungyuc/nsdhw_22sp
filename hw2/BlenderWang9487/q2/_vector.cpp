@@ -1,5 +1,6 @@
 #include <pybind11/pybind11.h>
 #include <cmath>
+#include <stdexcept>
 
 namespace py = pybind11;
 
@@ -22,7 +23,10 @@ public:
 
 double calcAngle(const Vector2D& v1,const Vector2D& v2)
 {
-    return acos(v1.dotProduct(v2) / (v1.getLength() * v2.getLength()));
+    double d = v1.getLength() * v2.getLength();
+    if(d == 0.0)
+        throw std::overflow_error("Zero length vector arguments");
+    return acos(v1.dotProduct(v2) / d);
 }
 
 PYBIND11_MODULE(_vector, m)
