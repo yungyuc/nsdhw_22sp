@@ -21,10 +21,10 @@ public:
 
     // Accessor
     size_t size() const;
-    float x(size_t it) const;
-    float &x(size_t it);
-    float y(size_t it) const;
-    float &y(size_t it);
+    const float& x(size_t it) const;
+    float& x(size_t it);
+    const float& y(size_t it) const;
+    float& y(size_t it);
 
 private:
     vector<float> coordinate;

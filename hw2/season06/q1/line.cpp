@@ -62,7 +62,7 @@ size_t Line::size() const
 {
     return coordinate.size() / 2;
 }
-float Line::x(size_t it) const
+const float& Line::x(size_t it) const
 {
     return coordinate.at(it * 2);
 }
@@ -70,11 +70,11 @@ float& Line::x(size_t it)
 {
     return coordinate.at(it * 2);
 }
-float Line::y(size_t it) const
+const float& Line::y(size_t it) const
 {
     return coordinate.at(it * 2 + 1);
 }
-float & Line::y(size_t it)
+float& Line::y(size_t it)
 {
     return coordinate.at(it * 2 + 1);
 }
