@@ -1,7 +1,7 @@
 CXX = g++
 CFLAGS = -shared -std=c++11 -Wall -fPIC
 PWD = $(shell pwd)
-INC = -I /usr/lib/python3
+INC = -I/usr/include/python3.8 -I/usr/include/pybind11 -lpython3.8
 
 _vector:
 	$(CXX) $(CFLAGS) `python3 -m pybind11 --includes` main.cpp -o _vector`python3-config --extension-suffix` $(INC)
