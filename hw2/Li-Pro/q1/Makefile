@@ -5,7 +5,7 @@ OBJ_DIR = $(BUILD_DIR)/obj
 
 CPP = $(wildcard *.cpp)
 OBJ = $(addprefix $(OBJ_DIR)/, $(CPP:.cpp=.o))
-EXE = $(OBJ_DIR)/hw2.exe
+EXE = $(BUILD_DIR)/hw2.exe
 
 .PHONY: all run check clean
 
