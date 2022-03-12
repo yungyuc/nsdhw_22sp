@@ -4,6 +4,12 @@ Line::Line (size_t size)
     : m_xvec(size), m_yvec(size)
 {}
 
+size_t
+Line::size() const
+{
+    
+}
+
 float const &
 Line::x(size_t idx) const
 {

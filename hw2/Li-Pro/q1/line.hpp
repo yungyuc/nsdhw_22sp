@@ -11,6 +11,8 @@ class Line
 public:
     Line(size_t size);
 
+    size_t size() const;
+
     float const & x(size_t idx) const;
     float       & x(size_t idx)      ;
     float const & y(size_t idx) const;
