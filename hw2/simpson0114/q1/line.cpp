@@ -6,7 +6,7 @@
 class Line
 {
 public:
-    Line() {}
+    Line() = default;
 
     Line(Line const & other)
     {
@@ -19,12 +19,21 @@ public:
             y(it) = other.y(it);
         }
     }
+
+    Line(Line       &&);
+    Line & operator=(Line const & );
+    Line & operator=(Line       &&);
     
     Line(size_t size)
     {
         _lineSize = size;
         m_x.resize(_lineSize);
         m_y.resize(_lineSize);
+    }
+
+    ~Line() { 
+        this->m_x.clear();  
+        this->m_y.clear();
     }
     size_t size() const { return _lineSize; }
     float const & x(size_t it) const { return m_x.at(it); }
