@@ -1,10 +1,11 @@
 CXX = c++
 CXXFLAGS = -O3 -Wall -shared -std=c++11 -fPIC
-INCLUDES = $(shell python3 -m pybind11 --includes)
+PY_INCLUDES = -I/usr/include/python3.8 -lpython3.8
+PYBIND_INCLUDES = $(shell python3 -m pybind11 --includes)
 TARGETS = _vector$(shell python3-config --extension-suffix)
 
 $(TARGETS): _vector.cpp
-	$(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
+	$(CXX) $(CXXFLAGS) $(PY_INCLUDES) $(PYBIND_INCLUDES) $^ -o $@
 
 .PHONY: clean
 clean:
