@@ -1,6 +1,7 @@
 import _vector
 import cmath
 import pytest
+import numpy as np
 
 class TestInstance:
 
@@ -13,10 +14,12 @@ class TestInstance:
 
 	def test_right_angle(self):
 
-		# the correct answer should be pi
-		# but we cant get exact solution, just test if it's close enough
+		answer = np.arccos(np.dot((3,4), (-4,3)) / 25)
+		assert _vector.py_get_angle(3, 4, -4, 3) == answer
 
-		assert abs(_vector.py_get_angle(3, 4, -4, 3)-cmath.pi/2) < 1e-5
-
-	#def test_another_angle():
-	#	pass
+	def test_another_angle(self):
+		
+		v1_len = np.sqrt(5)
+		v2_len = np.sqrt(25 + 49)
+		answer = np.arccos(np.dot((1,2), (-5, 7)) / (v1_len * v2_len))
+		assert _vector.py_get_angle(1, 2, -5, 7) == answer
