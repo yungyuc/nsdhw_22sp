@@ -1,5 +1,5 @@
 import _vector
-import math
+import cmath
 import pytest
 
 class TestInstance:
@@ -16,7 +16,7 @@ class TestInstance:
 		# the correct answer should be pi
 		# but we cant get exact solution, just test if it's close enough
 
-		assert abs(_vector.py_get_angle(3, 4, -4, 3)-math.pi/2) < 1e-5
+		assert abs(_vector.py_get_angle(3, 4, -4, 3)-cmath.pi/2) < 1e-5
 
 	#def test_another_angle():
 	#	pass

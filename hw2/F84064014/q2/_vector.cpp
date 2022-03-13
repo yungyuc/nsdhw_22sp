@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stdexcept>
 #include <math.h>
 #include <pybind11/pybind11.h>
 

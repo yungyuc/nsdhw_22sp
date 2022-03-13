@@ -6,4 +6,3 @@ test:
 
 clean:
 	rm *.so
-	rm -rf __pycache__
