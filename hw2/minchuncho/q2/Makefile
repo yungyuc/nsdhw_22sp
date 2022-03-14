@@ -15,7 +15,7 @@ all: $(OBJS)
 
 .PHONY: test
 test:
-	pytest
+	PYTHONPATH=./src pytest
 
 .PHONY: clean
 clean:
