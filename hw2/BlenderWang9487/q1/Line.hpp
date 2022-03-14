@@ -21,8 +21,8 @@ class Line
     }
     Line & operator=(Line       && l)
     {
-        _x = std::forward<Line>(l)._x;
-        _y = std::forward<Line>(l)._y;
+        _x = std::forward<std::vector<float>>(l._x);
+        _y = std::forward<std::vector<float>>(l._y);
         return *this;
     }
     Line(size_t size):_x(size),_y(size){}
