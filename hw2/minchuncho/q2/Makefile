@@ -15,8 +15,8 @@ all: $(OBJS)
 
 .PHONY: test
 test:
-	pytest tests
+	python3 -m pytest -v tests
 
 .PHONY: clean
 clean:
-	$(RM) $(OBJS) $(EXEC)
+	$(RM) $(OBJS) $(EXEC)$(PYEXTS)
