@@ -5,3 +5,7 @@
 [submodule "hw2/minchuncho/q2/hw2/minchuncho/q2/pybind11"]
 	path = hw2/minchuncho/q2/hw2/minchuncho/q2/pybind11
 	url = git@github.com:minchuncho/nsdhw_22sp.git
+[submodule "hw2/minchuncho/q2/pybind11"]
+	path = hw2/minchuncho/q2/pybind11
+	url = git@github.com:pybind/pybind11.git
+	branch = stable
