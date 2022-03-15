@@ -11,8 +11,8 @@ class Line
     Line(){}
     Line(Line const &  l):_x(l._x),_y(l._y){}
     Line(Line       && l):
-        _x(std::forward<std::vector<float>>(l._x)),
-        _y(std::forward<std::vector<float>>(l._y)){}
+        _x(std::move(l._x)),
+        _y(std::move(l._y)){}
     Line & operator=(Line const &  l)
     {
         _x = l._x;
@@ -21,13 +21,13 @@ class Line
     }
     Line & operator=(Line       && l)
     {
-        _x = std::forward<std::vector<float>>(l._x);
-        _y = std::forward<std::vector<float>>(l._y);
+        _x = std::move(l._x);
+        _y = std::move(l._y);
         return *this;
     }
     Line(size_t size):_x(size),_y(size){}
     ~Line(){}
-    size_t size() const
+    inline size_t size() const
     {
         return _x.size();
     }
