@@ -2,21 +2,7 @@
 Proposal Template (22sp)
 ========================
 
-This is a template to specify what your project is and the execution plan.  You
-will find it is difficult to plan for things that you are not sure about.  Do
-your best.
 
-.. note::
-
-  You are strongly encouraged to use this plain-text `reStructuredText
-  <https://docutils.sourceforge.io/rst.html>`__ format, although not forced.
-  :download:`Download this file. <project_template.rst>`
-
-Please do give your project a name that clearly states the subject and is short
-enough for people to remember.
-
-Additional documents or files may be used.  They should be added in the
-repository.
 
 Basic Information
 =================
