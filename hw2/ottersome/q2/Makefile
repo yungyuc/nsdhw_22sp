@@ -4,7 +4,7 @@ TARGET = $(addprefix $(TARGETNAME),$(shell python3-config --extension-suffix))
 BUILD_DIR ?= ./
 SRC_DIR ?= ./
 # Since we will be using pybind as header library
-INC_DIRS := -I./ $(shell python3-config --includes)
+INC_DIRS := -I./include $(shell python3-config --includes)
 OBJ_DIR ?= ./
 #Comment to force change in git
 
@@ -18,7 +18,7 @@ $(BUILD_DIR)/$(TARGET): $(SRC_DIR)/main.cpp
 default: $(BUILD_DIR)/$(TARGET)
 
 clean:
-	rm -rf $(OBJ_DIR)/*.so $(BUILD_DIR)/$(TARGET) result.txt || true
+	rm -rf $(OBJ_DIR)/*.so $(BUILD_DIR)/$(TARGET) ./__pycache__ .* || true
 
 #Pytest, there were no rules against just calling pytest
 test: 
