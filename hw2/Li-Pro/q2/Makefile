@@ -11,7 +11,7 @@ PYTHON_LIB = $(shell python3 -c 'print(__import__("sysconfig").get_config_vars()
 all: $(LIBVECTOR)
 
 test: $(LIBVECTOR)
-	env PYTHONPATH=".:$PYTHONPATH" python3 -m pytest -v
+	env PYTHONPATH=".:$$PYTHONPATH" python3 -m pytest -v
 
 clean:
 	rm -rf $(LIBVECTOR)
