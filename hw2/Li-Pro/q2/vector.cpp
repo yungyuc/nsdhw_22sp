@@ -31,8 +31,9 @@ get_rad(double ax, double ay, double bx, double by)
     }
 
     // what do you mean by precision :P
-    double cosrad = vec_cross(ax, ay, bx, by) / vec_length(ax, ay) / vec_length(bx, by);
-    return abs(asin(cosrad));
+    double cos_rad = abs(vec_cross(ax, ay, bx, by) / vec_length(ax, ay) / vec_length(bx, by));
+    double bounded_rad = cos_rad > 1.0 ? 1.0 : cos_rad;
+    return asin(bounded_rad);
 }
 
 PYBIND11_MODULE(libvector, m) {
