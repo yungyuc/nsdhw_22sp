@@ -3,7 +3,8 @@ PYBIND11_INCLUDE = $(shell python3 -m pybind11 --includes)
 CPP = $(wildcard *.cpp)
 
 PYTHON_INCLUDE = $(shell python3 -c 'print(__import__("sysconfig").get_paths()["include"])')
-PYTHON_LIB = $(shell basename $(PYTHON_INCLUDE))
+PYTHON_SRCDIR = $(shell python3 -c 'print(__import__("sysconfig").get_config_vars()["srcdir"])')
+PYTHON_LIB = $(shell python3 -c 'print(__import__("sysconfig").get_config_vars()["PYTHON_FOR_REGEN"])')
 
 .PHONY: all test clean
 
@@ -24,5 +25,7 @@ $(LIBVECTOR): $(CPP)
 		-std=c++11 \
 		-fPIC \
 		-o $(LIBVECTOR) \
-		-I$(PYTHON_INCLUDE) -l$(PYTHON_LIB) \
+		-I $(PYTHON_INCLUDE) \
+		-L $(PYTHON_SRCDIR) \
+		-l $(PYTHON_LIB) \
 		$(PYBIND11_INCLUDE) $(CPP)
