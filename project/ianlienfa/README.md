@@ -1,8 +1,7 @@
-================================================
 BBGym : The branch and bound framework 
 ================================================
 
-Project name: `BBGym <https://github.com/ianlienfa/BBGym>`__
+Project name: [BBGym](https://github.com/ianlienfa/BBGym)
 
 This is a branch and bound problem solving framework for all kinds of OR problems (especially scheduling problems)
 The goal of this framework is to make it easy to toggle between different search strategies, branching strategies and pruning strategies
@@ -27,52 +26,66 @@ Prospective Users
 1. Researchers that are interested in the framework and want to try out different search, branch and pruning strategies for OR problems.
 2. Students who would like to solve problem using branch and bound
 3. Industry professionals that would like to try out some ideas before moving onto implementing an state-of-the-art solver
-  For example: Industry like TSMC or MediaTek often need to solve scheduling problems for distributing jobs to machines under some given constraints.
+  * For example: Industry like TSMC or MediaTek often need to solve scheduling problems for distributing jobs to machines under some given constraints.
 
 System Architecture
 ===================
 
-`BB_engine`: 
+## C++ 
+
+`BB_engine`
+
   This is the main engine of the framework.  It is responsible for the following:
   1. Read the input file and parse the input
   2. Construct the environment
   3. Run the search strategy
   4. Output the results
 
-`branch_modules`:
+`branch_modules`
+
   This is the collection of branch classes
   A branch class should inherit the base class `BranchMod`, which requires the following:
   * Implement the `branch` function
 
-`prune_modules`:
+`prune_modules`
+
   This is the collection of pruning classes
   A pruning class should inherit the base class `PruneMod`, which requires the following:
   * Implement the `prune` function
 
-`Node`:
+`Node`
+
   This is the collection of node classes
   A specific problem requires a node class and a graph class to be defined.
   It generically specifies the node information during branch and bound
 
-`Graph`:
+`Graph`
+
   The graph class is used to store the graph information during branch and bound
   Compared to the node class, the graph class has more global information and knows about the state of the search
-  For example, a graph class for the :math:`1|\Sigma_Cj` problem, we need:
+  For example, a graph class for the :math:`1|\\Sigma{C_j}` problem, we need:
     * the configuration of the probelm instance
     * the best value founded so far    
     * the data structure for searching
 
-`config.h`:
+***config.h***
+
   The configuration for the problem solving
   Users can twiddle with the configuration in this file, 
   including the problem type, the searching strategy, the branching strategy, and the pruning strategy
+
+## Python modules
+
+  `BBGym`
+  
+  This module will be exposed for users to call the underlying branch and bound engine
 
 In general, the framework calls the BB_engine at the start of the program, 
 then for every node visited, the framework calls the branch_modules to branch, 
 the prune_modules to prune, updates the graph, then relies on the search_module to search for the next node.
 
 The users can use this system solely from source, twiddle the configuration in the config.h file, and build them from the source.  
-For this project, we hope to wrap it in a python package, and provide a gym-like api for RL on branch and bound problem solving.
+Or rely on the python module to operate the make process
 
 
 API Description
@@ -82,13 +95,16 @@ The following API follows the OpenAI gym api for environments
 The basic usage will be like following:
 
 ```python
-import gym
-env = gym.make('BBGym-v0')
-done = False
-while not done:
-  action = env.action_space.sample()
-  observation, reward, done, info = env.step(action)
-  print(observation, reward, done, info)
+
+import BBGym
+from BBGym import OneRjSumCj.prune_strategies
+
+# problem preparation
+solver = BBGym.prepare('OneRjSumCj', search='BFS', branch='plain', prune=[pruneIncumbentCmpr, LU_AND_SAL__Theorem1])
+problem = BBGym.parse_problem('case/1.txt')
+
+# probelm solve
+solver.solve(problem)
 
 ```
 
@@ -113,9 +129,9 @@ Schedule
 * Week 3 (4/18):
     * Pybind binding for the framework
 * Week 4 (4/25):
-    * Adjust the framework to be supported by the gym api
+    * BBGym.prepare()
 * Week 5 (5/2):
-    * Adjust the framework to be supported by the gym api
+    * BBGym.[Problem].search_modules()
 * Week 6 (5/9):
     * The final version of the framework
 * Week 7 (5/16):
