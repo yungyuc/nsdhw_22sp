@@ -2,8 +2,7 @@
 BBGym : The branch and bound framework 
 ================================================
 
-Project name: BBGym_ 
-.. BBGym_: <https://github.com/ianlienfa/BBGym>
+Project name: `BBGym <https://github.com/ianlienfa/BBGym>`__
 
 This is a branch and bound problem solving framework for all kinds of OR problems (especially scheduling problems)
 The goal of this framework is to make it easy to toggle between different search strategies, branching strategies and pruning strategies
@@ -11,22 +10,24 @@ The framework aim to construct environment for Reinforcement Learning the branch
 
 Problem to Solve
 ================
+Goal of this framework:
 
-This framework is aim for two goals:
-1. Providing a framework for testing out different search, branch and pruning strategies for some general scheduling problems
-  When researching on dominance relationships or problem-specific heuristics on OR problems, 
-  We often have to first implement the best heuristic and pruning strategy known to us.
-  Then we can test out different search strategies and branch and pruning strategies.
-  This framework is designed to be elastic enough to be able to easily insert and remove strategies
+To provide a framework for testing out different search, branch and pruning strategies for some general scheduling problems.
+
+When researching on dominance relationships or problem-specific heuristics on OR problems, we often have to:
+
+1. Implement the best heuristic and pruning strategy known to us.
+2. Test out different search strategies and branch and pruning strategies.
+
+This framework is designed to be elastic enough to be able to easily insert and remove strategies
   
-2. Provide an simple api for RL on branch and bound problem solving (*Main Goal of this Project*)
-
 Prospective Users
 =================
 
 1. Researchers that are interested in the framework and want to try out different search, branch and pruning strategies for OR problems.
 2. Students who would like to solve problem using branch and bound
 3. Industry professionals that would like to try out some ideas before moving onto implementing an state-of-the-art solver
+  For example: Industry like TSMC or MediaTek often need to solve scheduling problems for distributing jobs to machines under some given constraints.
 
 System Architecture
 ===================
@@ -56,7 +57,7 @@ System Architecture
 `Graph`:
   The graph class is used to store the graph information during branch and bound
   Compared to the node class, the graph class has more global information and knows about the state of the search
-  For example, a graph class for the :math: `1|\Sigma_Cj` problem, we need:
+  For example, a graph class for the :math:`1|\Sigma_Cj` problem, we need:
     * the configuration of the probelm instance
     * the best value founded so far    
     * the data structure for searching
