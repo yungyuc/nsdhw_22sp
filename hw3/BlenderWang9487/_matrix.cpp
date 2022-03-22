@@ -1,26 +1,23 @@
-// #include <pybind11/pybind11.h>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 // #include <mkl_lapack.h>
 #include <stdexcept>
 #include <vector>
 
-// namespace py = pybind11;
+namespace py = pybind11;
 
 class Matrix {
 
 public:
 
-    Matrix(size_t nrow, size_t ncol, bool column_major)
-      : m_nrow(nrow), m_ncol(ncol), m_column_major(column_major)
+    Matrix(size_t nrow, size_t ncol)
+      : m_nrow(nrow), m_ncol(ncol)
     {
         reset_buffer(nrow, ncol);
     }
 
-    Matrix
-    (
-        size_t nrow, size_t ncol, bool column_major
-      , std::vector<double> const & vec
-    )
-      : m_nrow(nrow), m_ncol(ncol), m_column_major(column_major)
+    Matrix(size_t nrow, size_t ncol, std::vector<double> const & vec)
+      : m_nrow(nrow), m_ncol(ncol)
     {
         reset_buffer(nrow, ncol);
         (*this) = vec;
@@ -48,7 +45,6 @@ public:
 
     Matrix(Matrix const & other)
       : m_nrow(other.m_nrow), m_ncol(other.m_ncol)
-      , m_column_major(other.m_column_major)
     {
         reset_buffer(other.m_nrow, other.m_ncol);
         for (size_t i=0; i<m_nrow; ++i)
@@ -79,9 +75,10 @@ public:
 
     Matrix(Matrix && other)
       : m_nrow(other.m_nrow), m_ncol(other.m_ncol)
-      , m_column_major(other.m_column_major)
     {
         reset_buffer(0, 0);
+        std::swap(m_nrow, other.m_nrow);
+        std::swap(m_ncol, other.m_ncol);
         std::swap(m_buffer, other.m_buffer);
     }
 
@@ -92,7 +89,6 @@ public:
         std::swap(m_nrow, other.m_nrow);
         std::swap(m_ncol, other.m_ncol);
         std::swap(m_buffer, other.m_buffer);
-        m_column_major = other.m_column_major;
         return *this;
     }
 
@@ -120,20 +116,18 @@ public:
         return std::vector<double>(m_buffer, m_buffer+size());
     }
 
-    double * data() const { return m_buffer; }
 private:
 
     size_t index(size_t row, size_t col) const
     {
-        if (m_column_major) { return row          + col * m_nrow; }
-        else                { return row * m_ncol + col         ; }
+        return row + col * m_nrow;
     }
 
     void reset_buffer(size_t nrow, size_t ncol)
     {
         if (m_buffer) { delete[] m_buffer; }
         const size_t nelement = nrow * ncol;
-        if (nelement) { m_buffer = new double[nelement]; }
+        if (nelement) { m_buffer = new double[nelement](); }
         else          { m_buffer = nullptr; }
         m_nrow = nrow;
         m_ncol = ncol;
@@ -141,7 +135,6 @@ private:
 
     size_t m_nrow = 0;
     size_t m_ncol = 0;
-    bool m_column_major = false;
     double * m_buffer = nullptr;
 
 };
@@ -156,7 +149,7 @@ Matrix multiply_naive(const Matrix& m1,const Matrix& m2)
     }
     size_t r = m1.nrow();
     size_t c = m2.ncol();
-    Matrix ret(r, c, false);
+    Matrix ret(r, c);
     for(size_t i=0;i < r;i++)
         for(size_t j=0;j < c;j++)
         {
@@ -166,4 +159,68 @@ Matrix multiply_naive(const Matrix& m1,const Matrix& m2)
             ret(i,j) = sum;
         }
     return ret;
+}
+
+Matrix multiply_tile(const Matrix& m1,const Matrix& m2,size_t tsize)
+{
+    if(m1.ncol() != m2.nrow())
+    {
+        throw std::out_of_range(
+            "number of m1's col and m2's row mismatch"
+        );
+    }
+    size_t r = m1.nrow();
+    size_t c = m2.ncol();
+    size_t k = m1.ncol();
+    Matrix ret(r, c);
+    for(size_t r_tile_start = 0;r_tile_start < r;r_tile_start += tsize)
+    {
+        size_t r_tile_end = std::min(r_tile_start+tsize, r);
+        for(size_t c_tile_start = 0;c_tile_start < c;c_tile_start += tsize)
+        {
+            size_t c_tile_end = std::min(c_tile_start+tsize, c);
+            for(size_t k_tile_start = 0;k_tile_start < k;k_tile_start += tsize)
+            {
+                size_t k_tile_end = std::min(k_tile_start+tsize, k);
+                for(size_t row = r_tile_start;row < r_tile_end;row++)
+                    for(size_t col = c_tile_start;col < c_tile_end;col++)
+                    {
+                        double sum = 0.0;
+                        for(size_t kth = k_tile_start;kth < k_tile_end;kth++)
+                            sum += m1(row,kth) * m2(kth,col);
+                        ret(row,col) += sum;
+                    }
+            }
+        }
+    }
+}
+
+PYBIND11_MODULE(_matrix, m)
+{
+    py::class_<Matrix>(m, "Matrix")
+        .def(py::init<size_t,size_t>())
+        .def(py::init<size_t,size_t,std::vector<double> const&>())
+        .def("__getitem__",
+            [](const Matrix& mat,std::pair<size_t,size_t> index)
+            {
+                return mat(index.first,index.second);
+            }
+        )
+        .def("__setitem__",
+            [](Matrix& mat,std::pair<size_t,size_t> index,double value)
+            {
+                mat(index.first,index.second) = value;
+            }
+        );
+    m
+    .def("multiply_naive",&multiply_naive,
+        py::arg("m1"),
+        py::arg("m2"))
+    .def("multiply_tile",&multiply_tile,
+        py::arg("m1"),
+        py::arg("m2"),
+        py::arg("tsize"))
+    .def("multiply_mkl",&multiply_naive,
+        py::arg("m1"),
+        py::arg("m2"));
 }
