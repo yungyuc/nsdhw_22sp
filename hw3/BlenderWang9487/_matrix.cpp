@@ -1,8 +1,9 @@
-#include <pybind11/pybind11.h>
-#include <mkl_lapack.h>
+// #include <pybind11/pybind11.h>
+// #include <mkl_lapack.h>
 #include <stdexcept>
+#include <vector>
 
-namespace py = pybind11;
+// namespace py = pybind11;
 
 class Matrix {
 
@@ -120,7 +121,6 @@ public:
     }
 
     double * data() const { return m_buffer; }
-
 private:
 
     size_t index(size_t row, size_t col) const
@@ -146,4 +146,24 @@ private:
 
 };
 
-
+Matrix multiply_naive(const Matrix& m1,const Matrix& m2)
+{
+    if(m1.ncol() != m2.nrow())
+    {
+        throw std::out_of_range(
+            "number of m1's col and m2's row mismatch"
+        );
+    }
+    size_t r = m1.nrow();
+    size_t c = m2.ncol();
+    Matrix ret(r, c, false);
+    for(size_t i=0;i < r;i++)
+        for(size_t j=0;j < c;j++)
+        {
+            double sum = 0.0;
+            for(size_t k=0;k < m1.ncol();k++)
+                sum += m1(i,k) * m2(k,j);
+            ret(i,j) = sum;
+        }
+    return ret;
+}
