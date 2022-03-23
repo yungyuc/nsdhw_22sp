@@ -10,13 +10,17 @@ Basic Information
 Problem to Solve
 =================
 A Stackelberg model is a strategic game which consists of a leader and a group of followers, who compete over a quantity while maximizing their profits or minimizing their costs. In the model, the leader acts first and the followers respond afterwards, which goes on and on until everyone settles.  
-However, whether or not the game will converge is up in the air. Gladly, such games take advantages of **backward induction** where the leader predicts followers’ best responses under a given strategy of his. If luckily, those best responses can be rewritten as functions of the leader’s strategy, then the leader can substitute those best responses back to his utility (or cost) function and find the extremum. Obviously, the game will stop with **just one back-and-forth**, which is quite efficient. Note that this approach favors the leader, which is called “first mover’s advantage.”
 
-.. Since the whole process is determined by the leader, it is like the leader is trying to bring the situation to his/her favorable conclusion, hence the project is named “SewUP.”
+However, whether or not the game will converge is up in the air. Gladly, such games take advantages of **backward induction** where the leader predicts followers’ best responses under a given strategy of his. If luckily, those best responses can be rewritten as functions of the leader’s strategy, then the leader can substitute those best responses back to his utility (or cost) function and find the extremum. Obviously, the game will stop with **just one back-and-forth**, which is quite efficient. 
+
+Note that this approach favors the leader, which is called “first mover’s advantage.”
+Since the whole process is determined by the leader, it is like the leader is trying to bring the situation to his/her favorable conclusion, hence the project is named “SewUP.”
 
 Prospective Users
 ==================
-For those researchers who study resource allcation and incentive mechanisms, especially one-to-many Stackelberg game with certain formats of utility functions, their problems can be examined or even solved by the tool.
+Resource allcation is a matter of how to make the best of resources. For example, typical resources that a model training task calls for are time, computational resources (such as battery power), and datasets. But in real-life, resources do not come for free, which is why we include incentive mechanisms. Requesters, who need resources, will reward to draw in some. Clearly, either being a requester or a resource provider, it is necessary to consider the utility or the cost. As the case may be, such problems can be modeled into Stackelberg games and would be a lot easier.
+
+Hence, for those researchers who study resource allcation and incentive mechanisms, especially one-to-many Stackelberg game with certain formats of utility/cost functions, their problems can be examined or even solved by the tool.
 
 .. As a matter of fact, if someone is able to model his competition into a Stackelberg game and hopes to solve it by backward induction, then very likely the utility functions have certain formats.
 
