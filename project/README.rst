@@ -88,3 +88,5 @@ Project List by Account Name
 #. `ianlienfa <https://github.com/ianlienfa/BBGym>`__ for
    `BBGym <README.rst>`__: https://github.com/ianlienfa/BBGym
 
+#. `minchuncho <https://github.com/minchuncho>`__ for
+   `sewup <README.rst>`__: https://github.com/minchuncho/sewup
