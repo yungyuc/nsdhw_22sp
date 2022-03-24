@@ -1,6 +1,6 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-// #include <mkl_lapack.h>
+#include <mkl_cblas.h>
 #include <stdexcept>
 #include <vector>
 
@@ -111,6 +111,8 @@ public:
 
     size_t size() const { return m_nrow * m_ncol; }
     double buffer(size_t i) const { return m_buffer[i]; }
+    const double* buffer() const { return m_buffer; }
+    double* buffer() { return m_buffer; }
     std::vector<double> buffer_vector() const
     {
         return std::vector<double>(m_buffer, m_buffer+size());
@@ -195,6 +197,37 @@ Matrix multiply_tile(const Matrix& m1,const Matrix& m2,size_t tsize)
     }
 }
 
+Matrix multiply_mkl(const Matrix& m1,const Matrix& m2)
+{
+    if(m1.ncol() != m2.nrow())
+    {
+        throw std::out_of_range(
+            "number of m1's col and m2's row mismatch"
+        );
+    }
+    int m = m1.nrow();
+    int n = m2.ncol();
+    int k = m1.ncol();
+    Matrix ret(m,n);
+    cblas_dgemm(
+        CblasRowMajor,
+        CblasNoTrans,
+        CblasNoTrans,
+        m,
+        n,
+        k,
+        1.0,
+        m1.buffer(),
+        k,
+        m2.buffer(),
+        n,
+        0.0,
+        ret.buffer(),
+        n
+    );
+    return ret;
+}
+
 PYBIND11_MODULE(_matrix, m)
 {
     py::class_<Matrix>(m, "Matrix")
@@ -211,7 +244,10 @@ PYBIND11_MODULE(_matrix, m)
             {
                 mat(index.first,index.second) = value;
             }
-        );
+        )
+        .def_property_readonly("nrow",&Matrix::nrow)
+        .def_property_readonly("ncol",&Matrix::ncol)
+        ;
     m
     .def("multiply_naive",&multiply_naive,
         py::arg("m1"),
@@ -220,7 +256,7 @@ PYBIND11_MODULE(_matrix, m)
         py::arg("m1"),
         py::arg("m2"),
         py::arg("tsize"))
-    .def("multiply_mkl",&multiply_naive,
+    .def("multiply_mkl",&multiply_mkl,
         py::arg("m1"),
         py::arg("m2"));
 }
