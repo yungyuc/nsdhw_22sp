@@ -16,7 +16,8 @@ In the project we try to make deep learning faster and easier
 
 Deep Learning is a powerful tool even for people who never write code before, however, 
 build a deep learning model is not a walk in the park, we hope to build a framework
-that user can simply use deep learning model by only put data in and get data out.
+that user have to care only about which dataset they are going to use, how many layers they
+want, which loss function they want, then they could train a powerful model on their task.
 
 Neaural Network is a important part of deep learning model. Training a neural network
 may cost a lot of time especially when there is no gpu available, thus some component
@@ -31,9 +32,9 @@ who just start to learn about deep learning.
 System Architecture
 ===================
 
-All function and class will be defined in python class FNN, function with complicate 
-computation process like forward, backward propagation, etc., would be written in C++
-function with less computation would be written in python
+A main class FNN will be written in C++ and connect to python script with pybind11.
+In python script FNN should be a callable class with some different function. Some
+fucntion like dense layer, activation are subclass defined inside FNN object.
 
 API Description
 ===============
@@ -42,6 +43,25 @@ FNN class includes complete implementation of a Feed Forward Neaural Network, us
 have to initialize model and train in python script. model configuration is
 determined by a string, each line of string start with layer name and followed with
 their parameter
+
+API function
+- FNN.__init__(): initialize parameter(layer) and flag
+- FNN.__call__(): two mode, train and eval, train mode will calcaulate gradient and update
+parameter, eval only forward and output result
+- FNN.trian(): set train mode
+- FNN.ecval(): set eval mode
+- FNN.forward(): forward input data to all layer and get gradient if necessary
+- FNN.backward(): update parameter
+
+Also layer and some activation function are class that defined in FNN, all these class
+have identical function forward(), df_dx()
+
+API class
+- FNN.sigmoid
+- FNN.linear
+- FNN.identical
+- FNN.ReLu
+- FNN.softmax
 
 Engineering Infrastructure
 ==========================
@@ -73,5 +93,5 @@ Schedule
 
 References
 ==========
-
-List the external references for the information provided in the proposal.
+#. `F84064014 <https://github.com/F84064014>`__ for
+   `SimpleNN <README.rst>`__: https://github.com/F84064014/SimpleNN
