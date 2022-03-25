@@ -9,7 +9,7 @@
 #include <pybind11/operators.h>
 #include <pybind11/numpy.h>
 
-//#include "mkl.h"
+#include <mkl.h>
 
 #include "StopWatch.hpp"
 
@@ -173,30 +173,60 @@ size_t calc_nflo(Matrix const & mat1, Matrix const & mat2)
  * Direct naive matrix matrix multiplication.
  * rename to multiply_naive
  */
+// Matrix multiply_naive(Matrix const & mat1, Matrix const & mat2)
+// {
+//     validate_multiplication(mat1, mat2);
+
+//     Matrix ret(mat1.nrow(), mat2.ncol());
+
+//     const size_t nrow1 = mat1.nrow();
+//     const size_t ncol1 = mat1.ncol();
+//     const size_t nrow2 = mat2.nrow();
+//     const size_t ncol2 = mat2.ncol();
+
+//     StopWatch sw;
+
+//     for (size_t i=0; i<nrow1; ++i)
+//     {
+//         const size_t base1 = i * ncol1;
+//         for (size_t k=0; k<ncol2; ++k)
+//         {
+//             double v = 0;
+//             for (size_t j=0; j<ncol1; ++j)
+//             {
+//                 v += mat1.m_buffer[base1 + j] * mat2.m_buffer[j*ncol2 + k];
+//             }
+//             ret.m_buffer[base1 + k] = v;
+//         }
+//     }
+
+//     ret.elapsed() = sw.lap();
+//     ret.nflo() = calc_nflo(mat1, mat2);
+
+//     return ret;
+// }
+
+/*
+ * Indirect naive matrix matrix multiplication.
+ */
 Matrix multiply_naive(Matrix const & mat1, Matrix const & mat2)
 {
     validate_multiplication(mat1, mat2);
 
     Matrix ret(mat1.nrow(), mat2.ncol());
 
-    const size_t nrow1 = mat1.nrow();
-    const size_t ncol1 = mat1.ncol();
-    const size_t nrow2 = mat2.nrow();
-    const size_t ncol2 = mat2.ncol();
-
     StopWatch sw;
 
-    for (size_t i=0; i<nrow1; ++i)
+    for (size_t i=0; i<mat1.nrow(); ++i)
     {
-        const size_t base1 = i * ncol1;
-        for (size_t k=0; k<ncol2; ++k)
+        for (size_t k=0; k<mat2.ncol(); ++k)
         {
             double v = 0;
-            for (size_t j=0; j<ncol1; ++j)
+            for (size_t j=0; j<mat1.ncol(); ++j)
             {
-                v += mat1.m_buffer[base1 + j] * mat2.m_buffer[j*ncol2 + k];
+                v += mat1(i,j) * mat2(j,k);
             }
-            ret.m_buffer[base1 + k] = v;
+            ret(i,k) = v;
         }
     }
 
@@ -212,20 +242,44 @@ Matrix multiply_naive(Matrix const & mat1, Matrix const & mat2)
 Matrix multiply_mkl(Matrix const & mat1, Matrix const & mat2)
 {
 
+    mkl_set_num_threads(1);
+
     Matrix ret(mat1.nrow(), mat2.ncol());
 
+    StopWatch sw;
+
+    cblas_dgemm(
+        CblasRowMajor /* const CBLAS_LAYOUT Layout */
+      , CblasNoTrans /* const CBLAS_TRANSPOSE transa */
+      , CblasNoTrans /* const CBLAS_TRANSPOSE transb */
+      , mat1.nrow() /* const MKL_INT m */
+      , mat2.ncol() /* const MKL_INT n */
+      , mat1.ncol() /* const MKL_INT k */
+      , 1.0 /* const double alpha */
+      , mat1.m_buffer /* const double *a */
+      , mat1.ncol() /* const MKL_INT lda */
+      , mat2.m_buffer /* const double *b */
+      , mat2.ncol() /* const MKL_INT ldb */
+      , 0.0 /* const double beta */
+      , ret.m_buffer /* double * c */
+      , ret.ncol() /* const MKL_INT ldc */
+    );
+
+    ret.elapsed() = sw.lap();
+    ret.nflo() = calc_nflo(mat1, mat2);
     return ret;
 
 }
 
-//template<size_t N>1
+
+//template<size_t N>
 struct Block
 {
     //static constexpr const size_t NDIM = N;
 	Block(size_t N)
 	{
 		NDIM = N;
-    	m_buffer[NDIM * NDIM];
+    	m_buffer = new double[NDIM * NDIM];
 	}
 
     double   operator[] (size_t idx) const { return m_buffer[idx]; }
@@ -355,9 +409,11 @@ void Tiler::multiply()
     }
 }
 
+
 /*
  * Tiled matrix matrix multiplication.
  */
+
 Matrix multiply_tile(Matrix const & mat1, Matrix const & mat2, size_t LSIZE)
 {
     validate_multiplication(mat1, mat2);
@@ -401,6 +457,73 @@ Matrix multiply_tile(Matrix const & mat1, Matrix const & mat2, size_t LSIZE)
 
     return ret;
 }
+
+
+/*
+my tile mul
+*/
+
+// Matrix multiply_tile(Matrix const & mat1, Matrix const & mat2, size_t LSIZE)
+// {
+//     validate_multiplication(mat1, mat2);
+
+//     Matrix ret(mat1.nrow(), mat2.ncol());
+
+//     const size_t tsize = LSIZE / sizeof(double);
+
+//     const size_t nrow1 = mat1.nrow();
+//     const size_t ncol1 = mat1.ncol();
+//     const size_t nrow2 = mat2.nrow();
+//     const size_t ncol2 = mat2.ncol();
+
+//     const size_t ntrow1 = nrow1 / tsize;
+//     const size_t ntcol1 = ncol1 / tsize;
+//     const size_t ntrow2 = nrow2 / tsize;
+//     const size_t ntcol2 = ncol2 / tsize;
+
+//     // Block value(tsize);
+//     // Tiler tiler(tsize);
+
+//     double * A = new double[tsize*tsize];
+//     double * B = new double[tsize*tsize];
+//     double * C = new double[tsize*tsize];
+
+//     StopWatch sw;
+
+//     for (size_t it=0; it<ntrow1; ++it)
+//     {
+//         for (size_t kt=0; kt<ntcol2; ++kt)
+//         {
+//             // initialize C
+//             for (size_t idx=0; idx<tsize*tsize; ++idx) C[idx] = 0;
+
+//             for (size_t jt=0; jt<ntcol1; ++jt)
+//             {
+//                 // tiler.load(mat1, it, jt, mat2, jt, kt);
+//                 for (size_t a = it*tsize; a<tsize; ++a)
+//                 {
+//                     for (size_t b = jt*tsize; b<tsize; ++j)
+//                     {
+//                         A = mat1[]
+//                     }
+//                 }
+
+//                 // tiler.multiply();
+
+
+//                 // value += tiler.m_ret;
+//             }
+//             // value.save(ret, it, kt);
+//         }
+//     }
+
+//     ret.elapsed() = sw.lap();
+//     ret.nflo() = calc_nflo(mat1, mat2);
+
+//     return ret;
+// }
+
+
 
 void initialize(Matrix & mat)
 {   
