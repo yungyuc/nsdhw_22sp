@@ -36,6 +36,10 @@ A main class FNN will be written in C++ and connect to python script with pybind
 In python script FNN should be a callable class with some different function. Some
 fucntion like dense layer, activation are subclass defined inside FNN object.
 
+Each FNN maintain a list(doubly linked) of layer object. All layers are made of a
+2d double array with size=(input_size, output_size), and followed by an activation
+fucntion.
+
 API Description
 ===============
 
