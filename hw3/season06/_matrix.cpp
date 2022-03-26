@@ -15,27 +15,27 @@ class Matrix
 {
 public:
     // default constructor
-    Matrix() : _rows(0), _cols(0) {};
+    Matrix() : m_rows(0), m_cols(0) {};
 
-    Matrix(size_t row, size_t col) : _rows(row), _cols(col)
+    Matrix(size_t row, size_t col) : m_rows(row), m_cols(col)
     {
-        _vec.clear();
-        _vec.resize(row * col, 0);
+        m_vec.clear();
+        m_vec.resize(row * col, 0);
     }
 
     // copy constructor
-    Matrix(Matrix const &other) : _rows(other._rows), _cols(other._cols)
+    Matrix(Matrix const &other) : m_rows(other.m_rows), m_cols(other.m_cols)
     {
-        _vec.resize(_rows, _cols);
-        for (size_t i = 0; i < _rows; i++)
-            for (size_t j = 0; j < _cols; j++)
+        m_vec.resize(m_rows, m_cols);
+        for (size_t i = 0; i < m_rows; i++)
+            for (size_t j = 0; j < m_cols; j++)
                 (*this)(i, j) = other(i, j);
     }
 
     // move constructor
-    Matrix(Matrix &&other) : _rows(other._rows), _cols(other._cols)
+    Matrix(Matrix &&other) : m_rows(other.m_rows), m_cols(other.m_cols)
     {
-        this->_vec = std::move(other._vec);
+        this->m_vec = std::move(other.m_vec);
     }
 
     // copy assignment operator
@@ -43,11 +43,11 @@ public:
     {
         if (this != &other)
         {
-            this->_cols = other._cols;
-            this->_rows = other._rows;
-            _vec.resize(_rows, _cols);
-            for (size_t i = 0; i < _rows; i++)
-                for (size_t j = 0; j < _cols; j++)
+            this->m_cols = other.m_cols;
+            this->m_rows = other.m_rows;
+            m_vec.resize(m_rows, m_cols);
+            for (size_t i = 0; i < m_rows; i++)
+                for (size_t j = 0; j < m_cols; j++)
                     (*this)(i, j) = other(i, j);
         }
         return *this;
@@ -58,9 +58,9 @@ public:
     {
         if (this != &other)
         {
-            this->_cols = other._cols;
-            this->_rows = other._rows;
-            this->_vec = std::move(other._vec);
+            this->m_cols = other.m_cols;
+            this->m_rows = other.m_rows;
+            this->m_vec = std::move(other.m_vec);
         }
         return *this;
     }
@@ -68,47 +68,47 @@ public:
     // destructor
     ~Matrix()
     {
-        _vec.clear(); 
-        _vec.shrink_to_fit();
+        m_vec.clear(); 
+        m_vec.shrink_to_fit();
     }
 
     // getter
     const size_t nrow() const
     {
-        return _rows;
+        return m_rows;
     }
     const size_t ncol() const
     {
-        return _cols;
+        return m_cols;
     }
     double *addr()
     {
-        return &_vec[0];
+        return &m_vec[0];
     }
 
     // load numpy array to matrix
     void load_from_array(py::array_t<double> array)
     {
-		py::buffer_info buf = array.request();
-        memcpy(&_vec[0], buf.ptr, _rows * _cols * sizeof(double));
+        py::buffer_info buf = array.request();
+        memcpy(&m_vec[0], buf.ptr, m_rows * m_cols * sizeof(double));
     }
 
     // rewrite operator
     double operator () (size_t row, size_t col) const
     {
-        return _vec[_cols * row + col];
+        return m_vec[m_cols * row + col];
     }
     double &operator () (size_t row, size_t col)
     {
-        return _vec[_cols * row + col];
+        return m_vec[m_cols * row + col];
     }
     bool operator==(const Matrix &other) const
     {
-        if (_rows != other.nrow() || _cols != other.ncol())
+        if (m_rows != other.nrow() || m_cols != other.ncol())
             return false;
 
-        for (size_t i = 0; i < _rows; ++i)
-            for (size_t j = 0; j < _cols; ++j)
+        for (size_t i = 0; i < m_rows; ++i)
+            for (size_t j = 0; j < m_cols; ++j)
                 if ((*this)(i, j) != other(i, j))
                     return false;
 
@@ -127,19 +127,19 @@ public:
     string str() const
     {
         string s = "";
-        for (size_t i = 0; i < _rows; ++i)
+        for (size_t i = 0; i < m_rows; ++i)
         {
-            for (size_t j = 0; j < _cols; ++j)
-                s += to_string(_vec[i * _cols + j]) + ' ';
+            for (size_t j = 0; j < m_cols; ++j)
+                s += to_string(m_vec[i * m_cols + j]) + ' ';
             s += '\n';
         }
         return s;
     }
 
 private:
-    vector<double> _vec;
-    size_t _rows;
-    size_t _cols;
+    vector<double> m_vec;
+    size_t m_rows;
+    size_t m_cols;
 };
 
 void is_validate_matrix(Matrix const &m1, Matrix const &m2)
