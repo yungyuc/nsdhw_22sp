@@ -7,7 +7,7 @@ PY = /usr/bin/python3
 _matrix: _matrix.cpp
 	$(CXX) $(TAG) `$(PY) -m pybind11 --includes` $< -o $@.so -L$(MKL_LIB) -I$(MKL_INCLUDE) -lblas
 .PHONY: test
-test: benchmark.py
+test: _matrix benchmark.py
 	$(PY) benchmark.py && $(PY) -m pytest
 
 .PHONY: clean
