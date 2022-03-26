@@ -217,17 +217,23 @@ Matrix multiply_mkl(Matrix &m1, Matrix &m2)
     const size_t n = m2.ncol();
     const size_t k = m1.ncol();
     double alpha = 1.0, beta = 0.0;
-    double * A = m1.addr();
-    double * B = m2.addr();
-    double * C = ret.addr();
 
-    cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
-                m, n, k, alpha, A, k, B, n, beta, C, n);
-
-    // Deallocating memory
-    free(A);
-    free(B);
-    free(C);
+    cblas_dgemm(
+        CblasRowMajor,
+        CblasNoTrans,
+        CblasNoTrans,
+        m,
+        n,
+        k,
+        alpha,
+        m1.addr(),
+        k,
+        m2.addr(),
+        n,
+        beta,
+        ret.addr(),
+        n
+    );
 
     return ret;
 }
@@ -244,9 +250,9 @@ PYBIND11_MODULE(_matrix, m)
         .def(py::init<>()) // call the constructor
         .def(py::init<size_t, size_t>())
         .def(py::self == py::self) // operator overloading (==)
+        .def_property_readonly("nrow", &Matrix::nrow)
+        .def_property_readonly("ncol", &Matrix::ncol)
         .def("load_from_array", &Matrix::load_from_array)
-        .def("nrow",            &Matrix::nrow)
-        .def("ncol",            &Matrix::ncol)
         .def("__getitem__",     &Matrix::getitem)
         .def("__setitem__",     &Matrix::setitem)
         .def("__repr__",        &Matrix::str);
