@@ -6,10 +6,10 @@ compiler = g++
 flag = -O3 -Wall -shared -std=c++11 -fPIC
 
 all: $(sources)
-	# $(compiler) $(flag) $(shell python3 -m pybind11 --includes) $(sources) -o $(exe)
-	$(compiler) $(flag) -I/usr/include/python3.8 -I/usr/include/pybind11 -lpython3.8 $(sources) -o $(exe) $(BLAS)
+	$(compiler) $(flag) -I /usr/include/python3.8 $(shell python3 -m pybind11 --includes) $(sources) -o $(exe)
 
-test:
+test: $(sources)
+	$(compiler) $(flag) -I/usr/include/python3.8 -I/usr/include/pybind11 -lpython3.8 $(sources) -o $(exe) $(BLAS)
 	python3 -m pytest
 
 clean:
