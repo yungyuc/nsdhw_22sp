@@ -49,11 +49,11 @@ determined by a string, each line of string start with layer name and followed w
 their parameter
 
 API function
+
 - FNN.__init__(): initialize parameter(layer) and flag
-- FNN.__call__(): two mode, train and eval, train mode will calcaulate gradient and update
-parameter, eval only forward and output result
+- FNN.__call__(): two mode, train and eval, train mode will calcaulate gradient and update parameter, eval only forward and output result
 - FNN.trian(): set train mode
-- FNN.ecval(): set eval mode
+- FNN.eval(): set eval mode
 - FNN.forward(): forward input data to all layer and get gradient if necessary
 - FNN.backward(): update parameter
 
@@ -61,11 +61,14 @@ Also layer and some activation function are class that defined in FNN, all these
 have identical function forward(), df_dx()
 
 API class
+
 - FNN.sigmoid
 - FNN.linear
 - FNN.identical
 - FNN.ReLu
 - FNN.softmax
+- FNN.CrossEntropy
+- FNN.SSE
 
 Engineering Infrastructure
 ==========================
@@ -83,17 +86,17 @@ Schedule
     Test pure python model with FNN with some dataset (regression or classification)
     to check FNN functionality and performance
 * Week 3 (4/18):
-    Build C++ module for every single function inside FNN
+    Build C++ module for every single function inside FNN and python interface (pybind11)
 * Week 4 (4/25):
-    Bind C++ module to python interface
-* Week 5 (5/2):
     Build automatic python unit test to test the correctness of output of C++ module
-* Week 6 (5/9): 
+* Week 5 (5/2):
     Test the C++ accelerated version's correctness and performance on different dataset 
+* Week 6 (5/9):
+    result performance visualiation
 * Week 7 (5/16):
     optimizing and refactoring
 * Week 8 (5/23):
-    result performance visualiation
+    Documentation and presentation preparing
 
 References
 ==========

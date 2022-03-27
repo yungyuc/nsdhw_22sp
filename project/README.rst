@@ -84,3 +84,12 @@ Project List by Account Name
 
 #. `github username <https://github.com/yungyuc>`__ for
    `project name <README.rst>`__: project repository URL
+   
+#. `ianlienfa <https://github.com/ianlienfa/BBGym>`__ for
+   `BBGym <README.rst>`__: https://github.com/ianlienfa/BBGym
+
+#. `minchuncho <https://github.com/minchuncho>`__ for
+   `sewup <README.rst>`__: https://github.com/minchuncho/sewup
+
+#. `F84064014 <https://github.com/F84064014>`__ for
+   `SimpleNN <README.rst>`__: https://github.com/F84064014/SimpleNN
