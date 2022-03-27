@@ -173,43 +173,69 @@ size_t calc_nflo(Matrix const & mat1, Matrix const & mat2)
  * Direct naive matrix matrix multiplication.
  * rename to multiply_naive
  */
-// Matrix multiply_naive(Matrix const & mat1, Matrix const & mat2)
-// {
-//     validate_multiplication(mat1, mat2);
+ Matrix ex2_multiply_naive(Matrix const & mat1, Matrix const & mat2)
+ {
+     validate_multiplication(mat1, mat2);
 
-//     Matrix ret(mat1.nrow(), mat2.ncol());
+     Matrix ret(mat1.nrow(), mat2.ncol());
 
-//     const size_t nrow1 = mat1.nrow();
-//     const size_t ncol1 = mat1.ncol();
-//     const size_t nrow2 = mat2.nrow();
-//     const size_t ncol2 = mat2.ncol();
+     const size_t nrow1 = mat1.nrow();
+     const size_t ncol1 = mat1.ncol();
+     const size_t nrow2 = mat2.nrow();
+     const size_t ncol2 = mat2.ncol();
 
-//     StopWatch sw;
+     StopWatch sw;
 
-//     for (size_t i=0; i<nrow1; ++i)
-//     {
-//         const size_t base1 = i * ncol1;
-//         for (size_t k=0; k<ncol2; ++k)
-//         {
-//             double v = 0;
-//             for (size_t j=0; j<ncol1; ++j)
-//             {
-//                 v += mat1.m_buffer[base1 + j] * mat2.m_buffer[j*ncol2 + k];
-//             }
-//             ret.m_buffer[base1 + k] = v;
-//         }
-//     }
+     for (size_t i=0; i<nrow1; ++i)
+     {
+         const size_t base1 = i * ncol1;
+         for (size_t k=0; k<ncol2; ++k)
+         {
+             double v = 0;
+             for (size_t j=0; j<ncol1; ++j)
+             {
+                 v += mat1.m_buffer[base1 + j] * mat2.m_buffer[j*ncol2 + k];
+             }
+             ret.m_buffer[base1 + k] = v;
+         }
+     }
 
-//     ret.elapsed() = sw.lap();
-//     ret.nflo() = calc_nflo(mat1, mat2);
+     ret.elapsed() = sw.lap();
+     ret.nflo() = calc_nflo(mat1, mat2);
 
-//     return ret;
-// }
+     return ret;
+}
+
+/*
+* row
+*/
+
+Matrix multiply_naive(Matrix const &mat1, Matrix const &mat2)
+{
+    validate_multiplication(mat1, mat2);
+
+    Matrix ret(mat1.nrow(), mat2.ncol());
+
+    for (size_t i = 0; i < mat1.nrow(); ++i)
+    {
+        for (size_t k = 0; k < mat2.ncol(); ++k)
+        {
+            double v = 0;
+            for (size_t j = 0; j < mat1.ncol(); ++j)
+            {
+                v += mat1(i, j) * mat2(j, k);
+            }
+            ret(i, k) = v;
+        }
+    }
+
+    return ret;
+}
 
 /*
  * Indirect naive matrix matrix multiplication.
  */
-Matrix multiply_naive(Matrix const & mat1, Matrix const & mat2)
+Matrix ex_multiply_naive(Matrix const & mat1, Matrix const & mat2)
 {
     validate_multiplication(mat1, mat2);
 
@@ -239,8 +265,10 @@ Matrix multiply_naive(Matrix const & mat1, Matrix const & mat2)
 /*
  * Use MKL for the matrix matrix multiplication.
  */
+
 Matrix multiply_mkl(Matrix const & mat1, Matrix const & mat2)
 {
+    validate_multiplication(mat1, mat2);
 
     mkl_set_num_threads(1);
 
@@ -329,9 +357,9 @@ struct Tiler
 	Tiler(size_t N)
 	{
 		NDIM = N;
-		m_mat1 = Block(N);
-		m_mat2 = Block(N);
-		m_ret = Block(N);
+		m_mat1 = new Block(N);
+		m_mat2 = new Block(N);
+		m_ret = new Block(N);
 	}
 
     void load(
@@ -342,9 +370,9 @@ struct Tiler
     void multiply();
 
 	size_t NDIM;
-    Block m_mat1 = NULL; // row-major
-    Block m_mat2 = NULL; // column-major
-    Block m_ret = NULL; // row-major
+    Block * m_mat1 = nullptr; // row-major
+    Block * m_mat2 = nullptr; // column-major
+    Block * m_ret = nullptr; // row-major
 };
 
 void Tiler::load(
@@ -353,19 +381,28 @@ void Tiler::load(
 )
 {
     const size_t ncol1 = mat1.ncol();
+	const size_t ncol2 = mat2.ncol();
 
     for (size_t i=0; i<NDIM; ++i)
     {
         const size_t base_t = i*NDIM;
         const size_t base_s = (it1*NDIM + i) * ncol1 + jt1*NDIM;
+        
+		const size_t base_t2 = i*NDIM;
+        const size_t base_s2 = (it2*NDIM + i) * ncol2 + jt2*NDIM;
+	
+        const size_t base = i*NDIM;
 
         for (size_t j=0; j<NDIM; ++j)
         {
-            m_mat1[base_t + j] = mat1.m_buffer[base_s + j];
+            (*m_mat1)[base_t + j] = mat1.m_buffer[base_s + j];
+            (*m_ret)[base_t2 + j] = mat2.m_buffer[base_s2 + j];
+            (*m_mat2)[j*NDIM + i] = (*m_ret)[base + j];
         }
     }
 
-    const size_t ncol2 = mat2.ncol();
+    /*
+	const size_t ncol2 = mat2.ncol();
 
     for (size_t i=0; i<NDIM; ++i)
     {
@@ -374,23 +411,29 @@ void Tiler::load(
 
         for (size_t j=0; j<NDIM; ++j)
         {
-            m_ret[base_t + j] = mat2.m_buffer[base_s + j];
+            (*m_ret)[base_t + j] = mat2.m_buffer[base_s + j];
         }
     }
+	*/
 
+	/*
     for (size_t i=0; i<NDIM; ++i)
     {
         const size_t base = i*NDIM;
 
         for (size_t j=0; j<NDIM; ++j)
         {
-            m_mat2[j*NDIM + i] = m_ret[base + j];
+            (*m_mat2)[j*NDIM + i] = (*m_ret)[base + j];
         }
     }
+	*/
 }
+
+
 
 void Tiler::multiply()
 {
+	
     for (size_t i=0; i<NDIM; ++i)
     {
         const size_t base1 = i*NDIM;
@@ -402,11 +445,12 @@ void Tiler::multiply()
             double v = 0;
             for (size_t j=0; j<NDIM; ++j)
             {
-                v += m_mat1[base1 + j] * m_mat2[base2 + j];
+                v += (*m_mat1)[base1 + j] * (*m_mat2)[base2 + j];
             }
-            m_ret[base1 + k] = v;
+            (*m_ret)[base1 + k] = v;
         }
     }
+	
 }
 
 
@@ -414,6 +458,8 @@ void Tiler::multiply()
  * Tiled matrix matrix multiplication.
  */
 
+
+/*
 Matrix multiply_tile(Matrix const & mat1, Matrix const & mat2, size_t LSIZE)
 {
     validate_multiplication(mat1, mat2);
@@ -446,7 +492,7 @@ Matrix multiply_tile(Matrix const & mat1, Matrix const & mat2, size_t LSIZE)
             {
                 tiler.load(mat1, it, jt, mat2, jt, kt);
                 tiler.multiply();
-                value += tiler.m_ret;
+                value += *(tiler.m_ret);
             }
             value.save(ret, it, kt);
         }
@@ -457,7 +503,39 @@ Matrix multiply_tile(Matrix const & mat1, Matrix const & mat2, size_t LSIZE)
 
     return ret;
 }
+*/
 
+Matrix multiply_tile(const Matrix &mat1, const Matrix &mat2, size_t tsize)
+{
+
+	
+     validate_multiplication(mat1, mat2);
+
+    size_t r = mat1.nrow();
+    size_t c = mat2.ncol();
+    size_t k = mat1.ncol();
+    Matrix ret(r, c);
+    for (size_t r_tile_start = 0; r_tile_start < r; r_tile_start += tsize)
+    {
+        size_t r_tile_end = std::min(r_tile_start + tsize, r);
+        for (size_t c_tile_start = 0; c_tile_start < c; c_tile_start += tsize)
+        {
+            size_t c_tile_end = std::min(c_tile_start + tsize, c);
+            for (size_t k_tile_start = 0; k_tile_start < k; k_tile_start += tsize)
+            {
+                size_t k_tile_end = std::min(k_tile_start + tsize, k);
+                for (size_t row = r_tile_start; row < r_tile_end; row++)
+                    for (size_t col = c_tile_start; col < c_tile_end; col++)
+                    {
+                        size_t index = row*c + col;
+                        for (size_t kth = k_tile_start; kth < k_tile_end; kth++)
+                            ret.m_buffer[index] += mat1(row, kth) * mat2(kth, col);
+                    }
+            }
+        }
+    }
+    return ret;
+}
 
 /*
 my tile mul
