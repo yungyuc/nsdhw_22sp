@@ -147,7 +147,6 @@ Matrix multiply_mkl(Matrix const & matrix1, Matrix const & matrix2)
 
 PYBIND11_MODULE(_matrix, m)
 {
-    m.doc() = "Matrix multiply";
     m.def("multiply_naive", &multiply_naive);
     m.def("multiply_tile", &multiply_tile);
     m.def("multiply_mkl", &multiply_mkl);
