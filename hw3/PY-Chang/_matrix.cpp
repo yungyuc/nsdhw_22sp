@@ -147,7 +147,7 @@ private:
     {
         if (m_buffer) { delete[] m_buffer; }
         const size_t nelement = nrow * ncol;
-        if (nelement) { m_buffer = new double[nelement]; }
+        if (nelement) { m_buffer = new double[nelement](); }
         else          { m_buffer = nullptr; }
         m_nrow = nrow;
         m_ncol = ncol;
@@ -205,11 +205,11 @@ Matrix multiply_naive(Matrix const & mat1, Matrix const & mat2){
     //         result(i, j) = temp;
     //     }
     // }
-    for (int i=0; i<result.nrow(); i++){
-        for (int j=0; j<result.ncol(); j++){
-            result(i, j) = 0.0;
-        }
-    }
+    // for (int i=0; i<result.nrow(); i++){
+    //     for (int j=0; j<result.ncol(); j++){
+    //         result(i, j) = 0.0;
+    //     }
+    // }
     for (int i = 0; i < mat1.nrow(); i++){
         for (int j = 0; j < mat2.ncol(); j++){
             for (int k = 0; k < mat1.ncol(); k++){
@@ -228,11 +228,11 @@ Matrix multiple_tile(Matrix const & mat1, Matrix const & mat2, size_t tileSize){
     const size_t mrow = mat1.nrow();
     const size_t mcol = mat2.ncol();
 
-    for (int i=0; i<result.nrow(); i++){
-        for (int j=0; j<result.ncol(); j++){
-            result(i, j) = 0.0;
-        }
-    }
+    // for (int i=0; i<result.nrow(); i++){
+    //     for (int j=0; j<result.ncol(); j++){
+    //         result(i, j) = 0.0;
+    //     }
+    // }
 
     for (int i = 0; i < mrow; i += tileSize){
         for (int j = 0; j < mcol; j += tileSize){
