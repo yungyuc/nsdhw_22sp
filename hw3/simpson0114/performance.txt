@@ -1,3 +1,0 @@
-multiply_naive: 24.5057 seconds.
-multiply_tile: 31.2832 seconds.
-multiply_mkl: 0.0931 seconds.

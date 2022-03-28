@@ -70,8 +70,23 @@ class Matrix
 
 };
 
+/*
+ * Throw an exception if the shapes of the two matrices don't support
+ * multiplication.
+ */
+void validate_multiplication(Matrix const & mat1, Matrix const & mat2)
+{
+    if (mat1.ncol() != mat2.nrow())
+    {
+        throw std::out_of_range(
+            "the number of first matrix column "
+            "differs from that of second matrix row");
+    }
+}
+
 Matrix multiply_naive(Matrix const & matrix1, Matrix const & matrix2)
 {
+    validate_multiplication(matrix1, matrix2);
 
     Matrix ret(matrix1.nrow(), matrix2.ncol());
 
@@ -93,6 +108,7 @@ Matrix multiply_naive(Matrix const & matrix1, Matrix const & matrix2)
 
 Matrix multiply_tile(Matrix const & matrix1, Matrix const & matrix2, size_t tilesize)
 {
+    validate_multiplication(matrix1, matrix2);
 
     Matrix ret(matrix1.nrow(), matrix2.ncol());
 
@@ -128,6 +144,7 @@ Matrix multiply_tile(Matrix const & matrix1, Matrix const & matrix2, size_t tile
 
 Matrix multiply_mkl(Matrix const & matrix1, Matrix const & matrix2)
 {
+    validate_multiplication(matrix1, matrix2);
 
     Matrix ret = Matrix(matrix1.nrow(), matrix2.ncol());
 

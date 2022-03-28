@@ -9,7 +9,7 @@ all:
 	g++ -shared -std=c++11 -fPIC `python3 -m pybind11 --includes` _matrix.cpp -o _matrix`python3-config --extension-suffix` $(PYBIND_INC) $(MKL_INC) $(MKL_LIB)
 
 clean:
-	rm -rf __pycache__ .pytest_cache *.o _matrix*.so
+	rm -rf __pycache__ .pytest_cache *.o _matrix*.so performance.txt
 
 test:
 	g++ -shared -std=c++11 -fPIC `python3 -m pybind11 --includes` _matrix.cpp -o _matrix`python3-config --extension-suffix` $(PYBIND_INC) $(MKL_INC) $(MKL_LIB)
