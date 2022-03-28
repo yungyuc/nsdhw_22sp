@@ -1,5 +1,3 @@
-#include "StopWatch.hpp"
-
 #include <mkl.h>
 
 #include <iostream>
