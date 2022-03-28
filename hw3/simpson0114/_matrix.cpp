@@ -98,15 +98,21 @@ Matrix multiply_tile(Matrix const & matrix1, Matrix const & matrix2, size_t tile
 
     for (size_t row = 0; row < matrix1.nrow(); row += tilesize) 
     {
+        size_t imax = std::min(matrix1.nrow(), row + tilesize);
+        
         for (size_t col = 0; col < matrix2.ncol(); col += tilesize) 
         {
+            size_t jmax = std::min(matrix2.ncol(), col + tilesize);
+            
             for (size_t inner = 0; inner < matrix1.ncol(); inner += tilesize) 
             {
-                for (size_t k = inner; k < std::min(matrix1.ncol(), inner + tilesize); k++) 
+                size_t kmax = std::min(matrix1.ncol(), inner + tilesize);
+                
+                for (size_t k = inner; k < kmax; k++) 
                 {
-                    for (size_t i = row; i < std::min(matrix1.nrow(), row + tilesize); i++) 
+                    for (size_t i = row; i < imax; i++) 
                     {
-                        for (size_t j = col; j < std::min(matrix2.ncol(), col + tilesize); j++)
+                        for (size_t j = col; j < jmax; j++)
                         {
                             ret(i, j) += matrix1(i, k) * matrix2(k, j);
                         }
@@ -145,11 +151,30 @@ Matrix multiply_mkl(Matrix const & matrix1, Matrix const & matrix2)
     return ret;
 } 
 
+void initialize(Matrix & mat)
+{
+    for (size_t i=0; i<mat.nrow(); ++i)
+    {
+        for (size_t j=0; j<mat.ncol(); ++j)
+        {
+            if (0 == i%2)
+            {
+                mat(i, j) = j;
+            }
+            else
+            {
+                mat(i, j) = mat.ncol() - 1 - j;
+            }
+        }
+    }
+}
+
 PYBIND11_MODULE(_matrix, m)
 {
     m.def("multiply_naive", &multiply_naive);
     m.def("multiply_tile", &multiply_tile);
     m.def("multiply_mkl", &multiply_mkl);
+    m.def("initialize", &initialize);
 
     pybind::class_<Matrix>(m, "Matrix")
         .def(pybind::init<int, int>())
