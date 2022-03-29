@@ -110,7 +110,7 @@ class TestInstance(unittest.TestCase):
 
         return ratio, time_tile
 
-    def test_tile(self):
+    '''def test_tile(self):
 
         show_ratio = bool(os.environ.get('SHOW_RATIO', False))
 
@@ -136,19 +136,8 @@ class TestInstance(unittest.TestCase):
         if show_ratio:
             print("tile 19 ratio:", ratio19)
             print("time19/time0:", time19/time0)
-        self.assertLess(ratio19/ratio0, 0.8)
+        self.assertLess(ratio19/ratio0, 0.8)'''
 
 
 #	def test_mtx(self):
 #		m = _matrix.Matrix(100, 100)
-
-if __name__ == "__main__":
-	m1 = _matrix.Matrix(100, 100)
-	m2 = _matrix.Matrix(100, 100)
-	#print(m[0,0])
-	m1 = m2
-	#print(m1.say_hi())
-	m1[5,3] = 100;
-	print(m1[5, 3])
-	print(m1.nrow())
-

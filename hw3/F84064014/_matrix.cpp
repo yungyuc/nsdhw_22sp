@@ -524,13 +524,16 @@ Matrix multiply_tile(const Matrix &mat1, const Matrix &mat2, size_t tsize)
             for (size_t k_tile_start = 0; k_tile_start < k; k_tile_start += tsize)
             {
                 size_t k_tile_end = std::min(k_tile_start + tsize, k);
-                for (size_t row = r_tile_start; row < r_tile_end; row++)
-                    for (size_t col = c_tile_start; col < c_tile_end; col++)
+                for (size_t row = r_tile_start; row < r_tile_end; ++row)
+				{
+					size_t base1 = row*r;
+                    for (size_t col = c_tile_start; col < c_tile_end; ++col)
                     {
                         size_t index = row*c + col;
-                        for (size_t kth = k_tile_start; kth < k_tile_end; kth++)
-                            ret.m_buffer[index] += mat1(row, kth) * mat2(kth, col);
+                        for (size_t kth = k_tile_start; kth < k_tile_end; ++kth)
+                            ret.m_buffer[index] += mat1.m_buffer[base1+kth] * mat2(kth, col);
                     }
+				}
             }
         }
     }
