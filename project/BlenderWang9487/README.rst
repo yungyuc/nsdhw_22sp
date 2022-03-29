@@ -17,13 +17,16 @@ Problem to Solve
 I want to build a machine learning library based on some mathematical theories.
 
 There are many easy-to-use hybrid frameworks that built for deep learning, 
-but few for 
+but fewer for other algorithms. So I'm going to build one.
+
+Some regression, classification and clustering models will be provided 
+by this library.
 
 Prospective Users
 =================
 
-Describe the users of your software and how they will use it.  It is OK to
-combine this section with the previous one (`Problem to solve`_).
+People who 
+Maybe some people who want to compare the 
 
 System Architecture
 ===================
@@ -43,18 +46,10 @@ system.
 Engineering Infrastructure
 ==========================
 
-Describe how you plan to put together the engineering system:
-
-1. Automatic build system and how to build your program
-2. Version control (show how you will use it)
-3. Testing framework
-4. Documentation
-
-Some of the above information should be included in the documentation in your
-software.
-
-You may use continuous integration, but it is not required.  If you use it,
-describe how it works in your code development.
+1. Using Cmake to configure & build the project
+2. Using Git to control different versions
+3. Using Pytest for testing
+4. Documentation: I plan to just write markdown files as documentation for now.
 
 Schedule
 ========
