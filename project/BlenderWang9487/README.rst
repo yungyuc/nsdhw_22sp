@@ -1,5 +1,5 @@
 ========================
-LittleDQN
+DummyML
 ========================
 
 
@@ -7,22 +7,17 @@ LittleDQN
 Basic Information
 =================
 
-Create a GitHub repository to host your project and add the URL here.  The
-GitHub repository has an 'About' field, in which you are encouraged to write a
-simple statement (preferably one sentence) to introduce the project.
+A dummy ML library for NSD course term project.
+
+Here is my Github page: `Github`_
 
 Problem to Solve
 ================
 
-Describe the problem or the set of problems you want to solve.  Include
-necessary background information without making it lengthy.
+I want to build a machine learning library based on some mathematical theories.
 
-Some points may help you organize the problem description:
-
-1. The field or industry of the problem.
-2. The physics and/or the mathematics behind the problem.
-3. The algorithm or numerical method that should be applied for solving the
-   problem.
+There are many easy-to-use hybrid frameworks that built for deep learning, 
+but few for 
 
 Prospective Users
 =================
@@ -89,3 +84,5 @@ References
 ==========
 
 List the external references for the information provided in the proposal.
+
+.. _Github: https://github.com/BlenderWang9487/DummyML.git
