@@ -196,20 +196,6 @@ Matrix multiply_naive(Matrix const & mat1, Matrix const & mat2){
     validate_multiplication(mat1, mat2);
     Matrix result(mat1.nrow(), mat2.ncol());
     
-    // for (int i = 0; i < mat1.nrow(); i++){
-    //     for (int j = 0; j < mat2.ncol(); j++){
-    //         double temp = 0.0;
-    //         for (int k = 0; k < mat1.ncol(); k++){
-    //             temp += mat1(i, k) * mat2(k, j);
-    //         }
-    //         result(i, j) = temp;
-    //     }
-    // }
-    // for (int i=0; i<result.nrow(); i++){
-    //     for (int j=0; j<result.ncol(); j++){
-    //         result(i, j) = 0.0;
-    //     }
-    // }
     for (int i = 0; i < mat1.nrow(); i++){
         for (int j = 0; j < mat2.ncol(); j++){
             for (int k = 0; k < mat1.ncol(); k++){
@@ -227,12 +213,6 @@ Matrix multiple_tile(Matrix const & mat1, Matrix const & mat2, size_t tileSize){
 
     const size_t mrow = mat1.nrow();
     const size_t mcol = mat2.ncol();
-
-    // for (int i=0; i<result.nrow(); i++){
-    //     for (int j=0; j<result.ncol(); j++){
-    //         result(i, j) = 0.0;
-    //     }
-    // }
 
     for (int i = 0; i < mrow; i += tileSize){
         for (int j = 0; j < mcol; j += tileSize){
@@ -261,12 +241,6 @@ Matrix multiply_mkl(Matrix const & mat1, Matrix const & mat2){
     mkl_set_num_threads(2);
     Matrix result(mat1.nrow(), mat2.ncol());
 
-    // for (int i=0; i<result.nrow(); i++){
-    //     for (int j=0; j<result.ncol(); j++){
-    //         result(i, j) = 0.0;
-    //     }
-    // }
-    //std::cout<<mat1.buffer()[1];
     cblas_dgemm(
         CblasRowMajor /* const CBLAS_LAYOUT Layout */
       , CblasNoTrans /* const CBLAS_TRANSPOSE transa */
@@ -288,26 +262,10 @@ Matrix multiply_mkl(Matrix const & mat1, Matrix const & mat2){
 }
 
 int main(int argc, char *argv[]){
-    // Matrix a(4, 4);
-    // Matrix b(4, 4);
     constexpr size_t size = 128;
     Matrix a(size, size);
     initialize(a);
     Matrix b = a;
-
-    // int temp = 1;
-    // for (int i = 0 ; i <4; i++){
-    //     for (int j = 0; j< 4; j++){
-    //         a(i, j) = temp++;
-    //         //std::cout<< a(i, j)<<std::endl;
-    //     }
-    // }
-
-    // temp = 7;
-    // for (int i = 0 ; i <3; i++ ){
-    //     b(i,0) = temp++;
-    //     //std::cout<<b(i,0)<<std::endl;
-    // }
 
     clock_t start, end;
     start = clock();
@@ -327,7 +285,6 @@ int main(int argc, char *argv[]){
 }
 
 PYBIND11_MODULE(_matrix, m){
-    //m.doc() = "pybind11 example";
     m.def("initialize", &initialize);
     m.def("multiply_naive", &multiply_naive);
     m.def("multiply_tile", &multiple_tile);
