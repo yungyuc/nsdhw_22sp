@@ -24,7 +24,7 @@ People who wants to use MST but have no idea of programming or people who just s
 System Architecture
 ====================
 
-.. image:: images/system_architecture.png
+.. image:: images/MST_system_architecture.png
 
 API Description
 =================
