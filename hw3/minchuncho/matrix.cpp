@@ -159,14 +159,14 @@ Matrix multiply_tile(Matrix const& mat1, Matrix const& mat2, size_t tsize)
     Matrix ret(mat1.row(), mat2.col());
     
     for(size_t ti=0; ti<mat1.row(); ti+=tsize){
+        size_t i_size = mat1.row()<ti+tsize ? mat1.row():ti+tsize;
         for(size_t tj=0; tj<mat2.col(); tj+=tsize){
+            size_t j_size = mat2.col()<tj+tsize ? mat2.col():tj+tsize;
             for(size_t tk=0; tk<mat1.col(); tk+=tsize){
-                size_t i_size = mat1.row()<ti+tsize ? mat1.row():ti+tsize;
+                size_t k_size = mat1.col()<tk+tsize ? mat1.col():tk+tsize;
                 for(size_t i=ti; i<i_size; i++){
-                    size_t j_size = mat2.col()<tj+tsize ? mat2.col():tj+tsize;
                     for(size_t j=tj; j<j_size; j++){
                         double v = 0;
-                        size_t k_size = mat1.col()<tk+tsize ? mat1.col():tk+tsize;
                         for(size_t k=tk; k<k_size; k++){
                             v += mat1(i, k)*mat2(k, j);
                         }
