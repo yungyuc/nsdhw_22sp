@@ -237,11 +237,14 @@ Matrix multiple_tile(Matrix const & mat1, Matrix const & mat2, size_t tileSize){
     for (int i = 0; i < mrow; i += tileSize){
         for (int j = 0; j < mcol; j += tileSize){
             for (int k = 0; k < mcol; k += tileSize ){
-                int xRange = std::min(i+tileSize, mrow);
+                //int xRange = std::min(i+tileSize, mrow);
+                int xRange = ((i+tileSize) < mrow) ? (i+tileSize) : mrow;
                 for (int x = i; x < xRange; x++){
-                    int yRange = std::min(j+tileSize, mcol);
+                    //int yRange = std::min(j+tileSize, mcol);
+                    int yRange = ((j+tileSize) < mcol) ? (j+tileSize) : mcol;
                     for (int y = j; y < yRange; y++){
-                        int zRange = std::min(k+tileSize, mrow);
+                        //int zRange = std::min(k+tileSize, mrow);
+                        int zRange = ((k+tileSize) < mrow) ? (k+tileSize) : mrow;
                         for (int z = k; z < zRange; z++){
                             result(x, y) += mat1(x, z) * mat2(z, y);
                         }
