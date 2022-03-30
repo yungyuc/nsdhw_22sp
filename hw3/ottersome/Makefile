@@ -32,7 +32,7 @@ show_values:
 	-echo "Value for INC_DIRS=${INC_DIRS}"
 
 clean:
-	rm -rf $(OBJ_DIR)/*.so $(BUILD_DIR)/$(TARGET) ./__pycache__ .* || true
+	rm -rf $(OBJ_DIR)/* $(BUILD_DIR)/$(TARGET) ./__pycache__ .* || true
 
 #Pytest, there were no rules against just calling pytest
 test: 

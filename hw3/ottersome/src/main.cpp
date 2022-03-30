@@ -1,21 +1,65 @@
+#include <pybind11/pybind11.h>
+#include <pybind11/operators.h>
+#include <iostream>
+#include <tuple>
+
 #include "main.h"
 #include "matrix.h"
 
-#include <pybind11/pybind11.h>
 
 namespace py = pybind11;
 
+Matrix ident(size_t row,size_t col){
 
-PYBIND11_MODULE(example, m) {
-    //py::class_<Animal>(m, "Animal")
-    //.def("go", &Animal::go);
+    if (row != col)
+    {
+        throw std::out_of_range(
+            "the number of first matrix column "
+            "differs from that of second matrix row");
+    }
 
-    //py::class_<Dog, Animal>(m, "Dog")
-    //.def(py::init<>());
+    Matrix mat(row,col);
+    mat.zero_out();
 
-    //m.def("call_go", &call_go);
+    for(size_t i=0;i<row;i++){
+        mat(i,i) = 1;
+    }
+
+    return mat;
+}
+
+PYBIND11_MODULE(_matrix, m) {
 
     py::class_<Matrix>(m, "Matrix", py::buffer_protocol())
+        .def(py::init<size_t, size_t>())
+        .def("print_vals",&Matrix::print_vals)
+        .def("nrow",&Matrix::nrow)
+        .def("ncol",&Matrix::ncol)
+        .def("__getitem__", [](const Matrix &m, const py::slice & slice) {
+            py::ssize_t start = 0, stop = 0, step = 0, slicelength = 0;
+            if (!slice.compute(m.size(), &start, &stop, &step, &slicelength)) {
+                throw py::error_already_set();
+            }
+            int istart = static_cast<int>(start);
+            int istop = static_cast<int>(stop);
+            int istep = static_cast<int>(step);
+
+            //TODO change this for when we need it 
+            return std::make_tuple(istart, istop, istep);
+        })
+        .def("__getitem__", [](const Matrix &m, std::tuple<size_t,size_t> indices) {
+                size_t row, col;
+                std::tie(row, col) = indices;
+            return m(row,col);
+        })
+        .def("__setitem__", [](Matrix &m, std::tuple<size_t,size_t> indices, const double value) {
+                size_t row, col;
+                std::tie(row, col) = indices;
+                m(row,col) = value;
+        })
+        .def("n_mult",&Matrix::n_mult)
+        .def("t_mult",&Matrix::t_mult<2>)
+    //TODO i need to verify the correctness of this
         .def_buffer([](Matrix &m) -> py::buffer_info {
                 return py::buffer_info(
                         m.data(),                               /* Pointer to buffer */
@@ -27,10 +71,8 @@ PYBIND11_MODULE(example, m) {
                         sizeof(float) }
                         );
                 });
+    m.def("ident",&ident,"Function initializes identity matrix");
 }
-
-
-
 
 //int main(int argc, char ** argv)
 //{

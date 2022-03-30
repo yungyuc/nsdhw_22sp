@@ -1,0 +1,21 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/c++",
+      "-O3",
+      "-Wall",
+      "-std=c++11",
+      "-fPIC",
+      "-I./include",
+      "-I/Users/rac716/miniforge3/envs/development_python/include/python3.8",
+      "-I/Users/rac716/miniforge3/envs/development_python/lib/python3.8/site-packages/pybind11/include",
+      "-c",
+      "-o",
+      "build/main.o",
+      "src/main.cpp"
+    ],
+    "directory": "/Users/rac716/OneDrive/Masters/MSem2/NumericalSoftwareDevelopment/nsdhw_22sp/hw3/ottersome",
+    "file": "/Users/rac716/OneDrive/Masters/MSem2/NumericalSoftwareDevelopment/nsdhw_22sp/hw3/ottersome/src/main.cpp",
+    "output": "/Users/rac716/OneDrive/Masters/MSem2/NumericalSoftwareDevelopment/nsdhw_22sp/hw3/ottersome/build/main.o"
+  }
+]
