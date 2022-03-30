@@ -9,7 +9,8 @@ Basic Information
 
 A dummy ML library for NSD course term project.
 
-Here is my Github page: `Github`_
+Here is my Github repository:
+`DummyML <https://github.com/BlenderWang9487/DummyML.git>`_
 
 Problem to Solve
 ================
@@ -17,31 +18,60 @@ Problem to Solve
 I want to build a machine learning library based on some mathematical theories.
 
 There are many easy-to-use hybrid frameworks that built for deep learning, 
-but fewer for other algorithms. So I'm going to build one.
+but fewer for other traditional ML algorithms. So I'm going to build one.
 
-Some regression, classification and clustering models will be provided 
-by this library.
+Some regression, classification and clustering models (like Gaussian linear 
+regression, naive Bayes classifier, Kmeans, etc.) will be provided by this
+library. (There will be atleast three approaches for each mission. One of them
+is a "dummy" approach which can be treated as the baseline.)
 
 Prospective Users
 =================
 
-People who 
-Maybe some people who want to compare the 
+People who are interested in machine learning and want to try some different 
+ML algorithms may use my library.
+
+Data scientists can use this library's models as baselines against theirs, too.
 
 System Architecture
 ===================
 
-Analyze how your system takes input, produces results, provide interface, and
-performs any other operations.  Describe the system's work flow.  You may
-consider to use a flow chart but it is not required.  Specify the constraints
-assumed in your system.  Describe the modularization of the system.
+There may or may not be a class to handle input/output data (I might just use
+Numpy array).
+
+There will be a class, "Model", which is the parent class of all the other
+models. It will provide an uniform interface for fitting, predicting, saving and
+loading.
+
+If there are some functions/data structures which are used by many algorithms
+(like matrix operations), they will be declared in utils.hpp, making them easy
+to maintain.
 
 API Description
 ===============
 
-Show how your system can be programmed.  You are supposed to implement the
-system using both C++ and Python.  Describe how a user writes a script in the
-system.
+Users can write something like this:
+
+.. code:: python
+    :number-lines:
+
+    import dummyml
+    import numpy as np
+    
+    # Initialize the model.
+    classifier = dummyml.some_classifier(""" some properties """)
+    
+    # If there is a pretrained weights file, user will be able to load it from
+    # the file.
+    classifier.load('some_weights_1.dat')
+    dummyinput = np.random.rand(10)
+
+    # Model object will be callable.
+    result = classifier(dummyinput)
+    print(result)
+
+    # User can save the weights to a file.
+    classifier.save('some_weights_2.dat')
 
 Engineering Infrastructure
 ==========================
@@ -54,30 +84,23 @@ Engineering Infrastructure
 Schedule
 ========
 
-Itemize the work to do and list them in a timeline.  Estimate the efforts of
-each item before the project starts.
-
-The schedule is expected to be adjusted during the development.  A schedule to
-accurately predict everything in the development is impossible and unnecessary.
-But the initial estimate is important, for the baseline becomes concrete when
-we adjust the plan.
-
-To start, you can list the to-do items on a weekly basis and assume the
-development of the project takes 8 weeks:
-
-* Planning phase (6 weeks including 2/21, 2/28, 3/7, 3/14, 3/21, 3/28):
-* Week 1 (4/4):
-* Week 2 (4/11):
-* Week 3 (4/18):
-* Week 4 (4/25):
-* Week 5 (5/2):
-* Week 6 (5/9):
-* Week 7 (5/16):
-* Week 8 (5/23):
+* Planning phase (6 weeks including 2/21, 2/28, 3/7, 3/14, 3/21, 3/28): Planning
+* Week 1 (4/4): Finish the Model class and simple API to check if the hybrid
+  system can work.
+* Week 2 (4/11): Add some unoptimized approaches of classification/regression 
+  algorithms in C++ to get the baselines.
+* Week 3 (4/18): Add some unoptimized approaches of clustering algorithms in C++.
+* Week 4 (4/25): Optimize them and bind them to python using pybind.
+* Week 5 (5/2): Write unit test/Github CI test and keep optimizing them.
+* Week 6 (5/9): Buffer week.
+* Week 7 (5/16): Write documentation and maybe test their performance with some
+  famous datasets.
+* Week 8 (5/23): Prepare for presentation.
 
 References
 ==========
 
-List the external references for the information provided in the proposal.
+Some algorithms that I might implement:
 
-.. _Github: https://github.com/BlenderWang9487/DummyML.git
+* `Naive Bayes classifier <https://en.wikipedia.org/wiki/Naive_Bayes_classifier>`_
+* `K-means clustering <https://en.wikipedia.org/wiki/K-means_clustering>`_
