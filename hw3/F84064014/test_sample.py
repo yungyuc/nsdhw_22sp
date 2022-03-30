@@ -1,5 +1,6 @@
 import _matrix
 import os
+import sys
 import cmath
 import pytest
 import timeit
@@ -138,6 +139,59 @@ class TestInstance(unittest.TestCase):
             print("time19/time0:", time19/time0)
         self.assertLess(ratio19/ratio0, 0.8)'''
 
+class Writer:
 
-#	def test_mtx(self):
-#		m = _matrix.Matrix(100, 100)
+    def __init__(self, streams):
+
+        self.streams = streams
+
+    def write(self, msg):
+
+        for stream in self.streams:
+
+            stream.write(msg)
+
+def benchmark():
+
+    setup = '''
+import _matrix
+
+size = 1000
+
+mat1 = _matrix.Matrix(size,size)
+mat2 = _matrix.Matrix(size,size)
+
+for it in range(size):
+    for jt in range(size):
+        mat1[it, jt] = it * size + jt + 1
+        mat2[it, jt] = it * size + jt + 1
+'''
+
+    naive = timeit.Timer('_matrix.multiply_naive(mat1, mat2)', setup=setup)
+    tile16 = timeit.Timer('_matrix.multiply_tile(mat1, mat2, 16)', setup=setup)
+    mkl = timeit.Timer('_matrix.multiply_mkl(mat1, mat2)', setup=setup)
+
+    repeat = 5
+
+    with open('performance.txt', 'w') as fobj:
+
+        w = Writer([sys.stdout, fobj])
+
+        w.write(f'Start multiply_naive (repeat={repeat}), take min = ')
+        naivesec = minsec = min(naive.repeat(repeat=repeat, number=1))
+        w.write(f'{minsec} seconds\n')
+
+        w.write(f'Start multiply_tile tsize=16 (repeat={repeat}), take min = ')
+        tile16sec = minsec = min(tile16.repeat(repeat=repeat, number=1))
+        w.write(f'{minsec} seconds\n')
+
+        w.write(f'Start multiply_mkl (repeat={repeat}), take min = ')
+        mklsec = minsec = min(mkl.repeat(repeat=repeat, number=1))
+        w.write(f'{minsec} seconds\n')
+
+        w.write('MKL speed-up over naive: %g x\n' % (naivesec/mklsec))
+        w.write('tile with tsize=16 speed-up over naive: %g x\n' % (naivesec/tile16sec))
+
+if __name__ == '__main__':
+    benchmark()
+
