@@ -34,7 +34,7 @@ def benchmark():
     mat2 = _matrix.Matrix(matrixSize, matrixSize)
     _matrix.initialize(mat1)
     _matrix.initialize(mat2)
-    runTimes = 1
+    runTimes = 3
     timeNaive = 0.0
     naiveAns = _matrix.Matrix(matrixSize, matrixSize) 
     for i in range(runTimes):
