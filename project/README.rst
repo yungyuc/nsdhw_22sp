@@ -82,8 +82,5 @@ Time Table
 Project List by Account Name
 ++++++++++++++++++++++++++++
 
-#. `github username <https://github.com/yungyuc>`__ for
-   `project name <README.rst>`__: project repository URL
-
-#. `github username <https://github.com/simpson0114>`__ for
+#. `simpson0114 <https://github.com/simpson0114>`__ for
    `Minimum-Spanning-Tree <README.rst>`__: https://github.com/simpson0114/Minimum-Spanning-Tree

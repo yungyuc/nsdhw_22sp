@@ -46,7 +46,6 @@ Engineering Infrastructure
 1. Automatic build system and how to build your program: GNU make
 2. Version control (show how you will use it): Git
 3. Testing framework: Pytest
-4. Documentation: (Will be included in my github repository soon.)
 
 Schedule
 =========
