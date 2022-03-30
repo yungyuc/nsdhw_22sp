@@ -62,8 +62,6 @@ class Matrix
         size_t nrow() const { return number_row; }
         size_t ncol() const { return number_col; }
 
-    private:
-
         size_t number_row;
         size_t number_col;
         double *matrix_buffer;
@@ -110,27 +108,32 @@ Matrix multiply_tile(Matrix const & matrix1, Matrix const & matrix2, size_t tile
 {
     validate_multiplication(matrix1, matrix2);
 
-    Matrix ret(matrix1.nrow(), matrix2.ncol());
+    size_t row_max = matrix1.nrow();
+    size_t col_max = matrix2.ncol();
+    size_t inner_max = matrix1.ncol();
+    Matrix ret(row_max, col_max);
 
-    for (size_t row = 0; row < matrix1.nrow(); row += tilesize) 
+    for (size_t row = 0; row < row_max; row += tilesize) 
     {
-        size_t imax = std::min(matrix1.nrow(), row + tilesize);
+        size_t imax = std::min(row_max, row + tilesize);
         
-        for (size_t col = 0; col < matrix2.ncol(); col += tilesize) 
+        for (size_t col = 0; col < col_max; col += tilesize) 
         {
-            size_t jmax = std::min(matrix2.ncol(), col + tilesize);
+            size_t jmax = std::min(col_max, col + tilesize);
             
-            for (size_t inner = 0; inner < matrix1.ncol(); inner += tilesize) 
+            for (size_t inner = 0; inner < inner_max; inner += tilesize) 
             {
-                size_t kmax = std::min(matrix1.ncol(), inner + tilesize);
-                
-                for (size_t k = inner; k < kmax; k++) 
+                size_t kmax = std::min(inner_max, inner + tilesize);
+
+                for (size_t i = row; i < imax; ++i) 
                 {
-                    for (size_t i = row; i < imax; i++) 
+                    size_t base1 = i * inner_max;
+                    for (size_t j = col; j < jmax; ++j)
                     {
-                        for (size_t j = col; j < jmax; j++)
-                        {
-                            ret(i, j) += matrix1(i, k) * matrix2(k, j);
+                        size_t index = i * col_max + j;
+                        for (size_t k = inner; k < kmax; ++k) 
+                        {   
+                            ret.matrix_buffer[index] += matrix1.matrix_buffer[base1 + k] * matrix2(k, j);
                         }
                     }
                 }
