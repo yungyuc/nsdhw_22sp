@@ -41,10 +41,36 @@ Most equalizers are hardware, this program develops an online equalizer and uses
 
 
 ## System Architecture
-To Be Determined
+<img src="./images/system_architecture.png" alt="system_architecture"/>
 
 ## API Description
-To Be Determined
+`equalize(file, mode='allpass', freq=0, gain=0, Q=0)`
+
+- `file`: An audio file, allow type: `.wav`
+- `mode`: Define the shape of the processing curve.
+    - `lowpass`
+    - `highpass`
+    - `lowshelf`
+    - `highshelf`
+    - `bandpass`
+    - `notch`
+    - `allpass`
+- `freq`: A frequency position need to be adjust. (unit: Hz)
+- `gain`: Amplification or attenuation of a certain range of frequencies. (unit: Db)
+- `Q`: Define the steepness or width of each filter.
+
+The following table describe the meaning of the parameters in each mode:
+
+| `mode`      | description       | `freq`                             | `gain` | `Q` |
+| :---------- | :---------------- | :--------------------------------- | :----- | :------- |
+| `lowpass`   | Low-pass filter   | The cut-off frequency              | unused | Drop-off steepness at the cut-off frequency |
+| `highpass`  | High-pass filter  | The cut-off frequency              | unused | Drop-off steepness at the cut-off frequency |
+| `lowshelf`  | Low-shelf filter  | The upper limit of the frequencies | The amplification or attenuation level | unused |
+| `highshelf` | High-shelf filter | The lower limit of the frequencies | The amplification or attenuation level | unused |
+| `bandpass`  | Band-pass filter  | Center of the frequency band       | unused | The width of the frequency band |
+| `notch`     | Notch filter      | Center of the frequency band       | unused | The width of the frequency band |
+| `allpass`   | All-pass filter   | unused | unused | unused |
+
 
 ## Engineering Infrastructure
 
