@@ -29,8 +29,6 @@ Matrix Matrix::tiled_mul(const Matrix &mat, int tile_size){
         }
     }
 
-    // cout << "tile_size: " << tile_size << endl;
-
     int trow1 = this->mRows / tile_size;
     int tcol1 = this->mCols / tile_size;
     int tcol2 = mat.mCols / tile_size;
@@ -94,9 +92,11 @@ void Matrix::direct_mul(const Matrix& mat1, int row1, int col1, const Matrix& ma
     for(int i = 0; i < tile_size; i++){
         for(int j = 0; j < tile_size; j++){
             int Base_j = j * tile_size;
+            double accu = 0;
             for(int k = 0; k < tile_size; k++){
-                tile_res(base_i1 + i, base_j2 + j) += mat1(base_i1+i,base_j1+k) * mat2_tmp.buffer[Base_j + k];
+                accu += mat1(base_i1+i,base_j1+k) * mat2_tmp.buffer[Base_j + k];
             }
+            tile_res(base_i1 + i, base_j2 + j) += accu;
         }
     }    
 }
