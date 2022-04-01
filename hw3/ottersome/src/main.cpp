@@ -58,7 +58,7 @@ PYBIND11_MODULE(_matrix, m) {
                 m(row,col) = value;
         })
         .def("n_mult",&Matrix::n_mult)
-        .def("t_mult",&Matrix::t_mult<2>)
+        .def("t_mult",&Matrix::t_mult<2*sizeof(double)>)
     //TODO i need to verify the correctness of this
         .def_buffer([](Matrix &m) -> py::buffer_info {
                 return py::buffer_info(

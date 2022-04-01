@@ -34,7 +34,7 @@ public:
 
     //Arithmetic Operations
     Matrix n_mult(const Matrix & mat2);
-    template<size_t ts>
+    template<size_t ts_bytes>
     Matrix t_mult(const Matrix & mat2){
         if (this->ncol() != mat2.nrow())
         {
@@ -47,43 +47,59 @@ public:
         Matrix retMat(this->nrow(), mat2.ncol());
         retMat.zero_out();
 
+        size_t ts = ts_bytes/sizeof(double);
 
         //Get size of tiles:
         //TODO handle the edge cases
         //size_t num_rt1 = std::ceil((sizeof(double)*m_nrow)/ts);
         //size_t num_ct1 = std::ceil((sizeof(double)*m_ncol)/ts);
         //size_t num_rt2 = (sizeof(double)*mat2.nrow())/ts;
-        //size_t num_ct2 = std::ceil((sizeof(double)*mat2.ncol())/ts);
+        size_t num_ct2 = std::ceil((float)(sizeof(double)*mat2.ncol())/ts_bytes);
+        //std::cout << "Dameloo : "<<num_ct2<<"<<as opposed to : "<<(double)(sizeof(double)*mat2.ncol())/ts_bytes<<std::endl;
 
-        size_t curCellHeight =0;
-        size_t curCellWidth = 0;
-        size_t operation_num= 0;
+        size_t rows =0;
+        size_t cols = 0;
+        size_t ops= 0;
+
+        std::cout <<"Meepo"<<std::endl;
         //Go around Cells in increments of their respective size
         for(size_t rtile = 0;rtile<retMat.nrow();rtile+=ts){
-            for(size_t ctile = 0;ctile< retMat.ncol();ctile+=ts){
 
-                //Actually do cell by cell dot product
-                curCellHeight =  std::min(ts, retMat.nrow()- rtile);
-                curCellWidth = std::min(ts, retMat.ncol()- ctile);
-                operation_num = std::min(ts, (this)->ncol()-ctile);
-                std::cout << "Info: \n"
-                    <<" curCellHeight:"<<curCellHeight<<"\n"
-                    <<" curCellWidth:"<<curCellWidth<<"\n"
-                    <<" operation_num:"<<operation_num<<"\n";
-                //For each element of the dot product
-                //Size of 
-                for(size_t tile_row = 0;tile_row<curCellHeight;tile_row++){
-                    for(size_t tile_col = 0;tile_col<curCellWidth;tile_col++){
-                        for(size_t elem = 0; elem< operation_num;elem++){
+            for(size_t t_col = 0;t_col< num_ct2;t_col+=ts){
+                std::cout <<"sarancho"<<std::endl;
+                //For every vertical tile in matrix 2(of the ctil tile column)
+                for(size_t vtile=0;vtile<mat2.nrow();vtile+=ts){
+                    //Actually do cell by cell dot product
+                    rows =  std::min(ts, retMat.nrow()- rtile);
+                    cols = std::min(ts, mat2.ncol()- t_col);
+                    ops = std::min(ts, (this)->ncol()-vtile);
+                    std::cout << "Info: \n"
+                        <<" rtile:"<<rtile<<"\n"
+                        <<" t_col:"<<t_col<<"\n"
+                        <<" vtile:"<<vtile<<"\n"
+                        <<" cols:"<<cols<<"\n"
+                        <<" rows:"<<rows<<"\n"
+                        <<" ops_num:"<<ops<<"\n";
+                    //For each element of the dot product
+                    //Size of 
+                    for(size_t col = 0;col<cols;col++){
+                        for(size_t row = 0;row<rows;row++){
                             std::cout << "Info: \n"
-                                <<" tile_row:"<<tile_row<<"\n"
-                                <<" tile_col:"<<tile_col<<"\n"
-                                <<" indexer:"<<elem<<"\n"
-                                <<" a_el:"<<(*this)(rtile+tile_row,ctile+tile_col+elem)<<"\n"
-                                <<" b_el:"<<mat2(rtile+tile_row+elem,ctile+tile_col)<<"\n";
-                            retMat(rtile+tile_row,ctile+tile_col) += (*this)(rtile+tile_row,ctile+elem)
-                                * mat2(rtile+elem,ctile+tile_col);
-                            //retMat(rtile,ctile) = (*this)(rtile+tile_row,ctile+tile_col) + mat2(ctile+tile_col,rtile+tile_row);
+                                <<" tile_row:"<<row<<"\n"
+                                <<" tile_col:"<<col<<"\n"<<std::endl;
+                            for(size_t elem = 0; elem< ops;elem++){
+                                std::cout
+                                    <<"\tindexer:"<<elem<<"\n"
+                                    <<"\tprod="<<(*this)(rtile+row,vtile+elem)
+                                    <<"*"<<mat2(vtile+elem,t_col+col)<<std::endl;
+                                    //<<"\ta_el:"<<(*this)(rtile+row,vtile+elem)<<"\n"
+                                    //<<"\tb_el:"<<mat2(vtile+elem,t_col+col)<<"\n";
+                                retMat(rtile+row,t_col+col)  += (*this)(rtile+row,vtile+elem)
+                                    * mat2(vtile+elem,t_col+col);
+                                //retMat(rtile+tile_row,ctile+tile_col) += (*this)(rtile+tile_row,ctile+elem)
+                                    //* mat2(rtile+elem,ctile+tile_col);
+                                //retMat(rtile,ctile) = (*this)(rtile+tile_row,ctile+tile_col) + mat2(ctile+tile_col,rtile+tile_row);
+                            }
                         }
                     }
                 }
