@@ -29,7 +29,9 @@ Prospective Users
 =================
 
 People who are interested in machine learning and want to try some different 
-ML algorithms may use my library.
+ML algorithms may use my library to solve some basic classification problems.
+For example, handwritten numbers in MNIST dataset can be classified using
+naive Bayes classifier with an acceptable accurancy.
 
 Data scientists can use this library's models as baselines against theirs, too.
 
