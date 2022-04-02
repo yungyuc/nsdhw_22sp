@@ -96,3 +96,6 @@ Project List by Account Name
 
 #. `ottersome <https://github.com/ottersome>`__ for
    `RIL <README.rst>`__: https://github.com/ottersome/RIL
+
+#. `BlenderWang9487 <https://github.com/BlenderWang9487>`__ for
+   `DummyML <BlenderWang9487/README.rst>`__: https://github.com/BlenderWang9487/DummyML
