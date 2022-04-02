@@ -1,5 +1,5 @@
 ========================
-LittleDQN
+DummyML
 ========================
 
 
@@ -7,85 +7,100 @@ LittleDQN
 Basic Information
 =================
 
-Create a GitHub repository to host your project and add the URL here.  The
-GitHub repository has an 'About' field, in which you are encouraged to write a
-simple statement (preferably one sentence) to introduce the project.
+A dummy ML library for NSD course term project.
+
+Here is my Github repository:
+`DummyML <https://github.com/BlenderWang9487/DummyML.git>`_
 
 Problem to Solve
 ================
 
-Describe the problem or the set of problems you want to solve.  Include
-necessary background information without making it lengthy.
+I want to build a machine learning library based on some mathematical theories.
 
-Some points may help you organize the problem description:
+There are many easy-to-use hybrid frameworks that built for deep learning, 
+but fewer for other traditional ML algorithms. So I'm going to build one.
 
-1. The field or industry of the problem.
-2. The physics and/or the mathematics behind the problem.
-3. The algorithm or numerical method that should be applied for solving the
-   problem.
+Some regression, classification and clustering models (like Gaussian linear 
+regression, naive Bayes classifier, Kmeans, etc.) will be provided by this
+library. (There will be atleast three approaches for each mission. One of them
+is a "dummy" approach which can be treated as the baseline.)
 
 Prospective Users
 =================
 
-Describe the users of your software and how they will use it.  It is OK to
-combine this section with the previous one (`Problem to solve`_).
+People who are interested in machine learning and want to try some different 
+ML algorithms may use my library.
+
+Data scientists can use this library's models as baselines against theirs, too.
 
 System Architecture
 ===================
 
-Analyze how your system takes input, produces results, provide interface, and
-performs any other operations.  Describe the system's work flow.  You may
-consider to use a flow chart but it is not required.  Specify the constraints
-assumed in your system.  Describe the modularization of the system.
+There may or may not be a class to handle input/output data (I might just use
+Numpy array).
+
+There will be a class, "Model", which is the parent class of all the other
+models. It will provide an uniform interface for fitting, predicting, saving and
+loading.
+
+If there are some functions/data structures which are used by many algorithms
+(like matrix operations), they will be declared in utils.hpp, making them easy
+to maintain.
 
 API Description
 ===============
 
-Show how your system can be programmed.  You are supposed to implement the
-system using both C++ and Python.  Describe how a user writes a script in the
-system.
+Users can write something like this:
+
+.. code:: python
+    :number-lines:
+
+    import dummyml
+    import numpy as np
+    
+    # Initialize the model.
+    classifier = dummyml.some_classifier(""" some properties """)
+    
+    # If there is a pretrained weights file, user will be able to load it from
+    # the file.
+    classifier.load('some_weights_1.dat')
+    dummyinput = np.random.rand(10)
+
+    # Model object will be callable.
+    result = classifier(dummyinput)
+    print(result)
+
+    # User can save the weights to a file.
+    classifier.save('some_weights_2.dat')
 
 Engineering Infrastructure
 ==========================
 
-Describe how you plan to put together the engineering system:
-
-1. Automatic build system and how to build your program
-2. Version control (show how you will use it)
-3. Testing framework
-4. Documentation
-
-Some of the above information should be included in the documentation in your
-software.
-
-You may use continuous integration, but it is not required.  If you use it,
-describe how it works in your code development.
+1. Using Cmake to configure & build the project
+2. Using Git to control different versions
+3. Using Pytest for testing
+4. Documentation: I plan to just write markdown files as documentation for now.
 
 Schedule
 ========
 
-Itemize the work to do and list them in a timeline.  Estimate the efforts of
-each item before the project starts.
-
-The schedule is expected to be adjusted during the development.  A schedule to
-accurately predict everything in the development is impossible and unnecessary.
-But the initial estimate is important, for the baseline becomes concrete when
-we adjust the plan.
-
-To start, you can list the to-do items on a weekly basis and assume the
-development of the project takes 8 weeks:
-
-* Planning phase (6 weeks including 2/21, 2/28, 3/7, 3/14, 3/21, 3/28):
-* Week 1 (4/4):
-* Week 2 (4/11):
-* Week 3 (4/18):
-* Week 4 (4/25):
-* Week 5 (5/2):
-* Week 6 (5/9):
-* Week 7 (5/16):
-* Week 8 (5/23):
+* Planning phase (6 weeks including 2/21, 2/28, 3/7, 3/14, 3/21, 3/28): Planning
+* Week 1 (4/4): Finish the Model class and simple API to check if the hybrid
+  system can work.
+* Week 2 (4/11): Add some unoptimized approaches of classification/regression 
+  algorithms in C++ to get the baselines.
+* Week 3 (4/18): Add some unoptimized approaches of clustering algorithms in C++.
+* Week 4 (4/25): Optimize them and bind them to python using pybind.
+* Week 5 (5/2): Write unit test/Github CI test and keep optimizing them.
+* Week 6 (5/9): Buffer week.
+* Week 7 (5/16): Write documentation and maybe test their performance with some
+  famous datasets.
+* Week 8 (5/23): Prepare for presentation.
 
 References
 ==========
 
-List the external references for the information provided in the proposal.
+Some algorithms that I might implement:
+
+* `Naive Bayes classifier <https://en.wikipedia.org/wiki/Naive_Bayes_classifier>`_
+* `K-means clustering <https://en.wikipedia.org/wiki/K-means_clustering>`_
