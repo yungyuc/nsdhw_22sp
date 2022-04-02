@@ -5,8 +5,11 @@ course will be humble in purpose but its lifetime will be longer than the
 course. It will start by with the aim of solving 3 main tasks related to image
 processing. This will be stated concretely and tackled generally. Once the
 course is over my aim is to use it for my own photography needs. The tools will 
-be more on the image editing/post-produciton side rather than something like
-openCV.
+be more on the image editing/post-production side rather than something like
+openCV. A little disclaimer will be made: Due to restrictions in time I will
+most likely be able to implement only one or two of these features, but I state
+three in case time allows to cover them all. If I find that one of them doesn't
+interest me or is too lengthy then I might switch them as well.
 
 # Basic Information
 
@@ -22,17 +25,18 @@ For the sake of obtaining a sense of completion for the course, the three main g
 will be chosen. Their inclusion is simply because they are a mix of previously acquired knowledge
 and experience I have been meaning to acquire
 
-1. First: [JPG Compression](https: //people.cs.rutgers.edu/~elgammal/classes/cs334/slide9_short.pdf).
+1. [JPG Compression](https://people.cs.rutgers.edu/~elgammal/classes/cs334/slide9_short.pdf)
    This uses a uses lossy compression through transform coding(DCT).
    If time allows, I would also like to implement variations to see if there any
    benefits to them.
-2. Kernel Applicaiton: A simple way of specifying your kernels and seeing their
+2. Kernel Application: A simple way of specifying your kernels and seeing their
    final results on image or on application of image for the sake of easily
-   analyzing their effects without having to learn a complicated/bload image
+   analyzing their effects without having to learn a complicated/bloated image
    processing framework.
 3. Image Stitching to a Video: Like most people in a Lab I always work with
    pyplot figures. I would like to be able to stitch them together into a video
    without:
+
         1. Having  a huge footprint on RAM 
         2. The Final Video having a prohibitive size.
 
@@ -48,6 +52,17 @@ detach myself from software like Adobe Lightroom for my own photography needs.
 
 # System Architecture
 
+Results and input can be seen in the API section below. There is no one set work
+flow as this is a set of tools that can be used in any (reasonable) combination desired by
+the user. Constraints will come mainly from the I/O. I plan to stick to one raw
+data format + python buffers, anything else would likely not be implemented or
+imported from a different library once the class is over. This would be more
+about good efficient compression so images of absurd sizes +40Mb will not be
+considered within this semester. 
+
+
+## Interface
+
 ### I/O Class
 
 This should handle all loading and saving operations.
@@ -57,7 +72,7 @@ This should handle all loading and saving operations.
 A tensor buffer that will represent the image in memory. 
 Ideally it would have additional features and layers of compatibility with
 modules like pyplot and numpy. At its core however, it would handle the
-mathematical operations such as convolution, matrix multiplicaiton, element-wise
+mathematical operations such as convolution, matrix multiplication, element-wise
 multiplication and so on. If time allows, parallelism will be used to speed up
 most of the operations that allow it. 
 
@@ -78,7 +93,7 @@ Though I'll place it here for convenience:
 
 The image sequence class would be responsible for execution of video-like
 feature of the Image Matrix Class. It would deal directly with the Image/Matrix
-class and output to disk the final image in a stardized format such as .mp4.
+class and output to disk the final image in a standardized format such as `.mp4`.
 
 ### Kernel 
 
@@ -164,7 +179,6 @@ realistic timeline.
     * Document
 * Week 8 (5/23):
     * Presentation Preparation and final touches 
-
 
 
 # References
