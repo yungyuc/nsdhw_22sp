@@ -82,5 +82,5 @@ Time Table
 Project List by Account Name
 ++++++++++++++++++++++++++++
 
-#. `github username <https://github.com/yungyuc>`__ for
-   `project name <README.rst>`__: project repository URL
+#. `BlenderWang9487 <https://github.com/BlenderWang9487>`__ for
+   `DummyML <README.rst>`__: https://github.com/BlenderWang9487/DummyML
