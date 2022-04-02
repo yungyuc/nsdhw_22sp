@@ -1,0 +1,8 @@
+line: number of points = 3
+point 0: x = 0 y = 1
+point 1: x = 1 y = 3
+point 2: x = 2 y = 5
+line2: number of points = 3
+point 0: x = 9 y = 1
+point 1: x = 1 y = 3
+point 2: x = 2 y = 5
