@@ -19,7 +19,11 @@ this two MST algorithms, and hope it can make it easier for beginners to underst
 
 Prospective Users
 ==================
-People who wants to use MST but have no idea of programming or people who just start to learn the MST.
+MST is a fundamental problem which can be used in diverse applications. For instance, it can be used in problems associated with network design, 
+like phone-network design,  or acting as the  approximation algorithm for NP-hard problems , such as approximately solving the traveling salesman problem, and etc.
+
+Therefore, People who wants to use MST to solve the problems above but have no idea of programming or people who just start to learn the MST are suitable for using 
+this tool.
 
 System Architecture
 ====================
@@ -32,14 +36,27 @@ API Description
 Graph class includes complete implementation of the Kruskal' algorithm and Prim's algorithm, user only
 have to initialize Graph in python script and choose the MST algorithm type.
 
-- Graph.__init__(): initialize vertices 
-- Graph.addEdge(): add an edge to graph
-- Graph.find(): find set of an element i
-- Graph.union(): union of two sets of x and y
-- Graph.minKey(): A utility function to find the vertex with minimum distance value, from the set of vertices not yet included in shortest path tree
-- Graph.sort(): sort edges' weight of the Graph from small to large
-- Graph.KruskalMST(): The main function to construct MST using Kruskal's algorithm
-- Graph.PrimMST(): The main function to construct MST using Prim's algorithm
+- Graph structure:
+
+class GraphMST{
+private:
+    int num_vertex;
+    std::vector<std::vector<int>> AdjMatrix;
+}
+
+- GraphMST.__init__(): initialize vertices 
+- GraphMST.addEdge(): add an edge to graph
+
+void GraphMST::AddEdge(int from, int to, int weight){
+    AdjMatrix[from][to] = weight;
+}
+
+- GraphMST.find(): find set of an element i
+- GraphMST.union(): union of two sets of x and y
+- GraphMST.minKey(): A utility function to find the vertex with minimum distance value, from the set of vertices not yet included in shortest path tree
+- GraphMST.sort(): sort edges' weight of the Graph from small to large
+- GraphMST.KruskalMST(): The main function to construct MST using Kruskal's algorithm
+- GraphMST.PrimMST(): The main function to construct MST using Prim's algorithm
 
 Engineering Infrastructure
 ===========================
@@ -51,7 +68,7 @@ Schedule
 =========
 * Planning phase (6 weeks including 2/21, 2/28, 3/7, 3/14, 3/21, 3/28):
 * Week 1 (4/4): Complete pure python version of MST class. Start the presentation skeleton.
-* Week 2 (4/11): Design of data structures of C++
+* Week 2 (4/11): Design of data structures of C++ and research how to make the data structure fit the algorithms also make the performance best
 * Week 3 (4/18): Complete the sorting part and merging part of MST in C++
 * Week 4 (4/25): Build C++ module for every single function inside MST and python interface (pybind11)
 * Week 5 (5/2): Build automatic python unit test to test the correctness of output of C++ module
@@ -64,3 +81,6 @@ References
 * `Minimum Spanning Tree <https://en.wikipedia.org/wiki/Minimum_spanning_tree>`_
 * `Kruskal's algorithm <https://en.wikipedia.org/wiki/Kruskal%27s_algorithm>`_
 * `Prim's algorithm <https://en.wikipedia.org/wiki/Prim%27s_algorithm>`_
+
+#. `simpson0114 <https://github.com/simpson0114>`__ for
+   `Minimum-Spanning-Tree <README.rst>`__: https://github.com/simpson0114/Minimum-Spanning-Tree
