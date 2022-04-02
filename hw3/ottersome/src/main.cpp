@@ -57,8 +57,10 @@ PYBIND11_MODULE(_matrix, m) {
                 std::tie(row, col) = indices;
                 m(row,col) = value;
         })
-        .def("n_mult",&Matrix::n_mult)
-        .def("t_mult",&Matrix::t_mult<2*sizeof(double)>)
+        .def("multiply_naive",&Matrix::multiply_naive)
+        .def("multiply_tile",[](Matrix &m1, const Matrix & m2, size_t tile_size){
+                return m1.multiply_tile(m2,tile_size);
+                })
     //TODO i need to verify the correctness of this
         .def_buffer([](Matrix &m) -> py::buffer_info {
                 return py::buffer_info(

@@ -1,6 +1,7 @@
 import numpy as np
 import pytest as pt
 import sys
+import unittest
 sys.path.append('./modules')
 import _matrix as mtx
 
@@ -17,6 +18,26 @@ def test_indexing():
     print("m[1,1,]={}".format(m1[1,1]))
     print("m[1,0]={}".format(m1[1,0]))
     print("m[2,2]={}".format(m1[2,2]))
+
+def test_match_tile_to_naive():
+
+    size = 100
+    mat1, mat2, *_ = make_matrices(size)
+
+    ret_naive = _matrix.multiply_naive(mat1, mat2)
+    ret_mkl = _matrix.multiply_tile(mat1, mat2)
+
+    self.assertEqual(size, ret_naive.nrow)
+    self.assertEqual(size, ret_naive.ncol)
+    self.assertEqual(size, ret_mkl.nrow)
+    self.assertEqual(size, ret_mkl.ncol)
+
+    for i in range(ret_naive.nrow):
+        for j in range(ret_naive.ncol):
+            self.assertNotEqual(mat1[i,j], ret_mkl[i,j])
+            self.assertEqual(ret_naive[i,j], ret_mkl[i,j])
+
+def test_matrix_random_coeff():
 
 def test_t_mult_by_ident():
     print("Pun pun Optimized ")
@@ -78,4 +99,16 @@ def test_times_identity():
     pass
 
 
+def make_matrices(self, size):
 
+    mat1 = _matrix.Matrix(size,size)
+    mat2 = _matrix.Matrix(size,size)
+    mat3 = _matrix.Matrix(size,size)
+
+    for it in range(size):
+        for jt in range(size):
+            mat1[it, jt] = it * size + jt + 1
+            mat2[it, jt] = it * size + jt + 1
+            mat3[it, jt] = 0
+
+    return mat1, mat2, mat3

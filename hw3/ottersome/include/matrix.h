@@ -33,9 +33,9 @@ public:
     std::vector<double> buffer_vector() const;
 
     //Arithmetic Operations
-    Matrix n_mult(const Matrix & mat2);
-    template<size_t ts_bytes>
-    Matrix t_mult(const Matrix & mat2){
+    Matrix multiply_naive(const Matrix & mat2);
+    //template<size_t ts_bytes>
+    Matrix multiply_tile(const Matrix & mat2, size_t ts_bytes){
         if (this->ncol() != mat2.nrow())
         {
             throw std::out_of_range(

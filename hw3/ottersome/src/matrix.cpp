@@ -10,72 +10,7 @@ namespace py = pybind11;
 #include "matrix.h"
 
 
-
-
-//TODO can we chagne the return type to be more efficient?
-
-//So we can speed on different size of tiles
-//shoudl be multiple of double
-
-//template<size_t ts>
-//Matrix Matrix::t_mult(const Matrix & mat2)
-//{
-    //if (this->ncol() != mat2.nrow())
-    //{
-        //throw std::out_of_range(
-            //"the number of first matrix column "
-            //"differs from that of second matrix row");
-    //}
-
-    ////Create matrix to return 
-    //Matrix retMat(this->nrow(), mat2.ncol());
-    //retMat.zero_out();
-
-
-    ////Get size of tiles:
-    ////TODO handle the edge cases
-    //size_t num_rt1 = std::ceil((sizeof(double)*m_nrow)/ts);
-    //size_t num_ct1 = std::ceil((sizeof(double)*m_ncol)/ts);
-    ////size_t num_rt2 = (sizeof(double)*mat2.nrow())/ts;
-    //size_t num_ct2 = std::ceil((sizeof(double)*mat2.ncol())/ts);
-
-    //size_t curCellHeight =0;
-    //size_t curCellWidth = 0;
-    //size_t adder = 0;
-    //size_t operation_num= 0;
-    ////Go around Cells in increments of their respective size
-    //for(size_t rtile = 0;rtile<retMat.nrow();rtile+=ts){
-        //for(size_t ctile = 0;ctile< retMat.ncol();ctile+=ts){
-
-            ////Actually do cell by cell dot product
-            //curCellHeight =  std::min(ts, retMat.nrow()- rtile);
-            //curCellWidth = std::min(ts, retMat.ncol()- ctile);
-            //operation_num = std::min(ts, (this)->ncol()-ctile);
-            ////For each element of the dot product
-            ////Size of 
-            //adder = 0;
-            //for(size_t tile_row = 0;tile_row<curCellHeight;tile_row++){
-                //for(size_t tile_col = 0;tile_col<curCellWidth;tile_col++){
-                    //for(size_t elem = 0; elem< operation_num;elem++){
-                        //retMat(rtile,ctile) = (*this)(rtile+tile_row,ctile+tile_col+elem)
-                                        //* mat2(rtile+tile_row+elem,ctile+tile_col);
-                        ////retMat(rtile,ctile) = (*this)(rtile+tile_row,ctile+tile_col) + mat2(ctile+tile_col,rtile+tile_row);
-                    //}
-                //}
-                //adder = 0;
-
-            //}
-
-        //}
-
-    //}
-
-
-    //return retMat;
-//}
-
-
-Matrix Matrix::n_mult(const Matrix & mat2)
+Matrix Matrix::multiply_naive(const Matrix & mat2)
 {
     if (this->ncol() != mat2.nrow())
     {
