@@ -1,4 +1,4 @@
-# RacImgLib(RIL): General Purpose Image Processing Framework
+# RacImgLib(RIL): General Purpose Image Processing Library
 
 This is a general purpose framework for image processing tasks. Its aim for the
 course will be humble in purpose but its lifetime will be longer than the
