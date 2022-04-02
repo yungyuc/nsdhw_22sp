@@ -78,8 +78,11 @@ Schedule
 
 References
 ===========
-* `Minimum Spanning Tree <https://en.wikipedia.org/wiki/Minimum_spanning_tree>`_
-* `Kruskal's algorithm <https://en.wikipedia.org/wiki/Kruskal%27s_algorithm>`_
-* `Prim's algorithm <https://en.wikipedia.org/wiki/Prim%27s_algorithm>`_
-* `simpson0114 <https://github.com/simpson0114>`__ for
+#. `Minimum Spanning Tree <https://en.wikipedia.org/wiki/Minimum_spanning_tree>`_
+
+#. `Kruskal's algorithm <https://en.wikipedia.org/wiki/Kruskal%27s_algorithm>`_
+
+#. `Prim's algorithm <https://en.wikipedia.org/wiki/Prim%27s_algorithm>`_
+
+#. `simpson0114 <https://github.com/simpson0114>`__ for
    `Minimum-Spanning-Tree <README.rst>`__: https://github.com/simpson0114/Minimum-Spanning-Tree
