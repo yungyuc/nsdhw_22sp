@@ -83,7 +83,18 @@ The following table describe the meaning of the parameters in each mode:
 
 ## Schedule
 
-<img src="./images/gantt.png" alt="gantt"/>
+Planning phase (6 weeks including 2/21, 2/28, 3/7, 3/14, 3/21, 3/28):
+
+| Week         | Planning |
+| :----------- | :------- |
+| Week 1 (4/4) | Study Fourier Transform <br> Survey information and libraries |
+| Week 2 (4/11) | Design system architecture |
+| Week 3 (4/18) | Implement functions |
+| Week 4 (4/25) | Implement functions <br> Write unit test|
+| Week 5 (5/2) | Write unit test <br> Build Github Action (CI)|
+| Week 6 (5/9) | Optimize execution performance |
+| Week 7 (5/16) | Overall tests |
+| Week 8 (5/23) | Prepare presentation <br> Write document |
 
 ## References
 
