@@ -38,6 +38,7 @@ def test_match_tile_to_naive():
             self.assertEqual(ret_naive[i,j], ret_mkl[i,j])
 
 def test_matrix_random_coeff():
+    pass
 
 def test_t_mult_by_ident():
     print("Pun pun Optimized ")

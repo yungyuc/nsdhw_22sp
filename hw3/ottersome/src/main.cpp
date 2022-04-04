@@ -28,13 +28,24 @@ Matrix ident(size_t row,size_t col){
     return mat;
 }
 
+Matrix multiply_naive(Matrix &m1, const Matrix &m2){
+    Matrix retMat = m1.multiply_naive(m2);
+    std::cout << "Before returning retMat we check mrow:"<<retMat.get_nrow()<<std::endl;
+    return retMat;
+}
+Matrix multiply_mkl(Matrix &m1, const Matrix &m2){
+    return m1.multiply_mkl(m2);
+}
+
 PYBIND11_MODULE(_matrix, m) {
 
     py::class_<Matrix>(m, "Matrix", py::buffer_protocol())
         .def(py::init<size_t, size_t>())
         .def("print_vals",&Matrix::print_vals)
-        .def("nrow",&Matrix::nrow)
-        .def("ncol",&Matrix::ncol)
+        //.def("nrow",&Matrix::nrow)
+        //.def("ncol",&Matrix::ncol)
+        .def_property_readonly("nrow",&Matrix::get_nrow)
+        .def_property_readonly("ncol",&Matrix::get_ncol)
         .def("__getitem__", [](const Matrix &m, const py::slice & slice) {
             py::ssize_t start = 0, stop = 0, step = 0, slicelength = 0;
             if (!slice.compute(m.size(), &start, &stop, &step, &slicelength)) {
@@ -57,10 +68,9 @@ PYBIND11_MODULE(_matrix, m) {
                 std::tie(row, col) = indices;
                 m(row,col) = value;
         })
-        .def("multiply_naive",&Matrix::multiply_naive)
-        .def("multiply_tile",[](Matrix &m1, const Matrix & m2, size_t tile_size){
-                return m1.multiply_tile(m2,tile_size);
-                })
+        //.def("multiply_naive",&multiply_naive)
+        .def("multiply_tile",&Matrix::multiply_tile)
+        //.def("multiply_mkl",&multiply_mkl)
     //TODO i need to verify the correctness of this
         .def_buffer([](Matrix &m) -> py::buffer_info {
                 return py::buffer_info(
@@ -68,31 +78,12 @@ PYBIND11_MODULE(_matrix, m) {
                         sizeof(float),                          /* Size of one scalar */
                         py::format_descriptor<float>::format(), /* Python struct-style format descriptor */
                         2,                                      /* Number of dimensions */
-                        { m.nrow(), m.ncol() },                 /* Buffer dimensions */
-                        { sizeof(float) * m.ncol(),             /* Strides (in bytes) for each index */
+                        { m.get_nrow(), m.get_ncol() },                 /* Buffer dimensions */
+                        { sizeof(float) * m.get_ncol(),             /* Strides (in bytes) for each index */
                         sizeof(float) }
                         );
                 });
     m.def("ident",&ident,"Function initializes identity matrix");
+    m.def("multiply_naive",&multiply_naive,"Naive multiplication");
+    m.def("multiply_mkl",&multiply_mkl,"Multiply using MKL method");
 }
-
-//int main(int argc, char ** argv)
-//{
-    //std::cout << ">>> A(2x3) times B(3x2):" << std::endl;
-    //Matrix mat1(2, 3, std::vector<double>{1, 2, 3, 4, 5, 6});
-    //Matrix mat2(3, 2, std::vector<double>{1, 2, 3, 4, 5, 6});
-
-    //Matrix mat3 = mat1 * mat2;
-
-    //std::cout << "matrix A (2x3):" << mat1 << std::endl;
-    //std::cout << "matrix B (3x2):" << mat2 << std::endl;
-    //std::cout << "result matrix C (2x2) = AB:" << mat3 << std::endl;
-
-    //std::cout << ">>> B(3x2) times A(2x3):" << std::endl;
-    //Matrix mat4 = mat2 * mat1;
-    //std::cout << "matrix B (3x2):" << mat2 << std::endl;
-    //std::cout << "matrix A (2x3):" << mat1 << std::endl;
-    //std::cout << "result matrix D (3x3) = BA:" << mat4 << std::endl;
-
-    //return 0;
-//}
