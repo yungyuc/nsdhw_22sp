@@ -99,3 +99,6 @@ Project List by Account Name
 
 #. `BlenderWang9487 <https://github.com/BlenderWang9487>`__ for
    `DummyML <BlenderWang9487/README.rst>`__: https://github.com/BlenderWang9487/DummyML
+
+#. `season06 <https://github.com/season06>`__ for
+   `Audio-Enhancer <season06/README.md>`__: https://github.com/season06/Audio-Enhancer
