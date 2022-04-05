@@ -10,8 +10,11 @@
 Matrix::Matrix(size_t const& row, size_t const& col)
     : row_(row), col_(col)
 {
-    this->vec_.clear();
-    this->vec_.resize(row*col, 0);
+    if(!this->vec_.empty()){
+        this->vec_.clear();
+    }
+    
+    this->vec_.resize(row*col);
 }
 
 Matrix::Matrix(size_t const& row, size_t const& col, std::vector<double> const& vec)
@@ -152,25 +155,27 @@ Matrix multiply_naive(Matrix const& mat1, Matrix const& mat2)
 
 Matrix multiply_tile(Matrix const& mat1, Matrix const& mat2, size_t tsize)
 {
-    if(mat1.col() != mat2.row()){
+    size_t m1_col = mat1.col(), m1_row = mat1.row(), m2_row = mat2.row(), m2_col = mat2.col();
+
+    if(m1_col != m2_row){
         throw std::out_of_range("mat1 col is different from mat2 row");
     }
 
-    Matrix ret(mat1.row(), mat2.col());
-    
+    Matrix ret(m1_row, m2_col);
     size_t i_size, j_size, k_size;
+    double v=0;
 
-    for(size_t ti=0; ti<mat1.row(); ti+=tsize){
-        i_size = std::min(mat1.row(), ti+tsize);
-        for(size_t tj=0; tj<mat2.col(); tj+=tsize){
-            j_size = std::min(mat2.col(), tj+tsize);
-            for(size_t tk=0; tk<mat1.col(); tk+=tsize){
-                k_size = std::min(mat1.col(), tk+tsize);
+    for(size_t ti=0; ti<m1_row; ti+=tsize){
+        i_size = std::min(m1_row, ti+tsize);
+        for(size_t tj=0; tj<m2_col; tj+=tsize){
+            j_size = std::min(m2_col, tj+tsize);
+            for(size_t tk=0; tk<m1_col; tk+=tsize){
+                k_size = std::min(m1_col, tk+tsize);
                 for(size_t i=ti; i<i_size; ++i){
                     for(size_t j=tj; j<j_size; ++j){
-                        double v = 0;
+                        v = 0;
                         for(size_t k=tk; k<k_size; ++k){
-                            v += mat1(i, k)*mat2(k, j);
+                            v += mat1(i, k) * mat2(k, j);
                         }
                         ret(i,j) += v;
                     }
