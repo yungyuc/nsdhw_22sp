@@ -3,6 +3,7 @@
 #include <vector>
 #include <stdexcept>
 #include <pybind11/pybind11.h>
+#include <algorithm>
 #include <math.h>
 #ifdef __unix__
 #include "mkl.h"
@@ -15,7 +16,7 @@ namespace py = pybind11;
 #include "matrix.h"
 
 
-Matrix Matrix::multiply_mkl(const Matrix & mat2){
+Matrix Matrix::multiply_mkl(const Matrix & mat2) const{ 
     if (this->ncol != mat2.nrow)
     {
         throw std::out_of_range(
@@ -37,7 +38,7 @@ Matrix Matrix::multiply_mkl(const Matrix & mat2){
             this->m_ncol,
             mat2.data(),
             mat2.ncol,
-            1.0,
+            0.0,
             ret.data(),
             ret.ncol
             );
@@ -45,31 +46,31 @@ Matrix Matrix::multiply_mkl(const Matrix & mat2){
     return ret;
 
 }
-Matrix Matrix::multiply_naive(const Matrix & mat2)
+Matrix Matrix::multiply_naive(const Matrix & mat2) const
 {
-    if (this->ncol != mat2.nrow)
+    if (this->m_ncol != mat2.nrow)
     {
         throw std::out_of_range(
             "the number of first matrix column "
             "differs from that of second matrix row");
     }
 
-    Matrix ret(this->nrow, mat2.ncol);
+    Matrix ret(this->m_nrow, mat2.ncol);
 
     for (size_t i=0; i<ret.nrow; ++i)
     {
         for (size_t k=0; k<ret.ncol; ++k)
         {
             double v = 0;
-            for (size_t j=0; j<this->ncol; ++j)
+            for (size_t j=0; j<this->m_ncol; ++j)
             {
                 v += (*this)(i,j) * mat2(j,k);
             }
             ret(i,k) = v;
         }
     }
-    std::cout <<" Seems liek multiplication went fine"<<std::endl
-;
+
+
     return ret;
 }
 
@@ -89,6 +90,8 @@ Matrix::Matrix(size_t nrow, size_t ncol, std::vector<double> const & vec)
 
 Matrix & Matrix::operator=(std::vector<double> const & vec)
 {
+    //TODO maybe revise this
+    std::cout<<"FAILURE: Implementation not revised!!"<<std::endl;
     if (size() != vec.size())
     {
         throw std::out_of_range("number of elements mismatch");
@@ -108,7 +111,7 @@ Matrix & Matrix::operator=(std::vector<double> const & vec)
 }
 
 Matrix::Matrix(Matrix const & other)
-    : nrow(other.nrow),ncol(other.ncol)
+    : m_nrow(other.nrow),m_ncol(other.ncol),nrow(m_nrow),ncol(m_ncol)
 
 {
     reset_buffer(other.nrow, other.ncol);
@@ -122,7 +125,8 @@ Matrix::Matrix(Matrix const & other)
 }
 
 Matrix & Matrix::operator=(Matrix const & other)
-{
+{    
+    std::cout<<"FAILURE: Implementation not revised!!"<<std::endl;
     if (this == &other) { return *this; }
     if (nrow != other.nrow || ncol != other.ncol)
     {
@@ -139,14 +143,12 @@ Matrix & Matrix::operator=(Matrix const & other)
 }
 
 Matrix::Matrix(Matrix && other)
-    : nrow(other.nrow),ncol(other.ncol)
+    : nrow(m_nrow),ncol(m_ncol)
 
 {
     reset_buffer(0, 0);
-    //nrow = other.nrow;
-    //ncol = other.ncol;
-    //std::swap(nrow, other.nrow);
-    //std::swap(m_ncol, other.m_ncol);
+    std::swap(m_nrow, other.m_nrow);
+    std::swap(m_ncol, other.m_ncol);
     std::swap(m_buffer, other.m_buffer);
 }
 
@@ -154,8 +156,6 @@ Matrix & Matrix::operator=(Matrix && other)
 {
     if (this == &other) { return *this; }
     reset_buffer(0, 0);
-    //m_nrow = other.nrow;
-    //m_ncol = other.ncol;
     std::swap(m_nrow, other.m_nrow);
     std::swap(m_nrow, other.m_ncol);
     std::swap(m_buffer, other.m_buffer);
@@ -212,6 +212,33 @@ void Matrix::print_vals(){
     }
 }
 
+bool Matrix::operator==(Matrix const & other) const{
+    //Compare through memory first maybe ? 
+    //We have to time to check if its more effective this way
+    if(ncol != other.ncol || nrow != other.nrow)
+        return false;
+
+    //To strict of an approach
+    // int n = memcmp(this->data(), other.data(),sizeof(double)*ncol*nrow);
+    // return (n==0)? true: false;
+    bool return_val = true;
+    for(size_t row= 0;row<nrow;row++){
+        for(size_t col= 0;col<ncol;col++){
+            if(std::abs((*this)(row,col) - other(row,col)) >= EQ_DIFF){
+                std::cout << "Found difference with "
+                    <<"\nthis["<<row<<"]"<<"["<<col<<"]="<<(*this)(row,col)
+                    <<"\nother["<<row<<"]"<<"["<<col<<"]="<<other(row,col)
+                    <<std::endl;
+                return_val=false;
+                break;
+            }
+        }
+        if(return_val==false) break;
+    }
+
+    return return_val;
+}
+
 
 /*********************
     Private Members
@@ -227,7 +254,7 @@ size_t Matrix::index(size_t row, size_t col) const
 void Matrix::reset_buffer(size_t o_nrow, size_t o_ncol)
 {
     if (m_buffer) { delete[] m_buffer; }
-    const size_t nelement = nrow * ncol;
+    const size_t nelement = o_nrow * o_ncol;
     if (nelement) { m_buffer = new double[nelement]; }
     else          { m_buffer = nullptr; }
     m_nrow = o_nrow;

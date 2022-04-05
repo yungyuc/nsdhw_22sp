@@ -28,10 +28,11 @@ Matrix ident(size_t row,size_t col){
     return mat;
 }
 
-Matrix multiply_naive(Matrix &m1, const Matrix &m2){
-    Matrix retMat = m1.multiply_naive(m2);
-    std::cout << "Before returning retMat we check mrow:"<<retMat.get_nrow()<<std::endl;
-    return retMat;
+Matrix multiply_naive(const Matrix &m1, const Matrix &m2){
+    return m1.multiply_naive(m2);
+}
+Matrix multiply_tile(const Matrix &m1, const Matrix &m2,size_t tile_size){
+    return m1.multiply_tile(m2, tile_size);
 }
 Matrix multiply_mkl(Matrix &m1, const Matrix &m2){
     return m1.multiply_mkl(m2);
@@ -39,11 +40,13 @@ Matrix multiply_mkl(Matrix &m1, const Matrix &m2){
 
 PYBIND11_MODULE(_matrix, m) {
 
-    py::class_<Matrix>(m, "Matrix", py::buffer_protocol())
+    py::class_<Matrix>(m, "Matrix")
         .def(py::init<size_t, size_t>())
         .def("print_vals",&Matrix::print_vals)
-        //.def("nrow",&Matrix::nrow)
-        //.def("ncol",&Matrix::ncol)
+        // .def("__eq__",[](Matrix & m1, const Matrix & m2){
+        //         return m1==m2;
+        //         })
+        .def(py::self == py::self)
         .def_property_readonly("nrow",&Matrix::get_nrow)
         .def_property_readonly("ncol",&Matrix::get_ncol)
         .def("__getitem__", [](const Matrix &m, const py::slice & slice) {
@@ -72,18 +75,9 @@ PYBIND11_MODULE(_matrix, m) {
         .def("multiply_tile",&Matrix::multiply_tile)
         //.def("multiply_mkl",&multiply_mkl)
     //TODO i need to verify the correctness of this
-        .def_buffer([](Matrix &m) -> py::buffer_info {
-                return py::buffer_info(
-                        m.data(),                               /* Pointer to buffer */
-                        sizeof(float),                          /* Size of one scalar */
-                        py::format_descriptor<float>::format(), /* Python struct-style format descriptor */
-                        2,                                      /* Number of dimensions */
-                        { m.get_nrow(), m.get_ncol() },                 /* Buffer dimensions */
-                        { sizeof(float) * m.get_ncol(),             /* Strides (in bytes) for each index */
-                        sizeof(float) }
-                        );
-                });
+;
     m.def("ident",&ident,"Function initializes identity matrix");
     m.def("multiply_naive",&multiply_naive,"Naive multiplication");
     m.def("multiply_mkl",&multiply_mkl,"Multiply using MKL method");
+    m.def("multiply_tile",&multiply_tile,"Multiply using Tile method");
 }

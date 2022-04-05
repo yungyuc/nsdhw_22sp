@@ -11,34 +11,15 @@
             "-fPIC",
             "-I./include",
             "-I/home/ottersome/miniconda3/include/python3.9",
+            "-I/home/ottersome/miniconda3/include/python3.9",
+            "-I/home/ottersome/miniconda3/include/python3.9",
             "-I/home/ottersome/miniconda3/lib/python3.9/site-packages/pybind11/include",
-            "-I/usr/include/mkl",
+            "-I/opt/intel/mkl/include",
             "-o",
             "build/matrix.o",
             "src/matrix.cpp"
         ],
-        "directory": "/home/ottersome/hw/ottersome",
+        "directory": "/home/ottersome/hw",
         "file": "src/matrix.cpp"
-    },
-    {
-        "arguments": [
-            "g++",
-            "-c",
-            "-pedantic",
-            "-O3",
-            "-Wall",
-            "-Wextra",
-            "-std=c++11",
-            "-fPIC",
-            "-I./include",
-            "-I/home/ottersome/miniconda3/include/python3.9",
-            "-I/home/ottersome/miniconda3/lib/python3.9/site-packages/pybind11/include",
-            "-I/usr/include/mkl",
-            "-o",
-            "build/main.o",
-            "src/main.cpp"
-        ],
-        "directory": "/home/ottersome/hw/ottersome",
-        "file": "src/main.cpp"
     }
 ]
