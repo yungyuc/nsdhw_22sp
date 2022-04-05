@@ -1,0 +1,6 @@
+tmp/
+build/
+backup/
+*.log
+*.json
+

@@ -73,12 +73,14 @@ public:
 
         size_t ts = ts_bytes/sizeof(double);
 
-        size_t num_ct2 = std::ceil((double)(sizeof(double)*mat2.ncol)/ts_bytes);
+        // size_t num_ct2 = std::ceil((double)(sizeof(double)*mat2.ncol)/ts_bytes);
 
         size_t rows =0;
         size_t cols = 0;
         size_t ops= 0;
 
+        size_t rtr = 0;;
+        size_t tcc = 0;;
 
         //Go around Cells in increments of their respective size
         for(size_t rtile = 0;rtile<retMat.nrow;rtile+=ts){
@@ -91,10 +93,12 @@ public:
                     //Actually do cell by cell dot product
                     ops = std::min(ts, (this)->ncol-vtile);
                     for(size_t col = 0;col<cols;col++){
+                        tcc = t_col+col;
                         for(size_t row = 0;row<rows;row++){
+                            rtr = rtile+row;
                             for(size_t elem = 0; elem< ops;elem++){
-                                retMat(rtile+row,t_col+col)  += (*this)(rtile+row,vtile+elem)
-                                    * mat2(vtile+elem,t_col+col);
+                                retMat(rtr,tcc)  += (*this)(rtr,vtile+elem)
+                                    * mat2(vtile+elem,tcc);
                             }
                         }
                     }

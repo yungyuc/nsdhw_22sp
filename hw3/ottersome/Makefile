@@ -29,7 +29,7 @@ LDFLAGS?= -shared -mkl
 CPPFLAGS ?= -pedantic -O3 -Wall -Wextra -std=c++11 -MMD -MP -fPIC $(INC_DIRS)
 		
 $(OBJ_DIR)/%.o:$(SRC_DIR)/%.cpp
-	# echo "For $@ This is the obj file ${SRC_FILES}"
+# echo "For $@ This is the obj file ${SRC_FILES}"
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
 
