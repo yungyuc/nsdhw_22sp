@@ -25,8 +25,8 @@ In this project, I will try to write the code and test the memory behavior paral
 Usually,  there are two ways to implement arrays of composite types. SoA or the columnar arrays perform
 better performance (cache locality) than AoS for heterogeneous data, especially when there are many field. 
 
-    For this purpose, designing a data structure handing large datasets with high performance is the core of this project I am focusing. It means not only to implement the pure 
-    Dataframe, but also design better data structures or operation for dataframe to reduce memory overhead.
+For this purpose, designing a data structure handing large datasets with high performance is the core of this project I am focusing. It means not only to implement the pure 
+Dataframe, but also design better data structures or operation for dataframe to reduce memory overhead.
   
 Prospective Users
 =================   
