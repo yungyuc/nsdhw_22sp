@@ -86,4 +86,4 @@ Project List by Account Name
    `project name <README.rst>`__: project repository URL
 
 #. `leonhsi <https://github.com/leonhsi>`__ for
-   `BVH-Generator`__ : https://github.com/leonhsi/BVH_Generator
+   `BVH-Generator <README.rst>`__ : https://github.com/leonhsi/BVH_Generator
