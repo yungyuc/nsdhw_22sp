@@ -1,8 +1,13 @@
 # Bounding Volume Hierarchy Trees Generator
 
+###### tags: `Ray Tracing`
+###### links: [link to github repo](https://github.com/leonhsi/BVH_Generator)
+
 ## Basic Information
 
 Bounding Volume Hierarchies (BVH) trees are an acceleration sturcture for ray tracing algorithm. The problem of ray tracing is to find the nearest intersection with a given ray and scene. In practice, it has to evaluate billions of such operations as the scene consists of millions of primitives, thus scene primitives are commonly arranged in spatial data structures to accelerate the search. BVH are such data structure that used mostly nowadays.
+
+In this project, I would evaluate each trees with common scenes in computer graphics such as dragon, rabbit, etc. Each of these scenes contains millions of primitives.
 
 ## Problem to Solve
 There are many kinds of BVH trees, mostly divided into binary BVH and n-ary BVH, and each BVH trees has its own advantage. In this project, I want to make the process of building different BVH trees faster and eaiser by providing APIs, and evaluate their performance against each other.
@@ -32,9 +37,9 @@ Performance will include the construction and traversal time it takes of this BV
 * week 1 : implement basic ray tracing algorithm with original binary BVH tree
 * week 2 : build the API and implement a different type of BVH tree
 * week 3 : build more types of BVH tree
-* week 4 : evaluate the performance of BVH trees with different scenes
-* week 5 : run the unit test
-* week 6 : visualize the result and prepare for the presentation
+* week 4 : run the unit test
+* week 5 : evaluate the performance of BVH trees with different scenes
+* week 6 : visualize the result using charts and prepare for the presentation
 
 ## Reference
 * [A Survey on Bounding Volume Hierarchies for Ray Tracing](https://meistdan.github.io/publications/bvh_star/paper.pdf)
