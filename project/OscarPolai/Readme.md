@@ -1,7 +1,7 @@
 Rocker : Pandas like Library  
 ================================================
 
-Project name : [Rocker](https://github.com/OscarPolai/)
+Project name : [Rocker](https://github.com/OscarPolai/Rock)
 
 I still remembered the first time when I use pandas Dataframe to analyze big dataset , I was surprised  the functionality the library provided.
 It behaves high-performance, easy-to-use data structure internally for data analysis. But there was a time when I try to load a bunch of data 
