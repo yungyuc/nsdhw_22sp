@@ -6,6 +6,7 @@ BUILD_DIR ?= ./modules
 SRC_DIR ?= ./src
 OBJ_DIR ?= ./build
 DEPS_DIR ?= ./deps
+TESTS_DIR ?= ./tests
 
 
 # Since we will be using pybind as header library
@@ -58,6 +59,5 @@ clean:
 	rm -rf $(OBJ_DIR)/* $(BUILD_DIR)/* ./__pycache__ .* || true
 	#rm -rf $(OBJ_DIR)/* $(BUILD_DIR)/$(TARGET) ./__pycache__ .* || true
 
-#Pytest, there were no rules against just calling pytest
-test: 
-	python3 -m pytest -s
+test:
+	python3 $(TESTS_DIR)/unit_test.py
