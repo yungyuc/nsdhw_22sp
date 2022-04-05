@@ -20,7 +20,7 @@ all: $(OBJS)
 	$(CC) $(CFLAGS) $(PYFLAG) $(PYBIND) $(OBJS) -o $(EXEC)$(PYEXTS) $(MKL) 
 
 test: $(OBJS)
-# 	$(CC) $(CFLAGS) $(PYFLAG) $(PYBIND) $(OBJS) -o $(EXEC)$(PYEXTS) $(MKL)
+	$(CC) $(CFLAGS) $(PYFLAG) $(PYBIND) $(OBJS) -o $(EXEC)$(PYEXTS) $(MKL)
 	python3 -m pytest -s
 
 .PHONY: clean
