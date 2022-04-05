@@ -58,8 +58,8 @@ public:
     //template<size_t ts_bytes>
     Matrix multiply_tile(const Matrix & mat2, size_t ts_bytes) const{
 
-        std::cout << "Number m1 cols"<< this->ncol
-            <<"\nNumebr of m2 rows:"<<mat2.nrow<<std::endl;
+        // std::cout << "Number m1 cols"<< this->ncol
+        //     <<"\nNumebr of m2 rows:"<<mat2.nrow<<std::endl;
         if (this->ncol != mat2.nrow)
         {
             throw std::out_of_range(
@@ -73,55 +73,26 @@ public:
 
         size_t ts = ts_bytes/sizeof(double);
 
-        //Get size of tiles:
-        //TODO handle the edge cases
-        //size_t num_rt1 = std::ceil((sizeof(double)*m_nrow)/ts);
-        //size_t num_ct1 = std::ceil((sizeof(double)*m_ncol)/ts);
-        //size_t num_rt2 = (sizeof(double)*mat2.nrow())/ts;
         size_t num_ct2 = std::ceil((double)(sizeof(double)*mat2.ncol)/ts_bytes);
-        //std::cout << "Dameloo : "<<num_ct2<<"<<as opposed to : "<<(double)(sizeof(double)*mat2.ncol())/ts_bytes<<std::endl;
 
         size_t rows =0;
         size_t cols = 0;
         size_t ops= 0;
 
-        // std::cout <<"num_ct2="<<num_ct2
-        //     <<"\n because mat2.ncol="<<mat2.ncol
-        //     <<"\n because sizeof(double)="<<sizeof(double)
-        //     <<"\n because ts_bytes"<<ts_bytes
-        //     <<std::endl;
 
         //Go around Cells in increments of their respective size
         for(size_t rtile = 0;rtile<retMat.nrow;rtile+=ts){
 
+            rows =  std::min(ts, retMat.nrow- rtile);
             for(size_t t_col = 0;t_col< mat2.ncol;t_col+=ts){
+                cols = std::min(ts, mat2.ncol- t_col);
                 //For every vertical tile in matrix 2(of the ctil tile column)
                 for(size_t vtile=0;vtile<mat2.nrow;vtile+=ts){
                     //Actually do cell by cell dot product
-                    rows =  std::min(ts, retMat.nrow- rtile);
-                    cols = std::min(ts, mat2.ncol- t_col);
                     ops = std::min(ts, (this)->ncol-vtile);
-                    // std::cout << "Info: \n"
-                    //     <<" rtile:"<<rtile<<"\n"
-                    //     <<" t_col:"<<t_col<<"\n"
-                    //     <<" vtile:"<<vtile<<"\n"
-                    //     <<" cols:"<<cols<<"\n"
-                    //     <<" rows:"<<rows<<"\n"
-                    //     <<" ops_num:"<<ops<<"\n";
-                    //For each element of the dot product
-                    //Size of 
                     for(size_t col = 0;col<cols;col++){
                         for(size_t row = 0;row<rows;row++){
-                            // std::cout << "Info: \n"
-                            //     <<" tile_row:"<<row<<"\n"
-                            //     <<" tile_col:"<<col<<"\n"<<std::endl;
                             for(size_t elem = 0; elem< ops;elem++){
-                                // std::cout
-                                //     <<"\tindexer:"<<elem<<"\n"
-                                //     <<"\tprod="<<(*this)(rtile+row,vtile+elem)
-                                //     <<"*"<<mat2(vtile+elem,t_col+col)<<std::endl;
-                                    // <<"\ta_el:"<<(*this)(rtile+row,vtile+elem)<<"\n"
-                                    // <<"\tb_el:"<<mat2(vtile+elem,t_col+col)<<"\n";
                                 retMat(rtile+row,t_col+col)  += (*this)(rtile+row,vtile+elem)
                                     * mat2(vtile+elem,t_col+col);
                             }

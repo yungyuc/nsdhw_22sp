@@ -132,7 +132,9 @@ class GradingTest(unittest.TestCase):
         t_mkl = timeit.Timer('_matrix.multiply_mkl(mat1, mat2)', globals=ns)
 
         time_tile = min(t_tile.repeat(10, 1))
+        print("Time for tile of size : {} is {}".format(tsize,time_tile))
         time_mkl = min(t_mkl.repeat(10, 1))
+        print("Time for mkl of size : {} is {}".format(tsize,time_mkl))
         ratio = time_tile/time_mkl
 
         return ratio, time_tile
