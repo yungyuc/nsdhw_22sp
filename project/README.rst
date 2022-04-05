@@ -84,3 +84,6 @@ Project List by Account Name
 
 #. `github username <https://github.com/yungyuc>`__ for
    `project name <README.rst>`__: project repository URL
+
+#. `PY-Chang <https://github.com/PY-Chang>`__ for
+`YABLAS <README.md>`__: https://github.com/PY-Chang/YABLAS
