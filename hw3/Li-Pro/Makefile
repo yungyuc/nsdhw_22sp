@@ -25,6 +25,7 @@ $(LIBMATRIX): $(CPP)
 	c++ \
 		-O3 \
 		-Wall \
+		-Wno-unknown-pragmas \
 		-Werror \
 		-shared \
 		-std=c++11 \
