@@ -91,7 +91,7 @@ Matrix::Matrix(size_t nrow, size_t ncol, std::vector<double> const & vec)
 Matrix & Matrix::operator=(std::vector<double> const & vec)
 {
     //TODO maybe revise this
-    std::cout<<"FAILURE: Implementation not revised!!"<<std::endl;
+    std::cerr<<"FAILURE: operator not yet part of implementation!!"<<std::endl;
     if (size() != vec.size())
     {
         throw std::out_of_range("number of elements mismatch");
@@ -126,7 +126,7 @@ Matrix::Matrix(Matrix const & other)
 
 Matrix & Matrix::operator=(Matrix const & other)
 {    
-    std::cout<<"FAILURE: Implementation not revised!!"<<std::endl;
+    std::cerr<<"FAILURE: operator not yet part of implementation!!"<<std::endl;
     if (this == &other) { return *this; }
     if (nrow != other.nrow || ncol != other.ncol)
     {
@@ -221,22 +221,16 @@ bool Matrix::operator==(Matrix const & other) const{
     //To strict of an approach
     // int n = memcmp(this->data(), other.data(),sizeof(double)*ncol*nrow);
     // return (n==0)? true: false;
-    bool return_val = true;
     for(size_t row= 0;row<nrow;row++){
         for(size_t col= 0;col<ncol;col++){
-            if(std::abs((*this)(row,col) - other(row,col)) >= EQ_DIFF){
-                std::cout << "Found difference with "
-                    <<"\nthis["<<row<<"]"<<"["<<col<<"]="<<(*this)(row,col)
-                    <<"\nother["<<row<<"]"<<"["<<col<<"]="<<other(row,col)
-                    <<std::endl;
-                return_val=false;
-                break;
+            // if(std::abs((*this)(row,col) - other(row,col)) >= EQ_DIFF){
+            if((*this)(row,col) != other(row,col)){
+                return false;
             }
         }
-        if(return_val==false) break;
     }
 
-    return return_val;
+    return true;
 }
 
 

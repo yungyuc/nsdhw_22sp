@@ -9,6 +9,7 @@
 
 namespace py = pybind11;
 
+//Mostly for tests
 Matrix ident(size_t row,size_t col){
 
     if (row != col)
@@ -43,9 +44,6 @@ PYBIND11_MODULE(_matrix, m) {
     py::class_<Matrix>(m, "Matrix")
         .def(py::init<size_t, size_t>())
         .def("print_vals",&Matrix::print_vals)
-        // .def("__eq__",[](Matrix & m1, const Matrix & m2){
-        //         return m1==m2;
-        //         })
         .def(py::self == py::self)
         .def_property_readonly("nrow",&Matrix::get_nrow)
         .def_property_readonly("ncol",&Matrix::get_ncol)
@@ -58,7 +56,8 @@ PYBIND11_MODULE(_matrix, m) {
             int istop = static_cast<int>(stop);
             int istep = static_cast<int>(step);
 
-            //TODO change this for when we need it 
+            //TODO Implement this for when we want to 
+            //deal with slices
             return std::make_tuple(istart, istop, istep);
         })
         .def("__getitem__", [](const Matrix &m, std::tuple<size_t,size_t> indices) {
@@ -71,11 +70,7 @@ PYBIND11_MODULE(_matrix, m) {
                 std::tie(row, col) = indices;
                 m(row,col) = value;
         })
-        //.def("multiply_naive",&multiply_naive)
-        .def("multiply_tile",&Matrix::multiply_tile)
-        //.def("multiply_mkl",&multiply_mkl)
-    //TODO i need to verify the correctness of this
-;
+        .def("multiply_tile",&Matrix::multiply_tile);
     m.def("ident",&ident,"Function initializes identity matrix");
     m.def("multiply_naive",&multiply_naive,"Naive multiplication");
     m.def("multiply_mkl",&multiply_mkl,"Multiply using MKL method");

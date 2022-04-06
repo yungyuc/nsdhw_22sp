@@ -57,14 +57,10 @@ public:
     //Arithmetic Operations
     Matrix multiply_naive(const Matrix & mat2) const;
     Matrix multiply_mkl(const Matrix & mat2) const;
-    //static Matrix n_mult(const Matrix & mat1, const Matrix & mat2){
-        //return mat1.n_mult(mat2);
-    //}
+    
     //template<size_t ts_bytes>
-    Matrix multiply_tile(const Matrix & mat2, size_t ts_bytes) const{
+    Matrix multiply_tile(const Matrix & mat2, size_t ts) const{
 
-        // std::cout << "Number m1 cols"<< this->ncol
-        //     <<"\nNumebr of m2 rows:"<<mat2.nrow<<std::endl;
         // auto start = high_resolution_clock::now();
         if (this->ncol != mat2.nrow)
         {
@@ -73,18 +69,15 @@ public:
                     "differs from that of second matrix row");
         }
 
-        //Create matrix to return 
+        //Create matrix to return and zero out its elements
         Matrix retMat(this->nrow, mat2.ncol);
         retMat.zero_out();
-
-        size_t ts = ts_bytes;
-
-        // size_t num_ct2 = std::ceil((double)(sizeof(double)*mat2.ncol)/ts_bytes);
 
         size_t tile_vbound =0, tile_hbound=0,op_bound=0;
         // auto b4_loop = high_resolution_clock::now();
 
         // auto aft_loop = high_resolution_clock::now();
+        
         //Go around Cells in increments of their respective size
         for(size_t rtile = 0; rtile < this->nrow;rtile+=ts)
         {
@@ -125,7 +118,6 @@ public:
         //     <<std::endl;
 
         return retMat;
-
 
     }
 

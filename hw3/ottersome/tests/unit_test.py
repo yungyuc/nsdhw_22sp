@@ -42,11 +42,10 @@ class GradingTest(unittest.TestCase):
 
     def test_indexing(self):
         m1 = _matrix.ident(3,3)
-        print("Size of identity is : {}x{}".format(m1.nrow,m1.ncol))
-        print("m[0,0]={}".format(m1[0,0]))
-        print("m[1,1,]={}".format(m1[1,1]))
-        print("m[1,0]={}".format(m1[1,0]))
-        print("m[2,2]={}".format(m1[2,2]))
+        assert m1[0,0] == 1
+        assert m1[1,1] == 1
+        assert m1[0,1] == 0
+        assert m1[1,0] == 0
 
     def test_basic(self):
 
@@ -74,25 +73,30 @@ class GradingTest(unittest.TestCase):
         self.assertEqual(mat1, mat2)
         self.assertTrue(mat1 is not mat2)
 
-    def test_match_naive_mkl(self):
+    def test_match_naive_mkl_tile(self):
 
         size = 100
-        mat1, mat2, *_ = self.make_matrices(size)
+        mat1, mat2, *_ = self.make_random_matrices(size)
 
-        print("mat1 size :{}".format(mat1.nrow))
         ret_naive = _matrix.multiply_naive(mat1, mat2)
-        print("ret_naive size :{}".format(ret_naive.nrow))
         ret_mkl = _matrix.multiply_mkl(mat1, mat2)
+        ret_tile = _matrix.multiply_tile(mat1, mat2,16)
 
         self.assertEqual(size, ret_naive.nrow)
         self.assertEqual(size, ret_naive.ncol)
         self.assertEqual(size, ret_mkl.nrow)
         self.assertEqual(size, ret_mkl.ncol)
+        self.assertEqual(size, ret_tile.nrow)
+        self.assertEqual(size, ret_tile.ncol)
 
         for i in range(ret_naive.nrow):
             for j in range(ret_naive.ncol):
-                self.assertNotEqual(mat1[i,j], ret_mkl[i,j])
                 self.assertEqual(ret_naive[i,j], ret_mkl[i,j])
+                self.assertEqual(ret_naive[i,j], ret_tile[i,j])
+
+        # Now test the operator==
+        self.assertEqual(ret_naive, ret_mkl)
+        self.assertEqual(ret_mkl, ret_tile)
 
     def test_zero(self):
 
@@ -101,75 +105,23 @@ class GradingTest(unittest.TestCase):
 
         ret_naive = _matrix.multiply_naive(mat1, mat3)
         ret_mkl = _matrix.multiply_mkl(mat1, mat3)
+        ret_tile= _matrix.multiply_tile(mat1, mat3,16)
 
         self.assertEqual(size, ret_naive.nrow)
         self.assertEqual(size, ret_naive.ncol)
         self.assertEqual(size, ret_mkl.nrow)
         self.assertEqual(size, ret_mkl.ncol)
+        self.assertEqual(size, ret_tile.nrow)
+        self.assertEqual(size, ret_tile.ncol)
 
         for i in range(ret_naive.nrow):
             for j in range(ret_naive.ncol):
                 self.assertEqual(0, ret_naive[i,j])
                 self.assertEqual(0, ret_mkl[i,j])
+                self.assertEqual(0, ret_tile[i,j])
 
-    def check_tile(self, mat1, mat2, tsize):
-
-        if 0 == tsize:
-            ret_tile = _matrix.multiply_naive(mat1, mat2)
-            tile_str = "_matrix.multiply_naive(mat1, mat2)"
-        else:
-            ret_tile = _matrix.multiply_tile(mat1, mat2, tsize)
-            tile_str = "_matrix.multiply_tile(mat1, mat2, tsize)"
-        ret_mkl = _matrix.multiply_mkl(mat1, mat2)
-
-        for i in range(ret_tile.nrow):
-            for j in range(ret_tile.ncol):
-                self.assertNotEqual(mat1[i,j], ret_mkl[i,j])
-                self.assertEqual(ret_tile[i,j], ret_mkl[i,j])
-
-        ns = dict(_matrix=_matrix, mat1=mat1, mat2=mat2, tsize=tsize)
-        t_tile = timeit.Timer(tile_str, globals=ns)
-        t_mkl = timeit.Timer('_matrix.multiply_mkl(mat1, mat2)', globals=ns)
-
-        time_tile = min(t_tile.repeat(10, 1))
-        print("Time for tile of size : {} is {}".format(tsize,time_tile))
-        time_mkl = min(t_mkl.repeat(10, 1))
-        print("Time for mkl of size : {} is {}".format(tsize,time_mkl))
-        ratio = time_tile/time_mkl
-
-        return ratio, time_tile
-
-    def test_tile(self):
-
-        show_ratio = bool(os.environ.get('SHOW_RATIO', False))
-
-        mat1, mat2, *_ = self.make_matrices(500)
-
-        ratio0, time0 = self.check_tile(mat1, mat2, 0)
-        if show_ratio:
-            print("naive ratio:", ratio0)
-
-        ratio16, time16 = self.check_tile(mat1, mat2, 16)
-        if show_ratio:
-            print("tile 16 ratio:", ratio16)
-            print("time16/time0:", time16/time0)
-        self.assertLess(ratio16/ratio0, 0.8)
-
-        ratio17, time17 = self.check_tile(mat1, mat2, 17)
-        if show_ratio:
-            print("tile 17 ratio:", ratio17)
-            print("time17/time0:", time17/time0)
-        self.assertLess(ratio17/ratio0, 0.8)
-
-        ratio19, time19 = self.check_tile(mat1, mat2, 19)
-        if show_ratio:
-            print("tile 19 ratio:", ratio19)
-            print("time19/time0:", time19/time0)
-        self.assertLess(ratio19/ratio0, 0.8)
 
 if __name__ == '__main__':
     random.seed(time.time_ns())
-    print("Starting Test")
     unittest.main()
-    print("Ending Test")
 # vim: set fenc=utf8 ff=unix et sw=4 ts=4 sts=4:
