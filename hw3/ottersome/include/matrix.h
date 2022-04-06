@@ -31,8 +31,12 @@ public:
     Matrix & operator=(Matrix && other);
     ~Matrix();
 
-    double & operator() (size_t row, size_t col);
-    double   operator() (size_t row, size_t col) const;
+    double const & operator() (size_t row, size_t col) const{
+        return m_buffer[row*m_ncol + col];
+    };
+    double & operator() (size_t row, size_t col){
+        return m_buffer[row*m_ncol + col];
+    }
 
     bool operator==(const Matrix & other) const;
 
@@ -73,61 +77,68 @@ public:
         Matrix retMat(this->nrow, mat2.ncol);
         retMat.zero_out();
 
-        size_t ts = ts_bytes/sizeof(double);
+        size_t ts = ts_bytes;
 
         // size_t num_ct2 = std::ceil((double)(sizeof(double)*mat2.ncol)/ts_bytes);
 
-        // size_t tile_vbound =0, tile_hbound=0,op_bound=0;
+        size_t tile_vbound =0, tile_hbound=0,op_bound=0;
         // auto b4_loop = high_resolution_clock::now();
 
-        for(size_t blocki=0 ; blocki<this->ncol ; blocki+=ts)
+
+    // for(size_t blocki=0 ; blocki<this->nrow ; blocki+=ts)
+    // {
+    //     size_t i_bound = std::min( blocki+ts, this->nrow);
+    //     for(size_t blockj=0 ; blockj<mat2.ncol ; blockj+=ts)
+    //     {
+    //         size_t j_bound = std::min( blockj+ts, mat2.ncol );
+    //         for(size_t blockk=0 ; blockk<this->ncol ; blockk+=ts)
+    //         {
+    //             size_t k_bound = std::min( blockk+ts, this->ncol);
+    //             for(size_t k=blockk ; k<k_bound ; k++)
+    //             {
+    //                 for(size_t i=blocki ; i<i_bound ; i++)
+    //                 {
+    //                     for(size_t j=blockj ; j<j_bound ; j++)
+    //                     {
+    //                         retMat(i,j) += (*this)(i,k)*mat2(k,j);
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+
+
+        // auto aft_loop = high_resolution_clock::now();
+        //Go around Cells in increments of their respective size
+        for(size_t rtile = 0; rtile < this->nrow;rtile+=ts)
         {
-            size_t i_bound = std::min( blocki+ts, this->nrow );
-            for(size_t blockj=0 ; blockj<mat2.nrow ; blockj+=ts)
+            tile_vbound =  std::min(ts+rtile, retMat.nrow);
+            for(size_t t_col = 0;t_col< mat2.ncol;t_col+=ts)
             {
-                size_t j_bound = std::min( blockj+ts, mat2.nrow);
-                for(size_t blockk=0 ; blockk<this->nrow ; blockk+=ts)
+                tile_hbound = std::min(ts+t_col, mat2.ncol);
+                //For every vertical tile in matrix 2(of the ctil tile column)
+                for(size_t vtile=0;vtile<mat2.nrow;vtile+=ts)
                 {
-                    size_t k_bound = std::min( blockk+ts, this->nrow );
-                    for(size_t k=blockk ; k<k_bound ; k++)
-                    {        
-                        for(size_t i=blocki ; i<i_bound ; i++)
-                        {
-                            for(size_t j=blockj ; j<j_bound ; j++)
+                    //Actually do cell by cell dot product
+                    op_bound = std::min(ts+vtile, (this)->ncol);
+                    for(size_t elem = vtile; elem< op_bound;elem++)
+                    {
+                            for(size_t row = rtile;row<tile_vbound;row++)
                             {
-                                retMat(i,j) += (*this)(i,k)*mat2(k,j);
+                        for(size_t col = t_col;col<tile_hbound;col++)
+                        {
+                                // rtr = rtile+row;
+                                retMat(row,col)  += (*this)(row,elem)
+                                    * mat2(elem,col);
                             }
                         }
                     }
                 }
-            }
-        }
 
-        // auto aft_loop = high_resolution_clock::now();
-        //Go around Cells in increments of their respective size
-        // for(size_t rtile = 0;rtile<retMat.nrow;rtile+=ts){
-        //     tile_vbound =  std::min(ts+rtile, retMat.nrow);
-        //     for(size_t t_col = 0;t_col< mat2.ncol;t_col+=ts){
-        //         tile_hbound = std::min(ts+t_col, mat2.ncol);
-        //         //For every vertical tile in matrix 2(of the ctil tile column)
-        //         for(size_t vtile=0;vtile<mat2.nrow;vtile+=ts){
-        //             //Actually do cell by cell dot product
-        //             op_bound = std::min(ts+vtile, (this)->ncol);
-        //             for(size_t elem = vtile; elem< op_bound;elem++){
-        //                 for(size_t col = t_col;col<tile_hbound;col++){
-        //                     tcc = t_col+col;
-        //                     for(size_t row = rtile;row<tile_vbound;row++){
-        //                         // rtr = rtile+row;
-        //                         retMat(row,col)  += (*this)(row,elem)
-        //                             * mat2(elem,col);
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //
-        //     }
-        //
-        // }
+            }
+
+        }
 
         // auto prep_duration = duration_cast<milliseconds>(b4_loop-start);
         // auto loop_duration = duration_cast<milliseconds>(aft_loop-b4_loop);

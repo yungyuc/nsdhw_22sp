@@ -167,14 +167,14 @@ Matrix::~Matrix()
     reset_buffer(0, 0);
 }
 
-double Matrix::operator() (size_t row, size_t col) const
-{
-    return m_buffer[index(row, col)];
-}
-double & Matrix::operator() (size_t row, size_t col)
-{
-    return m_buffer[index(row, col)];
-}
+// double Matrix::operator() (size_t row, size_t col) const
+// {
+//     return m_buffer[index(row, col)];
+// }
+// double & Matrix::operator() (size_t row, size_t col)
+// {
+//     return m_buffer[index(row, col)];
+// }
 
 //size_t Matrix::nrow() const { return m_nrow; }
 //size_t Matrix::ncol() const { return m_ncol; }
