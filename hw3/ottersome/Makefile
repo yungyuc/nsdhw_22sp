@@ -31,6 +31,11 @@ CPPFLAGS ?= -pedantic -O3 -Wall -Wextra -std=c++11 -MMD -MP -fPIC $(INC_DIRS)
 		
 .PHONY: clean, default, test, foundation
 
+default: foundation  test
+
+test: $(BUILD_DIR)/$(TARGET)
+	python3 $(TESTS_DIR)/unit_test.py
+
 $(BUILD_DIR)/$(TARGET): $(OBJ_FILES)
 	@echo 'Building Targe for ${OBJ_FILES}'
 	$(CXX) $(OBJ_FILES) -o $@ $(LDFLAGS)
@@ -43,15 +48,13 @@ $(OBJ_DIR)/%.o:$(SRC_DIR)/%.cpp
 #
 # Helpers
 #
-foundation: $(BUILD_DIR) $(SRC_DIR) $(OBJ_DIR) $(DEPS_DIR)
-	@echo 'Directory Created'
+foundation: $(BUILD_DIR) $(SRC_DIR) $(OBJ_DIR) 
 
 $(BUILD_DIR) $(SRC_DIR) $(OBJ_DIR): #$(DEPS_DIR):
 	mkdir $@
 
 -include $(DEPENDS)
 
-default: $(BUILD_DIR)/$(TARGET)
 
 show_values:
 	echo $(UNAME_S)
@@ -59,8 +62,5 @@ show_values:
 	@echo "Value for INC_DIRS=${INC_DIRS}"
 
 clean:
-	rm -rf $(OBJ_DIR)/* $(BUILD_DIR)/* ./__pycache__ .* || true
-	#rm -rf $(OBJ_DIR)/* $(BUILD_DIR)/$(TARGET) ./__pycache__ .* || true
+	rm -rf $(BUILD_DIR) $(OBJ_DIR) ./*.so ./__pycache__  || true
 
-test: $(BUILD_DIR)/$(TARGET)
-	python3 $(TESTS_DIR)/unit_test.py
