@@ -84,31 +84,6 @@ public:
         size_t tile_vbound =0, tile_hbound=0,op_bound=0;
         // auto b4_loop = high_resolution_clock::now();
 
-
-    // for(size_t blocki=0 ; blocki<this->nrow ; blocki+=ts)
-    // {
-    //     size_t i_bound = std::min( blocki+ts, this->nrow);
-    //     for(size_t blockj=0 ; blockj<mat2.ncol ; blockj+=ts)
-    //     {
-    //         size_t j_bound = std::min( blockj+ts, mat2.ncol );
-    //         for(size_t blockk=0 ; blockk<this->ncol ; blockk+=ts)
-    //         {
-    //             size_t k_bound = std::min( blockk+ts, this->ncol);
-    //             for(size_t k=blockk ; k<k_bound ; k++)
-    //             {
-    //                 for(size_t i=blocki ; i<i_bound ; i++)
-    //                 {
-    //                     for(size_t j=blockj ; j<j_bound ; j++)
-    //                     {
-    //                         retMat(i,j) += (*this)(i,k)*mat2(k,j);
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
-
-
         // auto aft_loop = high_resolution_clock::now();
         //Go around Cells in increments of their respective size
         for(size_t rtile = 0; rtile < this->nrow;rtile+=ts)
@@ -124,10 +99,10 @@ public:
                     op_bound = std::min(ts+vtile, (this)->ncol);
                     for(size_t elem = vtile; elem< op_bound;elem++)
                     {
-                            for(size_t row = rtile;row<tile_vbound;row++)
-                            {
-                        for(size_t col = t_col;col<tile_hbound;col++)
+                        for(size_t row = rtile;row<tile_vbound;row++)
                         {
+                            for(size_t col = t_col;col<tile_hbound;col++)
+                            {
                                 // rtr = rtile+row;
                                 retMat(row,col)  += (*this)(row,elem)
                                     * mat2(elem,col);
