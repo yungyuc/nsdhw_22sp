@@ -214,6 +214,10 @@ Matrix multiple_tile(Matrix const & mat1, Matrix const & mat2, size_t tileSize){
     const size_t mrow = mat1.nrow();
     const size_t mcol = mat2.ncol();
 
+    double *mat1Buffer = mat1.buffer();
+    double *mat2Buffer = mat2.buffer();
+    double *resultBuffer = result.buffer();
+
     for (int i = 0; i < mrow; i += tileSize){
         for (int j = 0; j < mcol; j += tileSize){
             for (int k = 0; k < mcol; k += tileSize ){
@@ -226,7 +230,8 @@ Matrix multiple_tile(Matrix const & mat1, Matrix const & mat2, size_t tileSize){
                         //int zRange = std::min(k+tileSize, mrow);
                         int zRange = ((k+tileSize) < mrow) ? (k+tileSize) : mrow;
                         for (int z = k; z < zRange; z++){
-                            result(x, y) += mat1(x, z) * mat2(z, y);
+                            //result(x, y) += mat1(x, z) * mat2(z, y);
+                            resultBuffer[x*mcol + y] += mat1Buffer[x*mcol + z] * mat2Buffer[z*mcol + y];
                         }
                     }
                 }
