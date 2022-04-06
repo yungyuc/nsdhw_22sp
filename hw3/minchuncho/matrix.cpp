@@ -172,12 +172,13 @@ Matrix multiply_tile(Matrix const& mat1, Matrix const& mat2, size_t tsize)
             for(size_t tk=0; tk<m1_col; tk+=tsize){
                 k_size = std::min(m1_col, tk+tsize);
                 for(size_t i=ti; i<i_size; ++i){
+                    size_t i_col = i * mat1.col_;
                     for(size_t j=tj; j<j_size; ++j){
                         v = 0;
                         for(size_t k=tk; k<k_size; ++k){
-                            v += mat1(i, k) * mat2(k, j);
+                            v += mat1.vec_[i_col+k] * mat2.vec_[k*mat2.col_+j];
                         }
-                        ret(i,j) += v;
+                        ret.vec_[i_col+j] += v;
                     }
                 }
             }

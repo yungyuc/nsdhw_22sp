@@ -37,6 +37,9 @@ public:
     double operator()(size_t const& i, size_t const& j) const;
     bool operator==(Matrix const& mat) const;
     friend std::ostream& operator<<(std::ostream& os, Matrix mat);
+    friend Matrix multiply_naive(Matrix const& ma, Matrix const& mb);
+    friend Matrix multiply_tile(Matrix const& mat1, Matrix const& mat2, size_t tsize);
+    friend Matrix multiply_mkl(Matrix& ma, Matrix& mb);
 
     size_t row() const { return row_; }
     size_t col() const { return col_; }
