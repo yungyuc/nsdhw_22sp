@@ -31,9 +31,9 @@ CPPFLAGS ?= -pedantic -O3 -Wall -Wextra -std=c++11 -MMD -MP -fPIC $(INC_DIRS)
 		
 .PHONY: clean, default, test, foundation
 
-default: foundation  test
+default: test
 
-test: $(BUILD_DIR)/$(TARGET)
+test: foundation $(BUILD_DIR)/$(TARGET)
 	python3 $(TESTS_DIR)/unit_test.py
 
 $(BUILD_DIR)/$(TARGET): $(OBJ_FILES)
