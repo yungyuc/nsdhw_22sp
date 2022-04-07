@@ -13,7 +13,7 @@ RES_FILE = performance.txt
 all: $(LIBMATRIX)
 
 benchmark: $(LIBMATRIX)
-	python3 _matrix.py | tee $(RES_FILE)
+	python3 test_matrix.py | tee $(RES_FILE)
 
 test: $(LIBMATRIX) benchmark
 	env PYTHONPATH=".:$$PYTHONPATH" python3 -m pytest -v

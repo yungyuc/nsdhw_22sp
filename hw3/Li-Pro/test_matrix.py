@@ -1,0 +1,144 @@
+#!/usr/bin/env python3
+
+from random  import randint, random
+from timeit  import timeit
+
+from _matrix  import Matrix, multiply_naive, multiply_tile, multiply_mkl
+
+def _data_matrix(data):
+    assert (not data) or all(len(datacol) == len(data[0])  for datacol in data)
+    
+    N, M = len(data), len(data[0])
+    mat = Matrix(N, M)
+    for i in range(N):
+        for j in range(M):
+            mat[i][j] = data[i][j]
+    
+    return mat
+
+def _matrix_eq(lhs, rhs):
+    if (lhs.nrow, lhs.ncol) != (rhs.nrow, rhs.ncol):
+        return False
+    
+    for i in range(lhs.nrow):
+        for j in range(lhs.ncol):
+            if lhs[i][j] != rhs[i][j]:
+                return False
+    
+    return True
+
+def _multiply_naive_eq(listA, listB, listRes):
+    return _matrix_eq(
+            multiply_naive(_data_matrix(listA), _data_matrix(listB)),
+            _data_matrix(listRes)
+        )
+
+def _multiply_tile_eq(listA, listB, listRes):
+    return _matrix_eq(
+            multiply_tile(_data_matrix(listA), _data_matrix(listB)),
+            _data_matrix(listRes)
+        )
+
+def _multiply_mkl_eq(listA, listB, listRes):
+    return _matrix_eq(
+            multiply_mkl(_data_matrix(listA), _data_matrix(listB)),
+            _data_matrix(listRes)
+        )
+
+def _multiply_all_eq(listA, listB, listRes):
+    return all( mulfunc_eq(listA, listB, listRes)
+            for mulfunc_eq in (_multiply_naive_eq, _multiply_tile_eq, _multiply_mkl_eq)
+        )
+
+def _gen_random_matrix(N, M, rng):
+    mat = Matrix(N, M)
+    for i in range(N):
+        for j in range(M):
+            mat[i][j] = rng()
+    
+    return mat
+
+_small_test_1 = [
+    [[1, 2], [3, 4]], [[9, 8], [7, 6]],
+    [[23, 20], [55, 48]]
+]
+
+_small_test_2 = [
+    [[12, 34], [78, 56]], [[13, 68], [24, 57]],
+    [[972, 2754], [2358, 8496]]
+]
+
+_small_test_3 = [
+    [[6, 3], [1, 7], [9, 2]], [[2, 3, 6], [8, 5, 3]],
+    [[36, 33, 45], [58, 38, 27], [34, 37, 60]]
+]
+
+_small_test_4 = [
+    [[2, 3, 6], [8, 5, 3]], [[6, 3], [1, 7], [9, 2]],
+    [[69, 39], [80, 65]]
+]
+
+def test_multiply_naive_small_matrices():
+    assert _multiply_naive_eq(*_small_test_1)
+    assert _multiply_naive_eq(*_small_test_2)
+    assert _multiply_naive_eq(*_small_test_3)
+    assert _multiply_naive_eq(*_small_test_4)
+
+def test_multiply_tile_small_matrices():
+    assert _multiply_tile_eq(*_small_test_1)
+    assert _multiply_tile_eq(*_small_test_2)
+    assert _multiply_tile_eq(*_small_test_3)
+    assert _multiply_tile_eq(*_small_test_4)
+
+def test_multiply_mkl_small_matrices():
+    assert _multiply_mkl_eq(*_small_test_1)
+    assert _multiply_mkl_eq(*_small_test_2)
+    assert _multiply_mkl_eq(*_small_test_3)
+    assert _multiply_mkl_eq(*_small_test_4)
+
+def test_random_int_matrices_equal_naive():
+    # rng = lambda: randint(valRange[0], valRange[1]-1) + random()
+    rng = lambda: randint(valRange[0], valRange[1])
+
+    for matSize in range(1, 1000, 100):
+        matA = _gen_random_matrix(matSize, matSize, rng)
+        matB = _gen_random_matrix(matSize, matSize, rng)
+
+        matNaiveRes = _multiply_naive_eq(matA, matB)
+        assert _multiply_all_eq(matA, matB, matNaiveRes)
+
+def benchmark():
+    rng = lambda: randint(valRange[0], valRange[1])
+    sucess = True
+
+    for matSize in range(1, 1000, 100):
+        matA = _gen_random_matrix(matSize, matSize, rng)
+        matB = _gen_random_matrix(matSize, matSize, rng)
+        
+        resMat = {}
+        def setResult(name, matrix):  # wrapper since we need assignment in lambda
+            resMat[name] = matrix
+
+        naiveTime = timeit(lambda: setResult('naive', multiply_naive_eq(matA, matB)), number=1, globals=locals())
+        tileTime = timeit(lambda: setResult('tile', _multiply_tile_eq(matA, matB)), number=1, globals=locals())
+        mklTime = timeit(lambda: setResult('mkl', _multiply_mkl_eq(matA, matB)), number=1, globals=locals())
+
+        naivePass = 'model'  # model solution
+        tilePass = 'pass'  if (resMat['tile'] == resMat['naive']) else 'fail'
+        mklPass = 'pass'  if (resMat['mkl'] == resMat['naive']) else 'fail'
+
+        print('Benchmark with matrix size = {}:'.format(matSize))
+        print('{name:<5}: result = {res:>5}, time = {time:<9} seconds'.format(name='naive', res=naivePass, time=naiveTime))
+        print('{name:<5}: result = {res:>5}, time = {time:<9} seconds'.format(name='tile', res=tilePass, time=tileTime))
+        print('{name:<5}: result = {res:>5}, time = {time:<9} seconds'.format(name='mkl', res=mklPass, time=mklTime))
+        print()
+
+        sucess &= naivePass & tilePass & mklPass
+    
+    if not sucess:
+        raise AssertionError("at least one test case failed")
+    
+
+if __name__ == "__main__":
+    benchmark()
+
