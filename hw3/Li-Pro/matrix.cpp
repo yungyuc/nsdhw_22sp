@@ -64,7 +64,7 @@ Matrix multiply_mkl(const Matrix & lhs, const Matrix & rhs);
 #pragma region matrix_def
 
 Matrix::Matrix(size_t row, size_t column)
-    : m_nrow(row), m_ncolumn(column), data(new double[row*column])
+    : m_nrow(row), m_ncolumn(column), data(new double[row*column]{})
 {
     // check empty matrix
     if (!row || !column)
