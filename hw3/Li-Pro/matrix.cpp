@@ -10,17 +10,21 @@
 struct Matrix
 {
 public:
-    const size_t m_nrow;
-    const size_t m_ncolumn;
+    size_t const m_nrow;
+    size_t const m_ncolumn;
 
     Matrix(size_t row, size_t column);
-    Matrix(const Matrix && other);  // used by pybind11 :)
+    Matrix(const Matrix && other);      // used by pybind11 :)
     ~Matrix();
 
     Matrix(const Matrix &) = delete;
 
     // in which place is it constexpr, if it's exported?
     constexpr double * operator[] (size_t rowid) { return data + m_ncolumn*rowid; }
+    
+    // ... and pybind11 does not convert ptr & ref
+    constexpr double const & getitem(size_t rowid, size_t colid) { return (*this)[rowid][colid]; }
+    constexpr double & setitem(size_t rowid, size_t colid, double val) { return (*this)[rowid][colid] = val; }
 
     /*double * operator[] (py::tuple rowid);*/  // dealing with `tuple`
 
@@ -127,8 +131,10 @@ PYBIND11_MODULE(libmatrix, m) {
         .def(py::init<size_t, size_t>())
         .def_readonly("nrow", &Matrix::m_nrow)
         .def_readonly("ncol", &Matrix::m_ncolumn)
-        /*.def(py::self[size_t()])*/                // operator not supported
-        .def("__getitem__", &Matrix::operator[])    // python operator (+ wrapper for args conversion)
+        /*.def(py::self[size_t()])*/                    // operator not supported
+        /*.def("__getitem__", &Matrix::operator[])*/    // python operator (+ wrapper for args conversion)
+        .def("_getitem", &Matrix::getitem)              // helper funcs for __getitem__
+        .def("_setitem", &Matrix::setitem)              // helper funcs for __setitem__
     ;
 
     m.def("multiply_naive", &multiply_naive);
