@@ -58,8 +58,9 @@ Matrix multiply_naive(Matrix& mat1, Matrix& mat2){
 	Matrix res(mat1.nrow(), mat2.ncol());
     for(size_t k=0; k < mat2.ncol(); k++)
 	for(size_t i=0; i < mat1.nrow(); i++)
-    for(size_t j=0; j < mat1.ncol(); j++)
-            	res(i,k) += mat1(i,j) * mat2(j,k);
+	for(size_t j=0; j < mat1.ncol(); j++)
+		res(i, k) += mat1(i,j) * mat2(j,k);
+	
 	return res;
 }
 
@@ -72,10 +73,12 @@ Matrix multiply_tile(Matrix& mat1, Matrix& mat2, size_t tsize){
     for(size_t tk = 0; tk < mat2.ncol(); tk += tsize)
 		//each tile consider as a small matrix
 		for(size_t i = ti; i < std::min(ti + tsize, mat1.nrow()); i++)
-		for(size_t j = tj; j < std::min(tj + tsize, mat1.ncol()); j++)
-		for(size_t k = tk; k < std::min(tk + tsize, mat2.ncol()); k++)
-			res(i, k) += mat1(i, j) * mat2(j, k);
-
+		for(size_t k = tk; k < std::min(tk + tsize, mat2.ncol()); k++){
+			double tmp = 0.0;
+			for(size_t j = tj; j < std::min(tj + tsize, mat1.ncol()); j++)
+				tmp += mat1(i, j) * mat2(j, k);
+			res(i, k) += tmp;
+		}
 	return res;
 }
 

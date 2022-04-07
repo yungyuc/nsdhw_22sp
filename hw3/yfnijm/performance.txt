@@ -1,0 +1,7 @@
+Python bulidin time cost :0.02583599090576172
+Naive time cost :2.346479892730713
+Tile time cost :0.6508338451385498
+Mlk time cost :0.028996706008911133
+Ratio of tile / naive :0.2773660439856328X
+Ratio of tile / mlk :22.4450958304898X
+Ratio of mkl / buildin :1.1223376767192057X
