@@ -91,7 +91,7 @@ multiply_mkl(const Matrix & lhs, const Matrix & rhs)
 namespace py = pybind11;
 
 PYBIND11_MODULE(libmatrix, m) {
-    py::class_<Matrix>(m, "Matrix")
+    py::class_<Matrix>(m, "_Matrix")
         .def(py::init<size_t, size_t>())
         .def_readonly("nrow", &Matrix::m_nrow)
         .def_readonly("ncol", &Matrix::m_ncolumn)
