@@ -14,17 +14,16 @@ public:
     size_t const m_ncolumn;
 
     Matrix(size_t row, size_t column);
-    Matrix(const Matrix && other);      // used by pybind11 :)
+    Matrix(Matrix && other);            // used by pybind11 :)
+    Matrix(const Matrix &);
     ~Matrix();
 
-    Matrix(const Matrix &) = delete;
-
     // in which place is it constexpr, if it's exported?
-    constexpr double * operator[] (size_t rowid) { return data + m_ncolumn*rowid; }
+    constexpr double * operator[] (size_t rowid) const { return data + m_ncolumn*rowid; }
     
     // ... and pybind11 does not convert ptr & ref
-    constexpr double const & getitem(size_t rowid, size_t colid) { return (*this)[rowid][colid]; }
-    constexpr double & setitem(size_t rowid, size_t colid, double val) { return (*this)[rowid][colid] = val; }
+    constexpr double const & getitem(size_t rowid, size_t colid) const { return (*this)[rowid][colid]; }
+    constexpr double & setitem(size_t rowid, size_t colid, double val) const { return (*this)[rowid][colid] = val; }
 
     /*double * operator[] (py::tuple rowid);*/  // dealing with `tuple`
 
@@ -74,12 +73,18 @@ Matrix::Matrix(size_t row, size_t column)
     }
 }
 
-Matrix::Matrix(const Matrix && other)
-    : m_nrow(other.m_nrow), m_ncolumn(other.m_ncolumn), data(new double[other.m_nrow*other.m_ncolumn])
+Matrix::Matrix(const Matrix & other)
+    : Matrix(other.m_nrow, other.m_ncolumn)
 {
     /*std::copy();*/  // slow
     std::memcpy(data, other.data, sizeof(double)*(m_nrow*m_ncolumn));
+
+    // other.data = nullptr;
 }
+
+Matrix::Matrix(Matrix && other)
+    : Matrix((const Matrix &) other)
+{}
 
 Matrix::~Matrix()
 {
@@ -111,6 +116,9 @@ Matrix
 multiply_tile(const Matrix & lhs, const Matrix & rhs)
 {
     throw "not yet implemented";
+    // assert( lhs.m_ncolumn == rhs.m_nrow );
+
+    // Matrix res(lhs.m_nrow, rhs.m_ncolumn);
 }
 
 Matrix
@@ -129,6 +137,7 @@ namespace py = pybind11;
 PYBIND11_MODULE(libmatrix, m) {
     py::class_<Matrix>(m, "_Matrix")
         .def(py::init<size_t, size_t>())
+        .def(py::init<const Matrix &>())
         .def_readonly("nrow", &Matrix::m_nrow)
         .def_readonly("ncol", &Matrix::m_ncolumn)
         /*.def(py::self[size_t()])*/                    // operator not supported
@@ -137,9 +146,9 @@ PYBIND11_MODULE(libmatrix, m) {
         .def("_setitem", &Matrix::setitem)              // helper funcs for __setitem__
     ;
 
-    m.def("multiply_naive", &multiply_naive);
-    m.def("multiply_tile", &multiply_tile);
-    m.def("multiply_mkl", &multiply_mkl);
+    m.def("_multiply_naive", &multiply_naive);
+    m.def("_multiply_tile", &multiply_tile);
+    m.def("_multiply_mkl", &multiply_mkl);
 }
 
 #pragma endregion
