@@ -115,10 +115,34 @@ multiply_naive(const Matrix & lhs, const Matrix & rhs)
 Matrix
 multiply_tile(const Matrix & lhs, const Matrix & rhs)
 {
-    throw "not yet implemented";
-    // assert( lhs.m_ncolumn == rhs.m_nrow );
+    assert( lhs.m_ncolumn == rhs.m_nrow );
 
-    // Matrix res(lhs.m_nrow, rhs.m_ncolumn);
+    const size_t tile_nrow = 8, tile_ncol = 8;
+
+    size_t N = lhs.m_nrow, M = rhs.m_ncolumn, P = lhs.m_ncolumn;
+    Matrix res(N, M);
+
+    for (size_t offi = 0; offi < N; offi += tile_nrow)
+    {
+        for (size_t offj = 0; offj < M; offj += tile_ncol)
+        {
+            const size_t lim_i = std::min(offi + tile_nrow, N);
+            const size_t lim_j = std::min(offj + tile_ncol, M);
+
+            for (size_t i = offi; i < lim_i; i++)
+            {
+                for (size_t j = offj; j < lim_j; j++)
+                {
+                    for (size_t k = 0; k < P; k++)
+                    {
+                        res[i][j] += lhs[i][k] * rhs[k][j];
+                    }
+                }
+            }
+        }
+    }
+
+    return res;
 }
 
 Matrix
