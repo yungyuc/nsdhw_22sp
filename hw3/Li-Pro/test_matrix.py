@@ -11,6 +11,8 @@ def _feq(a, b):
     return abs(a - b) < EPS
 
 def _data_matrix(data):
+    assert isinstance(data, list)
+
     assert (not data) or all(len(datacol) == len(data[0])  for datacol in data)
     
     N, M = len(data), len(data[0])
@@ -21,7 +23,21 @@ def _data_matrix(data):
     
     return mat
 
+def _matrix_data(mat):
+    assert isinstance(mat, Matrix)
+
+    N, M = mat.nrow, mat.ncol
+    data = [[0  for j in range(M)]  for i in range(N)]
+    for i in range(N):
+        for j in range(M):
+            data[i][j] = mat[i, j]
+    
+    return data
+
 def _matrix_eq(lhs, rhs):
+    assert isinstance(lhs, Matrix)
+    assert isinstance(rhs, Matrix)
+
     if (lhs.nrow, lhs.ncol) != (rhs.nrow, rhs.ncol):
         return False
     
@@ -56,12 +72,12 @@ def _multiply_all_eq(listA, listB, listRes):
         )
 
 def _gen_random_list(N, M, rng):
-    mat = [[0  for j in range(M)]  for i in range(N)]
+    data = [[0  for j in range(M)]  for i in range(N)]
     for i in range(N):
         for j in range(M):
-            mat[i][j] = rng()
+            data[i][j] = rng()
     
-    return mat
+    return data
 
 def _gen_random_matrix(N, M, rng):
     mat = Matrix(N, M)
@@ -122,7 +138,7 @@ def test_random_int_matrices_equal_naive():
         matB = _data_matrix(listB)
 
         matNaiveRes = multiply_naive(matA, matB)
-        assert _multiply_all_eq(listA, listB, matNaiveRes)
+        assert _multiply_all_eq(listA, listB, _matrix_data(matNaiveRes))
 
 def benchmark():
     valRange = (-1000, 1000)
@@ -146,12 +162,12 @@ def benchmark():
         mklPass = 'pass'  if _matrix_eq(resMat['mkl'], resMat['naive']) else 'fail'
 
         print('Benchmark with matrix size = {}:'.format(matSize))
-        print('{name:<5}: result = {res:>5}, time = {time:<9} seconds'.format(name='naive', res=naivePass, time=naiveTime))
-        print('{name:<5}: result = {res:>5}, time = {time:<9} seconds'.format(name='tile', res=tilePass, time=tileTime))
-        print('{name:<5}: result = {res:>5}, time = {time:<9} seconds'.format(name='mkl', res=mklPass, time=mklTime))
-        print()
+        print('{name:<5}: result = {res:>5}, time = {time:<9f} seconds'.format(name='naive', res=naivePass, time=naiveTime))
+        print('{name:<5}: result = {res:>5}, time = {time:<9f} seconds'.format(name='tile', res=tilePass, time=tileTime))
+        print('{name:<5}: result = {res:>5}, time = {time:<9f} seconds'.format(name='mkl', res=mklPass, time=mklTime))
+        print(flush=True)
 
-        sucess &= naivePass & tilePass & mklPass
+        sucess &= (tilePass == 'pass') and (mklPass == 'pass')
     
     if not sucess:
         raise AssertionError("at least one test case failed")
