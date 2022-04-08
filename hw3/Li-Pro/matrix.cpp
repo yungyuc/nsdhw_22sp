@@ -9,6 +9,8 @@
 
 #pragma region matrix_decl
 
+constexpr double EPS = 1e-6;
+
 struct Matrix
 {
 public:
@@ -22,6 +24,30 @@ public:
 
     // in which place is it constexpr, if it's exported?
     constexpr double * operator[] (size_t rowid) const { return data + m_ncolumn*rowid; }
+    constexpr bool operator== (const Matrix & other) const
+    {
+        // return m_nrow == other.m_nrow
+        //     && m_ncolumn == other.m_ncolumn
+        //     && std::memcmp(data, other.data, memsize()) == 0;
+
+        if (!(m_nrow == other.m_nrow && m_ncolumn == other.m_ncolumn))
+        {
+            return false;
+        }
+        
+        for (size_t i = 0; i < m_nrow; i++)
+        {
+            for (size_t j = 0; j < m_ncolumn; j++)
+            {
+                if (!(std::abs((*this)[i][j] - other[i][j]) < EPS))
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
     
     // ... and pybind11 does not convert ptr & ref
     constexpr double const & getitem(size_t rowid, size_t colid) const { return (*this)[rowid][colid]; }
@@ -30,6 +56,8 @@ public:
     /*double * operator[] (py::tuple rowid);*/  // dealing with `tuple`
 
 private:
+    constexpr size_t memsize() const { return sizeof(double) * m_nrow * m_ncolumn; }
+
     double * const data;
 };
 
@@ -244,7 +272,10 @@ PYBIND11_MODULE(libmatrix, m) {
         /*.def("__getitem__", &Matrix::operator[])*/    // python operator (+ wrapper for args conversion)
         .def("_getitem", &Matrix::getitem)              // helper funcs for __getitem__
         .def("_setitem", &Matrix::setitem)              // helper funcs for __setitem__
+        .def(py::self == py::self)
     ;
+
+    m.attr("EPS") = EPS;
 
     m.def("_multiply_naive", &multiply_naive);
     m.def("_multiply_tile", static_cast<Matrix (*)(const Matrix & lhs, const Matrix & rhs)>(&multiply_tile));

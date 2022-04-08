@@ -3,9 +3,7 @@
 from random  import randint, random
 from timeit  import timeit
 
-from _matrix  import Matrix, multiply_naive, multiply_tile, multiply_mkl
-
-EPS = 1e-6
+from _matrix  import EPS, Matrix, multiply_naive, multiply_tile, multiply_mkl
 
 def _feq(a, b):
     return abs(a - b) < EPS
@@ -38,15 +36,7 @@ def _matrix_eq(lhs, rhs):
     assert isinstance(lhs, Matrix)
     assert isinstance(rhs, Matrix)
 
-    if (lhs.nrow, lhs.ncol) != (rhs.nrow, rhs.ncol):
-        return False
-    
-    for i in range(lhs.nrow):
-        for j in range(lhs.ncol):
-            if not _feq(lhs[i, j], rhs[i, j]):
-                return False
-    
-    return True
+    return lhs == rhs
 
 def _multiply_naive_eq(listA, listB, listRes):
     return _matrix_eq(
