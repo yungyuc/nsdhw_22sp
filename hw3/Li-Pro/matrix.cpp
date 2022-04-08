@@ -80,7 +80,7 @@ Matrix multiply_naive(const Matrix & lhs, const Matrix & rhs);
  * @param tile_ncol tile size for column
  * @return Matrix product matrix
  */
-Matrix multiply_tile(const Matrix & lhs, const Matrix & rhs, const size_t tile_nrow, const size_t tile_ncol);
+Matrix multiply_tile(const Matrix & lhs, const Matrix & rhs, const size_t tile_nrow, const size_t tile_ncol, const size_t tile_nenum);
 
 /**
  * @brief Multiply two matrices, with matrix tiling.
@@ -165,7 +165,7 @@ multiply_naive(const Matrix & lhs, const Matrix & rhs)
 }
 
 Matrix
-multiply_tile(const Matrix & lhs, const Matrix & rhs, const size_t tile_nrow, const size_t tile_ncol)
+multiply_tile(const Matrix & lhs, const Matrix & rhs, const size_t tile_nrow, const size_t tile_ncol, const size_t tile_nenum)
 {
     assert( lhs.m_ncolumn == rhs.m_nrow );
 
@@ -176,16 +176,20 @@ multiply_tile(const Matrix & lhs, const Matrix & rhs, const size_t tile_nrow, co
     {
         for (size_t offj = 0; offj < M; offj += tile_ncol)
         {
-            const size_t lim_i = std::min(offi + tile_nrow, N);
-            const size_t lim_j = std::min(offj + tile_ncol, M);
-
-            for (size_t i = offi; i < lim_i; i++)
+            for (size_t offk = 0; offk < P; offk += tile_nenum)
             {
-                for (size_t j = offj; j < lim_j; j++)
+                const size_t lim_i = std::min(offi + tile_nrow, N);
+                const size_t lim_j = std::min(offj + tile_ncol, M);
+                const size_t lim_k = std::min(offk + tile_nenum, P);
+
+                for (size_t i = offi; i < lim_i; i++)
                 {
-                    for (size_t k = 0; k < P; k++)
+                    for (size_t j = offj; j < lim_j; j++)
                     {
-                        res[i][j] += lhs[i][k] * rhs[k][j];
+                        for (size_t k = offk; k < lim_k; k++)
+                        {
+                            res[i][j] += lhs[i][k] * rhs[k][j];
+                        }
                     }
                 }
             }
@@ -203,8 +207,8 @@ multiply_tile(const Matrix & lhs, const Matrix & rhs, const size_t tile_size)
         return multiply_naive(lhs, rhs);
     }
 
-    const size_t tile_nrow = tile_size, tile_ncol = tile_size;
-    return multiply_tile(lhs, rhs, tile_nrow, tile_ncol);
+    const size_t tile_nrow = tile_size, tile_ncol = tile_size, tile_nenum = tile_size;
+    return multiply_tile(lhs, rhs, tile_nrow, tile_ncol, tile_nenum);
 }
 
 Matrix
