@@ -34,7 +34,7 @@ private:
 };
 
 /**
- * @brief Multiply two matrices, naively without optimization
+ * @brief Multiply two matrices, naively without optimization.
  * 
  * @param lhs multiplier matrix
  * @param rhs multiplicand matrix
@@ -43,7 +43,29 @@ private:
 Matrix multiply_naive(const Matrix & lhs, const Matrix & rhs);
 
 /**
- * @brief Multiply two matrices, with matrix tiling
+ * @brief Multiply two matrices, with matrix tiling.
+ * The method is not exported.
+ * 
+ * @param lhs multiplier matrix
+ * @param rhs multiplicand matrix
+ * @param tile_nrow tile size for row
+ * @param tile_ncol tile size for column
+ * @return Matrix product matrix
+ */
+Matrix multiply_tile(const Matrix & lhs, const Matrix & rhs, const size_t tile_nrow, const size_t tile_ncol);
+
+/**
+ * @brief Multiply two matrices, with matrix tiling.
+ * 
+ * @param lhs multiplier matrix
+ * @param rhs multiplicand matrix
+ * @param tile_size tile size for row & column
+ * @return Matrix product matrix
+ */
+Matrix multiply_tile(const Matrix & lhs, const Matrix & rhs, const size_t tile_size);
+
+/**
+ * @brief Multiply two matrices, with matrix tiling (tile size = 8).
  * 
  * @param lhs multiplier matrix
  * @param rhs multiplicand matrix
@@ -115,11 +137,9 @@ multiply_naive(const Matrix & lhs, const Matrix & rhs)
 }
 
 Matrix
-multiply_tile(const Matrix & lhs, const Matrix & rhs)
+multiply_tile(const Matrix & lhs, const Matrix & rhs, const size_t tile_nrow, const size_t tile_ncol)
 {
     assert( lhs.m_ncolumn == rhs.m_nrow );
-
-    const size_t tile_nrow = 8, tile_ncol = 8;
 
     size_t N = lhs.m_nrow, M = rhs.m_ncolumn, P = lhs.m_ncolumn;
     Matrix res(N, M);
@@ -145,6 +165,25 @@ multiply_tile(const Matrix & lhs, const Matrix & rhs)
     }
 
     return res;
+}
+
+Matrix
+multiply_tile(const Matrix & lhs, const Matrix & rhs, const size_t tile_size)
+{
+    if (!tile_size)
+    {
+        return multiply_naive(lhs, rhs);
+    }
+
+    const size_t tile_nrow = tile_size, tile_ncol = tile_size;
+    return multiply_tile(lhs, rhs, tile_nrow, tile_ncol);
+}
+
+Matrix
+multiply_tile(const Matrix & lhs, const Matrix & rhs)
+{
+    const size_t tile_size = 8;
+    return multiply_tile(lhs, rhs, tile_size);
 }
 
 Matrix
@@ -208,7 +247,8 @@ PYBIND11_MODULE(libmatrix, m) {
     ;
 
     m.def("_multiply_naive", &multiply_naive);
-    m.def("_multiply_tile", &multiply_tile);
+    m.def("_multiply_tile", static_cast<Matrix (*)(const Matrix & lhs, const Matrix & rhs)>(&multiply_tile));
+    m.def("_multiply_tile", static_cast<Matrix (*)(const Matrix & lhs, const Matrix & rhs, const size_t tile_size)>(&multiply_tile));
     m.def("_multiply_mkl", &multiply_mkl);
 }
 

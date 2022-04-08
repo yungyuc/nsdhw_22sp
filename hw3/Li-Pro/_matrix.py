@@ -45,8 +45,8 @@ class Matrix(_Matrix):
 def multiply_naive(matA, matB):
     return Matrix(_multiply_naive(matA, matB))
 
-def multiply_tile(matA, matB):
-    return Matrix(_multiply_tile(matA, matB))
+def multiply_tile(*args):  # (matA, matB), (matA, matB, tileSize)
+    return Matrix(_multiply_tile(*args))
 
 def multiply_mkl(matA, matB):
     return Matrix(_multiply_mkl(matA, matB))
