@@ -5,6 +5,8 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/operators.h>
 
+#include "mkl/mkl.h"
+
 #pragma region matrix_decl
 
 struct Matrix
@@ -148,7 +150,42 @@ multiply_tile(const Matrix & lhs, const Matrix & rhs)
 Matrix
 multiply_mkl(const Matrix & lhs, const Matrix & rhs)
 {
-    throw "not yet implemented";
+    size_t N = lhs.m_nrow, M = rhs.m_ncolumn, P = lhs.m_ncolumn;
+
+    // reallocating is relative cheap
+    double* lbuf = (double *) mkl_malloc(N*P*sizeof(double), 64);
+    double* rbuf = (double *) mkl_malloc(P*M*sizeof(double), 64);
+    double* resbuf = (double *) mkl_malloc(N*M*sizeof(double), 64);
+    
+    if (lbuf == nullptr || rbuf == nullptr || resbuf == nullptr)
+    {
+        // throw std::bad_alloc("can not allocate extra buffer");
+        
+        throw std::bad_alloc{};
+    }
+
+    std::memcpy(lbuf, lhs[0], sizeof(double)*N*P);
+    std::memcpy(rbuf, rhs[0], sizeof(double)*P*M);
+    std::memset(resbuf, 0, sizeof(double)*N*M);
+
+    // RES = LBUF * RBUF
+    cblas_dgemm(
+        CblasRowMajor, CblasNoTrans, CblasNoTrans,
+        N, M, P,
+        1.0,  // alpha
+        lbuf, P, rbuf, M,
+        0.0,  // beta
+        resbuf, N
+    );
+
+    Matrix res(N, M);
+    std::memcpy(res[0], resbuf, sizeof(double)*N*M);
+    
+    mkl_free(lbuf);
+    mkl_free(rbuf);
+    mkl_free(resbuf);
+
+    return res;
 }
 
 #pragma endregion

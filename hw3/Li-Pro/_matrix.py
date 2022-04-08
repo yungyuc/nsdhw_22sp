@@ -3,6 +3,12 @@
 Wrapper for libmatrix
 """
 
+import os
+import sys
+
+if True:  # os.name == 'posix'
+    sys.setdlopenflags(os.RTLD_GLOBAL | os.RTLD_LAZY)  # share symbols for dlopen()
+
 from collections.abc  import Sequence
 
 from libmatrix  import _Matrix, _multiply_naive, _multiply_tile, _multiply_mkl
