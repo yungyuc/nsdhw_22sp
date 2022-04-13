@@ -111,3 +111,6 @@ Project List by Account Name
    
 #. `leonhsi <https://github.com/leonhsi>`__ for
    `BVH-Generator <README.rst>`__ : https://github.com/leonhsi/BVH_Generator
+
+#. `OscarPolai <https://github.com/OscarPolai>`__ for
+   `YABLAS <README.md>`__: https://github.com/OscarPolai/Rock
