@@ -92,7 +92,7 @@ Project List by Account Name
    `Columnar Structure Array <Li-Pro/README.rst>`_: https://github.com/Li-Pro/Columnar-Structure-Array
 
 #. `OscarPolai <https://github.com/OscarPolai>`__ for
-   `Rocker <Readme.md>`__: https://github.com/OscarPolai/Rock
+   `Rocker <OscarPolai/Readme.md>`__: https://github.com/OscarPolai/Rock
 
 #. `PY-Chang <https://github.com/PY-Chang>`__ for
    `YABLAS <PY-Chang/README.md>`__: https://github.com/PY-Chang/YABLAS
