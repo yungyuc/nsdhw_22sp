@@ -103,6 +103,9 @@ Project List by Account Name
 #. `season06 <https://github.com/season06>`__ for
    `Audio-Enhancer <season06/README.md>`__: https://github.com/season06/Audio-Enhancer
 
+#. `Li-Pro <https://github.com/Li-Pro>`_ for
+   `Columnar Structure Array <Li-Pro/README.rst>`_: https://github.com/Li-Pro/Columnar-Structure-Array
+
 #. `simpson0114 <https://github.com/simpson0114>`__ for
    `Minimum-Spanning-Tree <README.rst>`__: https://github.com/simpson0114/Minimum-Spanning-Tree
    
