@@ -21,12 +21,10 @@
 
 namespace py = pybind11;
 
-Allocator<double> alloc;
-
 class Matrix {
 public:
     Matrix(size_t const& row, size_t const& col);
-    Matrix(size_t const& row, size_t const& col, std::vector<double, Allocator<double>> const& vec);
+    Matrix(size_t const& row, size_t const& col, std::vector<double> const& vec);
     Matrix(Matrix const& mat);
     Matrix& operator=(Matrix const& mat);
     Matrix(Matrix && mat);
@@ -36,7 +34,7 @@ public:
         vec_.shrink_to_fit();
     }
     
-    Matrix& operator=(std::vector<double, Allocator<double>> const& vec);
+    Matrix& operator=(std::vector<double> const& vec);
     double& operator()(size_t const& i, size_t const& j);
     double operator()(size_t const& i, size_t const& j) const;
     bool operator==(Matrix const& mat) const;
@@ -71,14 +69,14 @@ std::size_t deallocated();
 PYBIND11_MODULE(_matrix, m) {
     py::class_<Matrix>(m, "Matrix")
         .def(py::init<size_t const&, size_t const&>())
-        .def(py::init<size_t const&, size_t const&, std::vector<double, Allocator<double>> const&>())
+        .def(py::init<size_t const&, size_t const&, std::vector<double> const&>())
         .def(py::self == py::self) // operator overloading
         .def_property_readonly("nrow", &Matrix::row) // the following functions are made for validate.sh
         .def_property_readonly("ncol", &Matrix::col)
         .def("__setitem__", &Matrix::set_element)
         .def("__getitem__", &Matrix::get_element)
         .def("__repr__", &Matrix::get_matrix_str);
-    
+
     m.def("bytes", &bytes);
     m.def("allocated", &allocated);
     m.def("deallocated", &deallocated);

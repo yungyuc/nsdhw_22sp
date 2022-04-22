@@ -2,16 +2,17 @@
 #include <new>
 #include <memory>
 #include <limits>
-#include <atomic>
 #include <vector>
 
 #include "byte_counter.hpp"
 
-template<typename T>
-struct Allocator {
+template<class T>
+class Allocator {
+public:
 	typedef T value_type;
 
-	Allocator() = default;
+    Allocator() = default;
+    ~Allocator() = default;
 
 	T* allocate(std::size_t n)
     {
@@ -39,17 +40,5 @@ struct Allocator {
         counter_.dec_bytes(bytes);
     }
 
-	ByteCounter counter_;
+    ByteCounter counter_;
 };
-
-// template <class T, class U>
-// bool operator==(const Allocator<T> & a, const Allocator<U> & b)
-// {
-//     return a.counter_ == b.counter_;
-// }
-
-// template <class T, class U>
-// bool operator!=(const Allocator<T> & a, const Allocator<U> & b)
-// {
-//     return !(a == b);
-// }

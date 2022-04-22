@@ -7,8 +7,10 @@
 
 #include "matrix.hpp"
 
+Allocator<double> alloc;
+
 Matrix::Matrix(size_t const& row, size_t const& col)
-    : row_(row), col_(col)
+    : row_(row), col_(col), vec_(alloc)
 {
     if(!this->vec_.empty()){
         this->vec_.clear();
@@ -17,11 +19,17 @@ Matrix::Matrix(size_t const& row, size_t const& col)
     this->vec_.resize(row*col);
 }
 
-Matrix::Matrix(size_t const& row, size_t const& col, std::vector<double, Allocator<double>> const& vec)
-    :row_(row), col_(col)
+Matrix::Matrix(size_t const& row, size_t const& col, std::vector<double> const& vec)
+    :row_(row), col_(col), vec_(alloc)
 {
     if(vec.size() != row*col) throw std::out_of_range("size mismatches");
-    this->vec_ = vec;
+    
+    this->vec_.clear();
+    this->vec_.shrink_to_fit();
+
+    for(auto const& item : vec){
+        this->vec_.push_back(item);
+    }
 }
 
 // copy constructor
@@ -46,10 +54,11 @@ Matrix& Matrix::operator=(Matrix const& mat)
 
 // move constructor
 Matrix::Matrix(Matrix && mat)
+    : vec_(std::move(mat.vec_))
 {
     std::swap(this->row_, mat.row_);
     std::swap(this->col_, mat.col_);
-    std::move(mat.vec_.begin(), mat.vec_.end(), std::back_inserter(this->vec_));
+    // std::move(mat.vec_.begin(), mat.vec_.end(), std::back_inserter(this->vec_));
 }
 
 // move assignment
@@ -64,9 +73,15 @@ Matrix& Matrix::operator=(Matrix && mat)
     return *this;
 }
 
-Matrix& Matrix::operator=(std::vector<double, Allocator<double>> const& vec)
+Matrix& Matrix::operator=(std::vector<double> const& vec)
 {
-    this->vec_ = vec;
+    this->vec_.clear();
+    this->vec_.shrink_to_fit();
+
+    for(auto const& item : vec){
+        this->vec_.push_back(item);
+    }
+
     return *this;
 }
 
@@ -206,6 +221,24 @@ Matrix multiply_mkl(Matrix& mat1, Matrix& mat2)
 
     return ret;
 }
+
+// template<class T>
+// std::size_t bytes()
+// {
+//     return Allocator<T>::counter_.bytes();
+// }
+
+// template<class T>
+// std::size_t allocated()
+// {
+//     return Allocator<T>::counter_.allocated();
+// }
+
+// template<class T>
+// std::size_t deallocated()
+// {
+//     return Allocator<T>::counter_.deallocated();
+// }
 
 std::size_t bytes()
 {
