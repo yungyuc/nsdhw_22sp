@@ -39,8 +39,11 @@ public:
         counter_.dec_bytes(bytes);
     }
 
-    ByteCounter counter_;
+    static ByteCounter counter_;
 };
+
+template <class T>
+ByteCounter Allocator<T>::counter_{};
 
 template <class T, class U>
 bool operator==(const Allocator<T> & a, const Allocator<U> & b)

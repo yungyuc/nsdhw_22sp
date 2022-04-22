@@ -4,12 +4,6 @@
 #include <atomic>
 #include <algorithm>
 
-struct ByteCounterStr {
-	std::size_t allocated = 0;
-    std::size_t deallocated = 0;
-    std::size_t refcount = 0;		// the number of byte counters which reference to this struct
-} ;
-
 class ByteCounter {
 public:
 	ByteCounter();
@@ -29,7 +23,6 @@ public:
 	std::size_t deallocated() const;
 
 private:
-	// std::size_t allocated_;
- //    std::size_t deallocated_;
-	ByteCounterStr* bc_ptr_;
+	std::size_t allocated_;
+    std::size_t deallocated_;
 };

@@ -222,24 +222,6 @@ Matrix multiply_mkl(Matrix& mat1, Matrix& mat2)
     return ret;
 }
 
-// template<class T>
-// std::size_t bytes()
-// {
-//     return Allocator<T>::counter_.bytes();
-// }
-
-// template<class T>
-// std::size_t allocated()
-// {
-//     return Allocator<T>::counter_.allocated();
-// }
-
-// template<class T>
-// std::size_t deallocated()
-// {
-//     return Allocator<T>::counter_.deallocated();
-// }
-
 std::size_t bytes()
 {
     return alloc.counter_.bytes();

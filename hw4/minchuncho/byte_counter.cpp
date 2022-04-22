@@ -1,28 +1,27 @@
 #include "byte_counter.hpp"
 
 ByteCounter::ByteCounter()
-	: bc_ptr_(new ByteCounterStr)
+	: allocated_(0), deallocated_(0)
 {
-	++bc_ptr_->refcount;
+	
 }
 
 ByteCounter::ByteCounter(ByteCounter const& other)
-	: bc_ptr_(other.bc_ptr_)
+	: allocated_(other.allocated_), deallocated_(other.deallocated_)
 {
-	++bc_ptr_->refcount;
 }
 
 ByteCounter::ByteCounter(ByteCounter && other)
-	: bc_ptr_(other.bc_ptr_)
 {
-	++bc_ptr_->refcount;
+	std::swap(allocated_, other.allocated_);
+	std::swap(deallocated_, other.deallocated_);
 }
 
 ByteCounter& ByteCounter::operator=(ByteCounter const& other)
 {
 	if(&other != this){
-		bc_ptr_ = other.bc_ptr_;
-		++bc_ptr_->refcount;
+		allocated_ = other.allocated_;
+		deallocated_ = other.deallocated_;
 	}
 
 	return *this;
@@ -31,52 +30,41 @@ ByteCounter& ByteCounter::operator=(ByteCounter const& other)
 ByteCounter& ByteCounter::operator=(ByteCounter && other)
 {
 	if(&other != this){
-		bc_ptr_ = other.bc_ptr_;
-		++bc_ptr_->refcount;
+		std::swap(allocated_, other.allocated_);
+		std::swap(deallocated_, other.deallocated_);
 	}
 
 	return *this;
 }
 
-ByteCounter::~ByteCounter()
-{
-	if(bc_ptr_){
-		if(bc_ptr_->refcount == 1){ // this is the last byte counter which references to the struct, and it's about to be destruct.
-			delete bc_ptr_;
-			bc_ptr_ = nullptr;
-		}
-		else{
-			--bc_ptr_->refcount;
-		}
-	}
-}
+ByteCounter::~ByteCounter(){}
 
 bool operator==(ByteCounter const& a, ByteCounter const& b)
 {
-	return a.bc_ptr_ == b.bc_ptr_;
+	return &a == &b;
 }
 
 void ByteCounter::inc_bytes(size_t bytes)
 {
-	bc_ptr_->allocated += bytes;
+	allocated_ += bytes;
 }
 
 void ByteCounter::dec_bytes(size_t bytes)
 {
-	bc_ptr_->deallocated += bytes;
+	deallocated_ += bytes;
 }
 
 std::size_t ByteCounter::bytes() const
 {
-	return bc_ptr_->allocated - bc_ptr_->deallocated;
+	return allocated_ - deallocated_;
 }
 
 std::size_t ByteCounter::allocated() const
 {
-	return bc_ptr_->allocated;
+	return allocated_;
 }
 
 std::size_t ByteCounter::deallocated() const
 {
-	return bc_ptr_->deallocated;
+	return deallocated_;
 }
