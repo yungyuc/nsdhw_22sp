@@ -19,6 +19,8 @@ public:
 	ByteCounter& operator=(ByteCounter && other);
 	~ByteCounter();
 
+	friend bool operator==(ByteCounter const& a, ByteCounter const& b);
+
 	void inc_bytes(size_t bytes);
 	void dec_bytes(size_t bytes);
 	// getter

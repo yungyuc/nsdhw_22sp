@@ -12,7 +12,6 @@ public:
 	typedef T value_type;
 
     Allocator() = default;
-    ~Allocator() = default;
 
 	T* allocate(std::size_t n)
     {
@@ -42,3 +41,15 @@ public:
 
     ByteCounter counter_;
 };
+
+template <class T, class U>
+bool operator==(const Allocator<T> & a, const Allocator<U> & b)
+{
+    return a.counter_ == b.counter_;
+}
+
+template <class T, class U>
+bool operator!=(const Allocator<T> & a, const Allocator<U> & b)
+{
+    return !(a == b);
+}

@@ -51,6 +51,11 @@ ByteCounter::~ByteCounter()
 	}
 }
 
+bool operator==(ByteCounter const& a, ByteCounter const& b)
+{
+	return a.bc_ptr_ == b.bc_ptr_;
+}
+
 void ByteCounter::inc_bytes(size_t bytes)
 {
 	bc_ptr_->allocated += bytes;
