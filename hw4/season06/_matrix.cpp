@@ -9,113 +9,65 @@
 #include <pybind11/numpy.h>
 #include <pybind11/operators.h>
 
+#include "allocator.cpp"
+
 using namespace std;
 namespace py = pybind11;
 
-/*
- * Byte Counter:
- * One instance of this counter is shared among a set of allocators.
- */
-struct ByteCounterImpl
-{
-    size_t allocated = 0;
-    size_t deallocated = 0;
-};
+Allocator<double> alloc;
 
-class ByteCounter
-{
-public:
-    ByteCounter() : m_impl(new ByteCounterImpl) {}
-
-    void increase(size_t amount)
-    {
-        m_impl->allocated += amount;
-    }
-
-    void decrease(size_t amount)
-    {
-        m_impl->deallocated += amount;
-    }
-
-    size_t bytes() const { return m_impl->allocated - m_impl->deallocated; }
-    size_t allocated() const { return m_impl->allocated; }
-    size_t deallocated() const { return m_impl->deallocated; }
-
-private:
-    ByteCounterImpl *m_impl;
-};
-
-
-/*
- * Simple Allocator:
- * Very simple allocator that counts the number of bytes allocated through it.
-*/
-template <class T>
-struct MyAllocator
-{
-    using value_type = T;
-
-    // Just use the default constructor of ByteCounter for the data member "counter".
-    MyAllocator() = default;
-
-    T *allocate(size_t n)
-    {
-        if (n > std::numeric_limits<size_t>::max() / sizeof(T))
-        {
-            throw std::bad_alloc();
-        }
-        const size_t bytes = n * sizeof(T);
-        T *p = static_cast<T *>(std::malloc(bytes));
-        if (p)
-        {
-            counter.increase(bytes);
-            return p;
-        }
-        else
-        {
-            throw std::bad_alloc();
-        }
-    }
-
-    void deallocate(T *p, size_t n) noexcept
-    {
-        std::free(p);
-
-        const size_t bytes = n * sizeof(T);
-        counter.decrease(bytes);
-    }
-
-    ByteCounter counter;
-};
-
-MyAllocator<double> alloc;
-
-size_t bytes()
-{
-    return alloc.counter.bytes();
-}
-size_t allocated()
-{
-    return alloc.counter.allocated();
-}
-size_t deallocated()
-{
-    return alloc.counter.deallocated();
-}
-
-
-/* 3 ways to implement a matrix.*/
 class Matrix
 {
 public:
-    Matrix(size_t row, size_t col) : m_rows(row), m_cols(col)
+    Matrix(size_t row, size_t col) : m_rows(row), m_cols(col), m_vec(alloc)
     {
         m_vec.clear();
         m_vec.resize(row * col, 0);
     }
+        
+    // copy constructor
+    Matrix(Matrix const &other)
+    {
+        this->m_rows = other.m_rows;
+        this->m_cols = other.m_cols;
+        this->m_vec = other.m_vec;
+    }
+
+    // move constructor
+    Matrix(Matrix &&other) : m_vec(std::move(other.m_vec))
+    {
+        std::swap(this->m_rows, other.m_rows);
+        std::swap(this->m_cols, other.m_cols);
+    }
+
+    // copy assignment operator
+    Matrix &operator=(Matrix const &other)
+    {
+        if (this != &other)
+        {
+            this->m_rows = other.m_rows;
+            this->m_cols = other.m_cols;
+            this->m_vec = other.m_vec;
+        }
+        return *this;
+    }
+
+    // move assignment operator
+    Matrix &operator=(Matrix &&other)
+    {
+        if (this != &other)
+        {
+            this->m_rows = other.m_rows;
+            this->m_cols = other.m_cols;
+            std::move(other.m_vec.begin(), other.m_vec.end(), std::back_inserter(this->m_vec));
+        }
+        return *this;
+    }
+
+    // destructor
     ~Matrix()
     {
-        m_vec.clear();
+        m_vec.clear(); 
         m_vec.shrink_to_fit();
     }
 
@@ -184,10 +136,26 @@ public:
     }
 
 private:
-    vector<double, MyAllocator<double>> m_vec = vector<double, MyAllocator<double>>(alloc);;
+    vector<double, Allocator<double>> m_vec;
     size_t m_rows;
     size_t m_cols;
 };
+
+size_t bytes()
+{
+    return alloc.counter.bytes();
+}
+
+size_t allocated()
+{
+    return alloc.counter.allocated();
+}
+
+size_t deallocated()
+{
+    return alloc.counter.deallocated();
+}
+
 
 void is_validate_matrix(Matrix const &m1, Matrix const &m2)
 {
