@@ -47,6 +47,7 @@ struct ByteCounter
 size_t ByteCounter::allocated = 0;
 size_t ByteCounter::deallocated = 0;
 
+
 /**
  * Very simple allocator that counts the number of bytes allocated through it.
  *
