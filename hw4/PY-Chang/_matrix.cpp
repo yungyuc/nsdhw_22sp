@@ -174,18 +174,6 @@ struct MyAllocator
 
 }; /* end struct MyAllocator */
 
-// template <class T, class U>
-// bool operator==(const MyAllocator<T> & a, const MyAllocator<U> & b)
-// {
-//     return a.counter == b.counter;
-// }
-
-// template <class T, class U>
-// bool operator!=(const MyAllocator<T> & a, const MyAllocator<U> & b)
-// {
-//     return !(a == b);
-// }
-
 
 static MyAllocator<double> alloc;
 
@@ -199,83 +187,6 @@ public:
         reset_buffer(nrow, ncol);
     }
 
-    // Matrix(size_t nrow, size_t ncol, std::vector<double, MyAllocator<double>> const & vec)
-    //   : m_nrow(nrow), m_ncol(ncol)
-    // {
-    //     reset_buffer(nrow, ncol);
-    //     (*this) = vec;
-    // }
-
-    Matrix & operator=(std::vector<double, MyAllocator<double>> const & vec)
-    {
-        if (size() != vec.size())
-        {
-            throw std::out_of_range("number of elements mismatch");
-        }
-
-        size_t k = 0;
-        for (size_t i=0; i<m_nrow; ++i)
-        {
-            for (size_t j=0; j<m_ncol; ++j)
-            {
-                //(*this)(i,j) = vec[k];
-                (*this) = vec;
-                ++k;
-            }
-        }
-
-        return *this;
-    }
-
-    Matrix(Matrix const & other)
-      : m_nrow(other.m_nrow), m_ncol(other.m_ncol)
-    {
-        reset_buffer(other.m_nrow, other.m_ncol);
-        for (size_t i=0; i<m_nrow; ++i)
-        {
-            for (size_t j=0; j<m_ncol; ++j)
-            {
-                (*this)(i,j) = other(i,j);
-            }
-        }
-    }
-
-    Matrix & operator=(Matrix const & other)
-    {
-        if (this == &other) { return *this; }
-        if (m_nrow != other.m_nrow || m_ncol != other.m_ncol)
-        {
-            reset_buffer(other.m_nrow, other.m_ncol);
-        }
-        for (size_t i=0; i<m_nrow; ++i)
-        {
-            for (size_t j=0; j<m_ncol; ++j)
-            {
-                (*this)(i,j) = other(i,j);
-            }
-        }
-        return *this;
-    }
-
-    Matrix(Matrix && other)
-      : m_nrow(other.m_nrow), m_ncol(other.m_ncol)
-    {
-        reset_buffer(0, 0);
-        std::swap(m_nrow, other.m_nrow);
-        std::swap(m_ncol, other.m_ncol);
-        std::swap(m_buffer, other.m_buffer);
-    }
-
-    Matrix & operator=(Matrix && other)
-    {
-        if (this == &other) { return *this; }
-        reset_buffer(0, 0);
-        std::swap(m_nrow, other.m_nrow);
-        std::swap(m_ncol, other.m_ncol);
-        std::swap(m_buffer, other.m_buffer);
-        return *this;
-    }
-
     bool operator==(Matrix const & other)
     {
         if (m_nrow != other.nrow() || m_ncol != other.ncol()){
@@ -287,12 +198,6 @@ public:
             }
         }
         return true;
-    }
-
-    ~Matrix()
-    {
-        reset_buffer(0, 0);
-        
     }
 
     double operator() (size_t row, size_t col) const
@@ -313,10 +218,6 @@ public:
 
     size_t size() const { return m_nrow * m_ncol; }
     double buffer(size_t i) const { return m_buffer[i]; }
-//  std::vector<double> buffer_vector() const
-//  {
-//      return std::vector<double>(m_buffer, m_buffer+size());
-//  }
 
 private:
 
@@ -336,10 +237,7 @@ private:
 
     size_t m_nrow = 0;
     size_t m_ncol = 0;
-    //double * m_buffer = nullptr;
-    // std::vector<double> m_buffer;
 
-    // MyAllocator<double> alloc;
     std::vector<double, MyAllocator<double>> m_buffer;
 
 
@@ -400,10 +298,6 @@ Matrix multiple_tile(Matrix const & mat1, Matrix const & mat2, size_t tileSize){
     const size_t mrow = mat1.nrow();
     const size_t mcol = mat2.ncol();
 
-    // double *mat1Buffer = mat1.buffer();
-    // double *mat2Buffer = mat2.buffer();
-    // double *resultBuffer = result.buffer();
-
     for (int i = 0; i < mrow; i += tileSize){
         for (int j = 0; j < mcol; j += tileSize){
             for (int k = 0; k < mcol; k += tileSize ){
@@ -431,13 +325,6 @@ Matrix multiply_mkl(Matrix const & mat1, Matrix const & mat2){
     validate_multiplication(mat1, mat2);
     mkl_set_num_threads(2);
     Matrix result(mat1.nrow(), mat2.ncol());
-    // double mat1_buffer_ptr[mat1.nrow()*mat1.ncol()];
-    // double mat2_buffer_ptr[mat2.nrow()*mat2.ncol()];
-    // double result_buffer_ptr[result.nrow()*result.ncol()];
-
-    // std::copy(mat1.buffer().begin(), mat1.buffer().end(), mat1_buffer_ptr);
-    // std::copy(mat2.buffer().begin(), mat2.buffer().end(), mat2_buffer_ptr);
-    //std::copy(result.buffer().begin(), result.buffer().end(), result_buffer_ptr);
 
     cblas_dgemm(
         CblasRowMajor /* const CBLAS_LAYOUT Layout */
@@ -455,16 +342,6 @@ Matrix multiply_mkl(Matrix const & mat1, Matrix const & mat2){
       , result.buffer() /* double * c */
       , result.ncol() /* const MKL_INT ldc */
     );
-
-    // for (int i=0; i< result.nrow()*result.ncol(); i++){
-    //     std::cout<<result_buffer_ptr[i];
-    // }
-
-    // for (int i=0; i< mat2.nrow()*mat2.ncol(); i++){
-    //     std::cout<<mat2_buffer_ptr[i];
-    // }
-    
-    //result.buffer().assign(result_buffer_ptr, result_buffer_ptr);
     return result;
 }
 
@@ -472,28 +349,28 @@ std::size_t bytes() { return alloc.counter.bytes(); }
 std::size_t allocated() { return alloc.counter.allocated(); }
 std::size_t deallocated() { return alloc.counter.deallocated();}
 
-int main(int argc, char *argv[]){
-    constexpr size_t size = 128;
-    Matrix a(size, size);
-    initialize(a);
-    Matrix b = a;
+// int main(int argc, char *argv[]){
+//     constexpr size_t size = 128;
+//     Matrix a(size, size);
+//     initialize(a);
+//     Matrix b = a;
 
-    clock_t start, end;
-    start = clock();
-    Matrix mklAns = multiply_mkl(a, b);
-    end = clock();
-    double dur = (double)(end - start);
-    std::cout<<"mtk done "<<dur/CLOCKS_PER_SEC<<std::endl;
+//     clock_t start, end;
+//     start = clock();
+//     Matrix mklAns = multiply_mkl(a, b);
+//     end = clock();
+//     double dur = (double)(end - start);
+//     std::cout<<"mtk done "<<dur/CLOCKS_PER_SEC<<std::endl;
 
-    Matrix naiveAns = multiply_naive(a, b);
-    std::cout<<"naive done"<<std::endl;
+//     Matrix naiveAns = multiply_naive(a, b);
+//     std::cout<<"naive done"<<std::endl;
 
-    Matrix tileAns = multiple_tile(a, b ,32);
-    std::cout<<"tile done"<<std::endl;
+//     Matrix tileAns = multiple_tile(a, b ,32);
+//     std::cout<<"tile done"<<std::endl;
 
-    if (naiveAns == tileAns)
-        std::cout<<"equal"<<std::endl;
-}
+//     if (naiveAns == tileAns)
+//         std::cout<<"equal"<<std::endl;
+// }
 
 PYBIND11_MODULE(_matrix, m){
     m.def("initialize", &initialize);
@@ -514,11 +391,6 @@ PYBIND11_MODULE(_matrix, m){
           "__setitem__",
           [](Matrix &mat, std::pair<size_t, size_t> p, double val) {
             mat(p.first, p.second) = val;
-        })
-        .def(
-          "__setitem__",
-          [](Matrix mat1, Matrix mat2) {
-            mat1 = mat2;
         })
         .def("__eq__", &Matrix::operator==)
         .def_property_readonly("nrow", &Matrix::nrow)
