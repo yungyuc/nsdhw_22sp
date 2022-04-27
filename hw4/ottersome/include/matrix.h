@@ -5,7 +5,6 @@
 #include <chrono>
 #include "allocator.h"
  
-using namespace std::chrono;
 #define EQ_DIFF 1.0e-5
 
 class Matrix {
@@ -17,8 +16,6 @@ private:
 
     size_t m_nrow = 0;
     size_t m_ncol = 0;
-    //const CustomAllocator<double> & customAllocator;
-    //double * m_buffer = nullptr;
     std::vector<double,CustomAllocator<double>> m_buffer;
 
 public:
@@ -27,8 +24,6 @@ public:
       Creators
     *******************************/
     Matrix(size_t nrow, size_t ncol);
-    //Matrix(size_t nrow, size_t ncol, std::vector<double> const & vec);
-    //Matrix & operator=(std::vector<double> const & vec);
     
     Matrix(Matrix const & other);
     Matrix & operator=(Matrix const & other);
@@ -86,9 +81,6 @@ public:
         retMat.zero_out();
 
         size_t tile_vbound =0, tile_hbound=0,op_bound=0;
-        // auto b4_loop = high_resolution_clock::now();
-
-        // auto aft_loop = high_resolution_clock::now();
         
         //Go around Cells in increments of their respective size
         for(size_t rtile = 0; rtile < this->nrow;rtile+=ts)
@@ -119,15 +111,6 @@ public:
             }
 
         }
-
-        // auto prep_duration = duration_cast<milliseconds>(b4_loop-start);
-        // auto loop_duration = duration_cast<milliseconds>(aft_loop-b4_loop);
-        // auto tot_duration = duration_cast<milliseconds>(aft_loop-start);
-        // std::cout << "Execution Times:\n"
-        //     <<"\tTotalDuration"<<tot_duration.count()<<"\n"
-        //     <<"\tprep_duration"<<prep_duration.count()<<"\n"
-        //     <<"\tloop_duration"<<loop_duration.count()<<"\n"
-        //     <<std::endl;
 
         return retMat;
 

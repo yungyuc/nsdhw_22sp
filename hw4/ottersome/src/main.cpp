@@ -44,9 +44,6 @@ PYBIND11_MODULE(_matrix, m) {
 
     py::class_<Matrix>(m, "Matrix")
         .def(py::init<size_t, size_t>())
-        //.def(py::init<size_t, size_t>(),[](size_t m, size_t n){
-                //return Matrix(m,n,customAllocator);
-                //})
         .def("print_vals",&Matrix::print_vals)
         .def(py::self == py::self)
         .def_property_readonly("nrow",&Matrix::get_nrow)
@@ -79,7 +76,7 @@ PYBIND11_MODULE(_matrix, m) {
     m.def("multiply_naive",&multiply_naive,"Naive multiplication");
     m.def("multiply_mkl",&multiply_mkl,"Multiply using MKL method");
     m.def("multiply_tile",&multiply_tile,"Multiply using Tile method");
-    m.def("bytes",[](){return ByteCounter::cur_alloc_bytes();},"Total bytes currently allocated");
-    m.def("allocated",[](){return ByteCounter::tot_alloc_bytes();},"Total bytes ever allocated");
-    m.def("deallocated",[](){return ByteCounter::tot_dealloc_bytes();},"Total bytes ever deallocated");
+    m.def("bytes",[](){return ByteCounter::getInstance()->cur_alloc_bytes();},"Total bytes currently allocated");
+    m.def("allocated",[](){return ByteCounter::getInstance()->tot_alloc_bytes();},"Total bytes ever allocated");
+    m.def("deallocated",[](){return ByteCounter::getInstance()->tot_dealloc_bytes();},"Total bytes ever deallocated");
 }
