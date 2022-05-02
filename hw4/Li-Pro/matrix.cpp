@@ -22,7 +22,7 @@ struct CountableAllocator
     void deallocate(pointer p, size_type n);
 
 private:
-    size_type allocated_size;
+    static size_type allocated_size;
 };
 
 struct Matrix
@@ -76,8 +76,11 @@ public:
 
 private:
     constexpr size_t memsize() const { return sizeof(double) * m_nrow * m_ncolumn; }
+    
+    using Alloc = CountableAllocator<double>;
 
-    std::vector<double> data;
+    std::vector<double, Alloc> data;
+    Alloc allocator;
 };
 
 /**
@@ -135,6 +138,10 @@ Matrix multiply_mkl(const Matrix & lhs, const Matrix & rhs);
 #pragma region matrix_def
 
 template<typename Tp>
+typename CountableAllocator<Tp>::size_type
+CountableAllocator<Tp>::allocated_size = 0;
+
+template<typename Tp>
 typename CountableAllocator<Tp>::pointer
 CountableAllocator<Tp>::allocate(CountableAllocator<Tp>::size_type n)
 {
@@ -152,7 +159,7 @@ CountableAllocator<Tp>::deallocate(
 }
 
 Matrix::Matrix(size_t row, size_t column)
-    : m_nrow(row), m_ncolumn(column), data(row * column)
+    : m_nrow(row), m_ncolumn(column), data(row * column), allocator({})
 {
     // check empty matrix
     if (!row || !column)
