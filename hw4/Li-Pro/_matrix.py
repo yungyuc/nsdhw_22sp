@@ -3,6 +3,7 @@
 Wrapper for libmatrix
 """
 
+import gc
 import os
 import sys
 
@@ -15,7 +16,7 @@ from libmatrix  \
     import (
         EPS, _Matrix, 
         _multiply_naive, _multiply_tile, _multiply_mkl, 
-        bytes, allocated, deallocated
+        _bytes, _allocated, _deallocated
     )
 
 __all__ = [
@@ -59,3 +60,15 @@ def multiply_tile(*args):  # (matA, matB), (matA, matB, tileSize)
 
 def multiply_mkl(matA, matB):
     return Matrix(_multiply_mkl(matA, matB))
+
+def bytes():
+    gc.collect()
+    return _bytes()
+
+def allocated():
+    gc.collect()
+    return _allocated()
+
+def deallocated():
+    gc.collect()
+    return _deallocated()

@@ -329,9 +329,9 @@ PYBIND11_MODULE(libmatrix, m) {
     m.def("_multiply_tile", static_cast<Matrix (*)(const Matrix & lhs, const Matrix & rhs, const size_t tile_size)>(&multiply_tile));
     m.def("_multiply_mkl", &multiply_mkl);
 
-    m.def("bytes", &CountableAllocator<double>::bytes);
-    m.def("allocated", &CountableAllocator<double>::allocated);
-    m.def("deallocated", &CountableAllocator<double>::deallocated);
+    m.def("_bytes", &CountableAllocator<double>::bytes);
+    m.def("_allocated", &CountableAllocator<double>::allocated);
+    m.def("_deallocated", &CountableAllocator<double>::deallocated);
 }
 
 #pragma endregion
