@@ -11,6 +11,20 @@
 
 constexpr double EPS = 1e-6;
 
+template<typename Tp>
+struct CountableAllocator
+{
+    using value_type = Tp;
+    using pointer = value_type*;
+    using size_type = std::size_t;
+
+    pointer allocate(size_type n);
+    void deallocate(pointer p, size_type n);
+
+private:
+    size_type allocated_size;
+};
+
 struct Matrix
 {
 public:
@@ -119,6 +133,23 @@ Matrix multiply_mkl(const Matrix & lhs, const Matrix & rhs);
 
 
 #pragma region matrix_def
+
+template<typename Tp>
+typename CountableAllocator<Tp>::pointer
+CountableAllocator<Tp>::allocate(CountableAllocator<Tp>::size_type n)
+{
+    allocated_size += sizeof(Tp[n]);
+    return new Tp[n];
+}
+
+template<typename Tp>
+void
+CountableAllocator<Tp>::deallocate(
+    CountableAllocator<Tp>::pointer p, CountableAllocator<Tp>::size_type n
+){
+    allocated_size -= sizeof(Tp[n]);
+    delete[] p;
+}
 
 Matrix::Matrix(size_t row, size_t column)
     : m_nrow(row), m_ncolumn(column), data(row * column)
