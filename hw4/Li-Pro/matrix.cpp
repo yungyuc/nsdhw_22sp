@@ -23,7 +23,12 @@ public:
     ~Matrix();
 
     // in which place is it constexpr, if it's exported?
-    constexpr double * operator[] (size_t rowid) const { return data + m_ncolumn*rowid; }
+    constexpr double * operator[] (size_t rowid) const
+    {
+        // data is contiguos
+        return (double*) data.data() + m_ncolumn*rowid;
+    }
+    
     constexpr bool operator== (const Matrix & other) const
     {
         // return m_nrow == other.m_nrow
@@ -58,7 +63,7 @@ public:
 private:
     constexpr size_t memsize() const { return sizeof(double) * m_nrow * m_ncolumn; }
 
-    double * const data;
+    std::vector<double> data;
 };
 
 /**
@@ -116,7 +121,7 @@ Matrix multiply_mkl(const Matrix & lhs, const Matrix & rhs);
 #pragma region matrix_def
 
 Matrix::Matrix(size_t row, size_t column)
-    : m_nrow(row), m_ncolumn(column), data(new double[row*column]{})
+    : m_nrow(row), m_ncolumn(column), data(row * column)
 {
     // check empty matrix
     if (!row || !column)
@@ -128,8 +133,7 @@ Matrix::Matrix(size_t row, size_t column)
 Matrix::Matrix(const Matrix & other)
     : Matrix(other.m_nrow, other.m_ncolumn)
 {
-    /*std::copy();*/  // slow
-    std::memcpy(data, other.data, sizeof(double)*(m_nrow*m_ncolumn));
+    std::memcpy((*this)[0], other[0], sizeof(double)*(m_nrow*m_ncolumn));
 
     // other.data = nullptr;
 }
@@ -139,9 +143,7 @@ Matrix::Matrix(Matrix && other)
 {}
 
 Matrix::~Matrix()
-{
-    delete[] data;
-}
+{}
 
 Matrix
 multiply_naive(const Matrix & lhs, const Matrix & rhs)
