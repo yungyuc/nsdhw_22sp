@@ -21,8 +21,13 @@ struct CountableAllocator
     pointer allocate(size_type n);
     void deallocate(pointer p, size_type n);
 
+    constexpr static std::size_t bytes() { return allocated() - deallocated(); }
+    constexpr static std::size_t allocated() { return allocated_size; }
+    constexpr static std::size_t deallocated() { return deallocated_size; }
+
 private:
     static size_type allocated_size;
+    static size_type deallocated_size;
 };
 
 struct Matrix
@@ -142,6 +147,10 @@ typename CountableAllocator<Tp>::size_type
 CountableAllocator<Tp>::allocated_size = 0;
 
 template<typename Tp>
+typename CountableAllocator<Tp>::size_type
+CountableAllocator<Tp>::deallocated_size = 0;
+
+template<typename Tp>
 typename CountableAllocator<Tp>::pointer
 CountableAllocator<Tp>::allocate(CountableAllocator<Tp>::size_type n)
 {
@@ -154,7 +163,7 @@ void
 CountableAllocator<Tp>::deallocate(
     CountableAllocator<Tp>::pointer p, CountableAllocator<Tp>::size_type n
 ){
-    allocated_size -= sizeof(Tp[n]);
+    deallocated_size += sizeof(Tp[n]);
     delete[] p;
 }
 
@@ -264,6 +273,7 @@ multiply_mkl(const Matrix & lhs, const Matrix & rhs)
     size_t N = lhs.m_nrow, M = rhs.m_ncolumn, P = lhs.m_ncolumn;
 
     // reallocating is relative cheap
+    // We DO NOT use Alloc here, for speed
     double* lbuf = (double *) mkl_malloc(N*P*sizeof(double), 64);
     double* rbuf = (double *) mkl_malloc(P*M*sizeof(double), 64);
     double* resbuf = (double *) mkl_malloc(N*M*sizeof(double), 64);
@@ -325,6 +335,10 @@ PYBIND11_MODULE(libmatrix, m) {
     m.def("_multiply_tile", static_cast<Matrix (*)(const Matrix & lhs, const Matrix & rhs)>(&multiply_tile));
     m.def("_multiply_tile", static_cast<Matrix (*)(const Matrix & lhs, const Matrix & rhs, const size_t tile_size)>(&multiply_tile));
     m.def("_multiply_mkl", &multiply_mkl);
+
+    m.def("bytes", &CountableAllocator<double>::bytes);
+    m.def("allocated", &CountableAllocator<double>::allocated);
+    m.def("deallocated", &CountableAllocator<double>::deallocated);
 }
 
 #pragma endregion

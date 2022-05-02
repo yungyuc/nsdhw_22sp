@@ -11,9 +11,18 @@ if True:  # os.name == 'posix'
 
 from collections.abc  import Sequence
 
-from libmatrix  import EPS, _Matrix, _multiply_naive, _multiply_tile, _multiply_mkl
+from libmatrix  \
+    import (
+        EPS, _Matrix, 
+        _multiply_naive, _multiply_tile, _multiply_mkl, 
+        bytes, allocated, deallocated
+    )
 
-__all__ = ['Matrix', 'EPS', 'multiply_naive', 'multiply_tile', 'multiply_mkl']
+__all__ = [
+    'EPS', 'Matrix',
+    'multiply_naive', 'multiply_tile', 'multiply_mkl',
+    'bytes', 'allocated', 'deallocated'
+]
 
 class Matrix(_Matrix):
     def __getitem__(self, key: Sequence):
