@@ -33,12 +33,15 @@ private:
 struct Matrix
 {
 public:
+    using allocator_type = CountableAllocator<double>;
+    using buffer_type = std::vector<double, allocator_type>;
+
     size_t const m_nrow;
     size_t const m_ncolumn;
 
     Matrix(size_t row, size_t column);
     Matrix(Matrix && other);            // used by pybind11 :)
-    Matrix(const Matrix &);
+    Matrix(const Matrix &) = delete;
     ~Matrix();
 
     // in which place is it constexpr, if it's exported?
@@ -81,11 +84,8 @@ public:
 
 private:
     constexpr size_t memsize() const { return sizeof(double) * m_nrow * m_ncolumn; }
-    
-    using Alloc = CountableAllocator<double>;
 
-    std::vector<double, Alloc> data;
-    Alloc allocator;
+    buffer_type data;
 };
 
 /**
@@ -168,7 +168,7 @@ CountableAllocator<Tp>::deallocate(
 }
 
 Matrix::Matrix(size_t row, size_t column)
-    : m_nrow(row), m_ncolumn(column), data(row * column), allocator({})
+    : m_nrow(row), m_ncolumn(column), data(row * column)
 {
     // check empty matrix
     if (!row || !column)
@@ -177,16 +177,8 @@ Matrix::Matrix(size_t row, size_t column)
     }
 }
 
-Matrix::Matrix(const Matrix & other)
-    : Matrix(other.m_nrow, other.m_ncolumn)
-{
-    std::memcpy((*this)[0], other[0], sizeof(double)*(m_nrow*m_ncolumn));
-
-    // other.data = nullptr;
-}
-
 Matrix::Matrix(Matrix && other)
-    : Matrix((const Matrix &) other)
+    : m_nrow(other.m_nrow), m_ncolumn(other.m_ncolumn), data(std::move(other.data))
 {}
 
 Matrix::~Matrix()
@@ -319,7 +311,8 @@ namespace py = pybind11;
 PYBIND11_MODULE(libmatrix, m) {
     py::class_<Matrix>(m, "_Matrix")
         .def(py::init<size_t, size_t>())
-        .def(py::init<const Matrix &>())
+        // .def(py::init<const Matrix &>())
+        .def(py::init([](Matrix & other) { return new Matrix(std::move(other)); }))
         .def_readonly("nrow", &Matrix::m_nrow)
         .def_readonly("ncol", &Matrix::m_ncolumn)
         /*.def(py::self[size_t()])*/                    // operator not supported
