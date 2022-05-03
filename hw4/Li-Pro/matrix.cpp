@@ -19,11 +19,14 @@ struct CountableAllocator
     using size_type = std::size_t;
 
     pointer allocate(size_type n);
-    void deallocate(pointer p, size_type n);
+    void deallocate(pointer p, size_type n) noexcept;
 
     constexpr static std::size_t bytes() { return allocated() - deallocated(); }
     constexpr static std::size_t allocated() { return allocated_size; }
     constexpr static std::size_t deallocated() { return deallocated_size; }
+
+    constexpr bool operator==(const CountableAllocator & other) { return true; }
+    constexpr bool operator!=(const CountableAllocator & other) { return !(*this == other); }
 
 private:
     static size_type allocated_size;
@@ -154,15 +157,27 @@ template<typename Tp>
 typename CountableAllocator<Tp>::pointer
 CountableAllocator<Tp>::allocate(CountableAllocator<Tp>::size_type n)
 {
+    if (std::numeric_limits<std::size_t>::max() / sizeof(Tp) < n)
+    {
+        throw std::bad_array_new_length();
+    }
+
     allocated_size += sizeof(Tp[n]);
-    return new Tp[n];
+
+    pointer p = new Tp[n];
+    if (p == nullptr)
+    {
+        throw std::bad_alloc();
+    }
+    
+    return p;
 }
 
 template<typename Tp>
 void
 CountableAllocator<Tp>::deallocate(
     CountableAllocator<Tp>::pointer p, CountableAllocator<Tp>::size_type n
-){
+) noexcept {
     deallocated_size += sizeof(Tp[n]);
     delete[] p;
 }
