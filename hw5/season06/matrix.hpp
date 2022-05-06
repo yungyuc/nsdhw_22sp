@@ -6,7 +6,6 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>
-#include <pybind11/operators.h>
 
 using namespace std;
 namespace py = pybind11;
@@ -86,6 +85,13 @@ public:
         return &m_vec[0];
     }
 
+    // load numpy array to matrix
+    void load_from_array(py::array_t<double> array)
+    {
+        py::buffer_info buf = array.request();
+        memcpy(&m_vec[0], buf.ptr, m_rows * m_cols * sizeof(double));
+    }
+
     // rewrite operator
     double operator () (size_t row, size_t col) const
     {
@@ -116,6 +122,17 @@ public:
     void setitem(std::pair<size_t, size_t> index, const double value)
     {
         (*this)(index.first, index.second) = value;
+    }
+    string str() const
+    {
+        string s = "";
+        for (size_t i = 0; i < m_rows; ++i)
+        {
+            for (size_t j = 0; j < m_cols; ++j)
+                s += to_string(m_vec[i * m_cols + j]) + ' ';
+            s += '\n';
+        }
+        return s;
     }
 
 private:

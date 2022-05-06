@@ -2,7 +2,7 @@ sources = ../mod.cpp
 exe = _matrix
 CC = g++
 
-cflag = -O3 -Wall -shared -std=c++11 -fPIC
+cflag = -O3 -Wall -shared -std=c++17 -fPIC
 pyflag = $(shell python3-config --includes)
 pyext = $(shell python3-config --extension-suffix)
 pybind = -I/usr/include/pybind11 -lpython3.8
@@ -13,7 +13,7 @@ mkl = -I/usr/include/mkl -L /usr/lib/x86_64-linux-gnu/mkl -lblas
 
 all: $(sources)
 	cp ./matrix.hpp ../matrix.hpp
-	$(CC) $(cflag) $(pyflag) $(pybind) $(numpy) $(sources) -o $(exe)$(pyext) $(mkl)
+	$(CC) $(cflag) $(pyflag) $(pybind) $(numpy) -I. $(sources) -o $(exe)$(pyext) $(mkl)
 	rm ../matrix.hpp
 
 test: $(sources)
