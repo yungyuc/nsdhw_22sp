@@ -9,11 +9,11 @@ MKL_LIBS := ${MKL_DIR}/libmkl_def.so \
 		        ${MKL_DIR}/libmkl_intel_lp64.so \
 		        ${MKL_DIR}/libmkl_sequential.so
 
-INC = -I/usr/include/python3.8 -I/usr/include/pybind11 -lpython3.8
+INC = -I./ -I/usr/include/python3.8 -I/usr/include/pybind11 -lpython3.8
 NUMPY = -I`python3 -c 'import numpy;print(numpy.get_include())'`
 
 _matrix:
-	$(CXX) $(CFLAGS) $(MKL_Flags) $(MKL_LIBS) $(NUMPY) `python3 -m pybind11 --includes` mod.cpp -o _matrix`python3-config --extension-suffix` $(INC) 
+	$(CXX) $(CFLAGS) $(MKL_Flags) $(MKL_LIBS) $(NUMPY) `python3 -m pybind11 --includes` ../mod.cpp -o _matrix`python3-config --extension-suffix` $(INC) 
 
 .PHONY: test clean
 
