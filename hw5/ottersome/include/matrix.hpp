@@ -5,9 +5,10 @@
 #include <chrono>
 #include "mkl.h"
 using namespace std::chrono;
+namespace py = pybind11;
+
 #define EQ_DIFF 1.0e-5
 
-namespace py = pybind11;
 class Matrix {
 private:
 
@@ -45,8 +46,11 @@ public:
     double & get(size_t row, size_t col) ;
 
     //For convenience
-    const size_t  & nrow;
-    const size_t  & ncol;
+    const size_t  & nr;
+    const size_t  & nc;
+
+    size_t nrow(){return m_nrow;}
+    size_t ncol(){return m_ncol;}
 
     //For python members
     size_t get_nrow() const{ return m_nrow;}
@@ -63,7 +67,7 @@ public:
     Matrix multiply_tile(const Matrix & mat2, size_t ts) const{
 
         // auto start = high_resolution_clock::now();
-        if (this->ncol != mat2.nrow)
+        if (this->nc != mat2.nr)
         {
             throw std::out_of_range(
                     "the number of first matrix column "
@@ -71,7 +75,7 @@ public:
         }
 
         //Create matrix to return and zero out its elements
-        Matrix retMat(this->nrow, mat2.ncol);
+        Matrix retMat(this->nr, mat2.nc);
         retMat.zero_out();
 
         size_t tile_vbound =0, tile_hbound=0,op_bound=0;
@@ -80,17 +84,17 @@ public:
         // auto aft_loop = high_resolution_clock::now();
         
         //Go around Cells in increments of their respective size
-        for(size_t rtile = 0; rtile < this->nrow;rtile+=ts)
+        for(size_t rtile = 0; rtile < this->nr;rtile+=ts)
         {
-            tile_vbound =  std::min(ts+rtile, retMat.nrow);
-            for(size_t t_col = 0;t_col< mat2.ncol;t_col+=ts)
+            tile_vbound =  std::min(ts+rtile, retMat.nr);
+            for(size_t t_col = 0;t_col< mat2.nc;t_col+=ts)
             {
-                tile_hbound = std::min(ts+t_col, mat2.ncol);
+                tile_hbound = std::min(ts+t_col, mat2.nc);
                 //For every vertical tile in matrix 2(of the ctil tile column)
-                for(size_t vtile=0;vtile<mat2.nrow;vtile+=ts)
+                for(size_t vtile=0;vtile<mat2.nr;vtile+=ts)
                 {
                     //Actually do cell by cell dot product
-                    op_bound = std::min(ts+vtile, (this)->ncol);
+                    op_bound = std::min(ts+vtile, (this)->nc);
                     for(size_t elem = vtile; elem< op_bound;elem++)
                     {
                         for(size_t row = rtile;row<tile_vbound;row++)
@@ -109,15 +113,6 @@ public:
 
         }
 
-        // auto prep_duration = duration_cast<milliseconds>(b4_loop-start);
-        // auto loop_duration = duration_cast<milliseconds>(aft_loop-b4_loop);
-        // auto tot_duration = duration_cast<milliseconds>(aft_loop-start);
-        // std::cout << "Execution Times:\n"
-        //     <<"\tTotalDuration"<<tot_duration.count()<<"\n"
-        //     <<"\tprep_duration"<<prep_duration.count()<<"\n"
-        //     <<"\tloop_duration"<<loop_duration.count()<<"\n"
-        //     <<std::endl;
-
         return retMat;
 
     }
@@ -134,31 +129,32 @@ public:
 
 };
 
+
 Matrix Matrix::multiply_mkl(const Matrix & mat2) const{ 
-    if (this->ncol != mat2.nrow)
+    if (this->nc != mat2.nr)
     {
         throw std::out_of_range(
             "the number of first matrix column "
             "differs from that of second matrix row");
     }
-    Matrix ret(this->nrow, mat2.ncol);
+    Matrix ret(this->nr, mat2.nc);
 
     //TODO, not so sure about teh values of these alphas
     cblas_dgemm(
             CblasRowMajor,
             CblasNoTrans,
             CblasNoTrans,
-            this->nrow,
-            mat2.ncol,
-            this->ncol,
+            this->nr,
+            mat2.nc,
+            this->nc,
             1.0,
             this->m_buffer,
             this->m_ncol,
             mat2.data(),
-            mat2.ncol,
+            mat2.nc,
             0.0,
             ret.data(),
-            ret.ncol
+            ret.nc
             );
 
     return ret;
@@ -166,18 +162,18 @@ Matrix Matrix::multiply_mkl(const Matrix & mat2) const{
 }
 Matrix Matrix::multiply_naive(const Matrix & mat2) const
 {
-    if (this->m_ncol != mat2.nrow)
+    if (this->m_ncol != mat2.nr)
     {
         throw std::out_of_range(
             "the number of first matrix column "
             "differs from that of second matrix row");
     }
 
-    Matrix ret(this->m_nrow, mat2.ncol);
+    Matrix ret(this->m_nrow, mat2.nc);
 
-    for (size_t i=0; i<ret.nrow; ++i)
+    for (size_t i=0; i<ret.nr; ++i)
     {
-        for (size_t k=0; k<ret.ncol; ++k)
+        for (size_t k=0; k<ret.nc; ++k)
         {
             double v = 0;
             for (size_t j=0; j<this->m_ncol; ++j)
@@ -193,13 +189,13 @@ Matrix Matrix::multiply_naive(const Matrix & mat2) const
 }
 
 Matrix::Matrix(size_t nrow, size_t ncol)
-    : m_nrow(nrow),m_ncol(ncol),nrow(m_nrow),ncol(m_ncol)
+    : m_nrow(nrow),m_ncol(ncol),nr(m_nrow),nc(m_ncol)
 {
     reset_buffer(nrow, ncol);
 }
 
 Matrix::Matrix(size_t nrow, size_t ncol, std::vector<double> const & vec)
-    : m_nrow(nrow),m_ncol(ncol),nrow(m_nrow),ncol(m_ncol)
+    : m_nrow(nrow),m_ncol(ncol),nr(m_nrow),nc(m_ncol)
 
 {
     reset_buffer(nrow, ncol);
@@ -216,9 +212,9 @@ Matrix & Matrix::operator=(std::vector<double> const & vec)
     }
 
     size_t k = 0;
-    for (size_t i=0; i<nrow; ++i)
+    for (size_t i=0; i<nr; ++i)
     {
-        for (size_t j=0; j<ncol; ++j)
+        for (size_t j=0; j<nc; ++j)
         {
             (*this)(i,j) = vec[k];
             ++k;
@@ -229,13 +225,13 @@ Matrix & Matrix::operator=(std::vector<double> const & vec)
 }
 
 Matrix::Matrix(Matrix const & other)
-    : m_nrow(other.nrow),m_ncol(other.ncol),nrow(m_nrow),ncol(m_ncol)
+    : m_nrow(other.nr),m_ncol(other.nc),nr(m_nrow),nc(m_ncol)
 
 {
-    reset_buffer(other.nrow, other.ncol);
-    for (size_t i=0; i<nrow; ++i)
+    reset_buffer(other.nr, other.nc);
+    for (size_t i=0; i<nr; ++i)
     {
-        for (size_t j=0; j<ncol; ++j)
+        for (size_t j=0; j<nc; ++j)
         {
             (*this)(i,j) = other(i,j);
         }
@@ -246,13 +242,13 @@ Matrix & Matrix::operator=(Matrix const & other)
 {    
     std::cerr<<"FAILURE: operator not yet part of implementation!!"<<std::endl;
     if (this == &other) { return *this; }
-    if (nrow != other.nrow || ncol != other.ncol)
+    if (nr != other.nr || nc != other.nc)
     {
-        reset_buffer(other.nrow, other.ncol);
+        reset_buffer(other.nr, other.nc);
     }
-    for (size_t i=0; i<nrow; ++i)
+    for (size_t i=0; i<nr; ++i)
     {
-        for (size_t j=0; j<ncol; ++j)
+        for (size_t j=0; j<nc; ++j)
         {
             (*this)(i,j) = other(i,j);
         }
@@ -261,7 +257,7 @@ Matrix & Matrix::operator=(Matrix const & other)
 }
 
 Matrix::Matrix(Matrix && other)
-    : nrow(m_nrow),ncol(m_ncol)
+    : nr(m_nrow),nc(m_ncol)
 
 {
     reset_buffer(0, 0);
@@ -310,7 +306,7 @@ void Matrix::zero_out(){
 
 
 void Matrix::print_vals(){
-  
+
     //if(m_nrow > 100 or m_ncol){
         //for(size_t r=0;r< m_nrow;r++){
             //for(size_t c=0;c< m_ncol;c++){
@@ -326,14 +322,11 @@ void Matrix::print_vals(){
 bool Matrix::operator==(Matrix const & other) const{
     //Compare through memory first maybe ? 
     //We have to time to check if its more effective this way
-    if(ncol != other.ncol || nrow != other.nrow)
+    if(nc != other.nc || nr != other.nr)
         return false;
 
-    //Too strict of an approach
-    // int n = memcmp(this->data(), other.data(),sizeof(double)*ncol*nrow);
-    // return (n==0)? true: false;
-    for(size_t row= 0;row<nrow;row++){
-        for(size_t col= 0;col<ncol;col++){
+    for(size_t row= 0;row<nr;row++){
+        for(size_t col= 0;col<nc;col++){
             // if(std::abs((*this)(row,col) - other(row,col)) >= EQ_DIFF){
             if((*this)(row,col) != other(row,col)){
                 return false;
@@ -365,7 +358,6 @@ void Matrix::reset_buffer(size_t o_nrow, size_t o_ncol)
     m_nrow = o_nrow;
     m_ncol = o_ncol;
 }
-
 Matrix multiply_naive(const Matrix &m1, const Matrix &m2){
     return m1.multiply_naive(m2);
 }

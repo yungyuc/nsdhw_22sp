@@ -17,7 +17,7 @@ SRC_FILES := ../mod.cpp
 OBJ_FILES := $(OBJ_DIR)/mod.o 
 
 LDFLAGS?= -shared -lblas
-CPPFLAGS ?= -pedantic -O3 -Wall -Wextra -std=c++11 -MMD -MP -fPIC $(INC_DIRS)
+CPPFLAGS ?= -pedantic -O3 -Wall -Wextra -std=c++17 -MMD -MP -fPIC $(INC_DIRS)
 		
 .PHONY: clean, default, test, foundation
 
