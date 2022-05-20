@@ -10,12 +10,13 @@ long long Tracker::tile_load_time = 0;
 std::chrono::steady_clock::time_point Tracker::begin =  std::chrono::steady_clock::now();
 std::chrono::steady_clock::time_point Tracker::end =  std::chrono::steady_clock::now();
 
-Matrix Matrix::tiled_mul(const Matrix &mat, int tile_size){
+Matrix& Matrix::tiled_mul(const Matrix &mat, int tile_size){
 
     if(this->mCols != mat.mRows){
         throw "Matrixs are not compatible";
     }
-    Matrix res(this->mRows, mat.mCols);
+    Matrix* res_ptr = new Matrix(this->mRows, mat.mCols);
+    Matrix& res = *res_ptr;
 
     // Adjust tile_size if not appropriate
     if((this->mCols % tile_size) || (this->mRows % tile_size) || (mat.mCols % tile_size))

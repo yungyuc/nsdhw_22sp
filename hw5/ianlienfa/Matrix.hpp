@@ -19,16 +19,13 @@ namespace py = pybind11;
 
 int constexpr TILE_SIZE = 100; 
 
-#define mRows nrow
-#define mCols ncol
-
 struct Tiler;
 struct Matrix {
         
     vector<double, MyAllocator<double>> buffer;
     bool trans;
     bool col_maj;    
-    size_t nrow, ncol;    
+    size_t mRows, mCols;    
 
     Matrix(){
         mRows = 0;
@@ -83,6 +80,9 @@ struct Matrix {
         trans = (trans) ? false: true;
         return *this;
     }
+
+    const size_t& nrow(){return mRows;}
+    const size_t& ncol(){return mCols;}
 
     double operator()(size_t row, size_t col) const {
         if(trans)
@@ -203,7 +203,7 @@ struct Matrix {
         return true;
     }
  
-    Matrix tiled_mul(const Matrix &mat, int tile_size);
+    Matrix& tiled_mul(const Matrix &mat, int tile_size);
     double* data(){return buffer.data();}    
 
     static Matrix* _multiply_naive(Matrix &mat1, Matrix &mat2)
@@ -225,7 +225,7 @@ struct Matrix {
         return mult;       
     }
 
-    static Matrix _multiply_tile(Matrix &mat1, Matrix &mat2, int tsize)
+    static Matrix& _multiply_tile(Matrix &mat1, Matrix &mat2, int tsize)
     {
         return mat1.tiled_mul(mat2, tsize);
     }

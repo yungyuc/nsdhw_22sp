@@ -211,29 +211,29 @@ WrapMatrix
 
         namespace py = pybind11;
 
-        // (*this)
+        (*this)
             // The Python constructor will be counted!
-            // .def_tagged(py::init<size_t, size_t>())
-            // .def_property_readonly("nrow", &Matrix::nrow)
-            // .def_property_readonly("ncol", &Matrix::ncol)
-            // .def("__eq__", [](Matrix const & self, Matrix const & other) { return self == other; })
-            // .def
-            // (
-            //     "__getitem__"
-            //   , [](Matrix const & self, std::tuple<size_t, size_t> idx)
-            //     { return self(std::get<0>(idx), std::get<1>(idx)); }
-            // )
-            // .def
-            // (
-            //     "__setitem__"
-            //   , [](Matrix & self, std::tuple<size_t, size_t> idx, double value)
-            //     { return self(std::get<0>(idx), std::get<1>(idx)) = value; }
-            // )
-        // ;
+            .def_tagged(py::init<size_t, size_t>())
+            .def_property_readonly("nrow", &Matrix::nrow)
+            .def_property_readonly("ncol", &Matrix::ncol)
+            .def("__eq__", [](Matrix const & self, Matrix const & other) { return self == other; })
+            .def
+            (
+                "__getitem__"
+              , [](Matrix const & self, std::tuple<size_t, size_t> idx)
+                { return self(std::get<0>(idx), std::get<1>(idx)); }
+            )
+            .def
+            (
+                "__setitem__"
+              , [](Matrix & self, std::tuple<size_t, size_t> idx, double value)
+                { return self(std::get<0>(idx), std::get<1>(idx)) = value; }
+            )
+        ;
 
-        // mod.def("multiply_mkl", &multiply_mkl);
-        // mod.def("multiply_naive", &multiply_naive);
-        // mod.def("multiply_tile", &multiply_tile);
+        mod.def("multiply_mkl", &multiply_mkl);
+        mod.def("multiply_naive", &multiply_naive);
+        mod.def("multiply_tile", &multiply_tile);
 
     }
 

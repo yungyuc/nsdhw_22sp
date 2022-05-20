@@ -71,8 +71,8 @@ private:
         object o = module::import("_matrix");
         std::string name = std::string(str(call.func.scope.attr("__name__")));
         name += std::string(call.func.name) + "_post_count";
-        const size_t count = getattr(o, name.c_str(), int_(0)).cast<size_t>() + 1;
-        setattr(o, name.c_str(), int_(count));
+        const size_t count = getattr(o, name.c_str(), pybind11::int_(0)).cast<size_t>() + 1;
+        setattr(o, name.c_str(), pybind11::int_(count));
     }
 
 };
