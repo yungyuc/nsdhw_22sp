@@ -20,10 +20,17 @@ int main(int argc, char* argv[])
 {
     srand(0);
     vector<double> v1(500 * 500), v2(500 * 500);    
-    std::generate(v1.begin(), v1.end(), [](){return std::rand() % 10;});
-    std::generate(v2.begin(), v2.end(), [](){return std::rand() % 10;});
+    std::generate(v1.begin(), v1.end(), [](){return 1;});
+    std::generate(v2.begin(), v2.end(), [](){return 1;});
     Matrix mtrx(500, 500, v1);
     Matrix mtrx2(500, 500, v2);
+    cout << "eq: " << Matrix::__eq__(mtrx, mtrx2) << endl;
+    double item = Matrix::__getitem__(mtrx, std::make_tuple(1, 1));
+    cout << "item: " << item << endl;
+    Matrix::__setitem__(mtrx, std::make_tuple(1, 1), 1);
+    item = Matrix::__getitem__(mtrx, std::make_tuple(1, 1));
+    cout << "read: " << item << endl;
+
 
     // Time tracker vars
     long long vanilla_time = 0;
@@ -34,14 +41,14 @@ int main(int argc, char* argv[])
     /* Vanilla mul */
     TIME_ELAPSE_START();
     Matrix res(500, 500);
-    res = Matrix::multiply_naive(mtrx, mtrx2);    
+    res = *Matrix::multiply_naive(mtrx, mtrx2);    
     res.brief("Vanilla");
     TIME_ELAPSE_END(vanilla_time);
 
     /* Lapack mul*/
     TIME_ELAPSE_START();
     Matrix res_mkl(500, 500);
-    res_mkl = Matrix::multiply_mkl(mtrx, mtrx2);    
+    res_mkl = *Matrix::multiply_mkl(mtrx, mtrx2);    
     res_mkl.brief("MKL");
     TIME_ELAPSE_END(lapack_time);
 

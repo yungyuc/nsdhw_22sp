@@ -20,7 +20,7 @@ Matrix Matrix::tiled_mul(const Matrix &mat, int tile_size){
     // Adjust tile_size if not appropriate
     if((this->mCols % tile_size) || (this->mRows % tile_size) || (mat.mCols % tile_size))
     {
-        int tmp_tile_size = std::__gcd(this->mCols, this->mRows);
+        size_t tmp_tile_size = std::__gcd(this->mCols, this->mRows);
         tmp_tile_size = std::__gcd(tmp_tile_size, mat.mCols);
         
         // find nearest tile_size
@@ -101,13 +101,11 @@ void Matrix::direct_mul(const Matrix& mat1, int row1, int col1, const Matrix& ma
     }    
 }
 
-
-
 ostream& operator<<(ostream& os, const Matrix& dt)
 {
     os << "Matrix<" << dt.mRows << ", " << dt.mCols << ">" << endl;
-    for (int i = 0; i < dt.mRows; i++) {
-        for (int j = 0; j < dt.mCols; j++) {
+    for (size_t i = 0; i < dt.mRows; i++) {
+        for (size_t j = 0; j < dt.mCols; j++) {
             os << dt.operator()(i, j) << " ";
         }
         os << endl;
@@ -116,43 +114,55 @@ ostream& operator<<(ostream& os, const Matrix& dt)
     return os;
 }
 
-
-#ifdef FORPYBIND
-PYBIND11_MODULE(_matrix, m) {
-    m.attr("__name__") = "matrix";
-    py::class_<Matrix>(m, "Matrix")
-        .def(py::init<int, int, vector<double>>())
-        .def(py::init<int, int>())
-        .def("show", &Matrix::show, py::arg("name") = "")
-        .def("brief", &Matrix::brief, py::arg("name") = "")
-        .def(py::self == py::self)
-        .def_readonly("nrow", &Matrix::mRows)
-        .def_readonly("ncol", &Matrix::mCols)
-        .def("__getitem__",
-             [](const Matrix &s, std::tuple<int, int> t) {
-                 int i, j;
-                 std::tie(i, j) = t;
-                 if(i < s.mRows && j < s.mCols)
-                     return s(i, j);
-                 else
-                     throw "Index out of range";
-             })
-        .def("__setitem__",
-             [](Matrix &s, std::tuple<int, int> t, float val) {
-                 int i, j;
-                 std::tie(i, j) = t;
-                 if(i < s.mRows && j < s.mCols)
-                    s(i, j) = val;
-                 else
-                     throw "Index out of range";
-             });
-    m.def("multiply_naive", &Matrix::multiply_naive);
-    m.def("multiply_tile", &Matrix::multiply_tile);
-    m.def("multiply_mkl", &Matrix::multiply_mkl);
-    m.def("bytes", &MyAllocator<double>::bytes);
-    m.def("deallocated", &MyAllocator<double>::deallocated);
-    m.def("allocated", &MyAllocator<double>::allocated);
-
+Matrix* multiply_mkl(Matrix &mat1, Matrix &mat2)
+{   
+    return Matrix::_multiply_mkl(mat1, mat2);
+}
+Matrix* multiply_naive(Matrix &mat1, Matrix &mat2)
+{
+    return Matrix::_multiply_naive(mat1, mat2);
+}
+Matrix multiply_tile(Matrix &mat1, Matrix &mat2, int tsize)
+{
+    return Matrix::_multiply_tile(mat1, mat2, tsize);
 }
 
-#endif 
+
+// #ifdef FORPYBIND
+// PYBIND11_MODULE(_matrix, m) {
+//     m.attr("__name__") = "matrix";
+//     py::class_<Matrix>(m, "Matrix")
+//         .def(py::init<int, int, vector<double>>())
+//         .def(py::init<int, int>())
+//         .def("show", &Matrix::show, py::arg("name") = "")
+//         .def("brief", &Matrix::brief, py::arg("name") = "")
+//         .def(py::self == py::self)
+//         .def_readonly("nrow", &Matrix::mRows)
+//         .def_readonly("ncol", &Matrix::mCols)
+//         .def("__getitem__",
+//              [](const Matrix &s, std::tuple<int, int> t) {
+//                  int i, j;
+//                  std::tie(i, j) = t;
+//                  if(i < s.mRows && j < s.mCols)
+//                      return s(i, j);
+//                  else
+//                      throw "Index out of range";
+//              })
+//         .def("__setitem__",
+//              [](Matrix &s, std::tuple<int, int> t, float val) {
+//                  int i, j;
+//                  std::tie(i, j) = t;
+//                  if(i < s.mRows && j < s.mCols)
+//                     s(i, j) = val;
+//                  else
+//                      throw "Index out of range";
+//              });
+//     m.def("multiply_naive", &Matrix::multiply_naive);
+//     m.def("multiply_tile", &Matrix::multiply_tile);
+//     m.def("multiply_mkl", &Matrix::multiply_mkl);
+//     m.def("bytes", &MyAllocator<double>::bytes);
+//     m.def("deallocated", &MyAllocator<double>::deallocated);
+//     m.def("allocated", &MyAllocator<double>::allocated);
+
+// }
+// #endif 

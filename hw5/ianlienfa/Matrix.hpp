@@ -28,7 +28,7 @@ struct Matrix {
     vector<double, MyAllocator<double>> buffer;
     bool trans;
     bool col_maj;    
-    int nrow, ncol;    
+    size_t nrow, ncol;    
 
     Matrix(){
         mRows = 0;
@@ -39,9 +39,9 @@ struct Matrix {
         buffer.clear();
     }
 
-    Matrix(int row, int col): mRows(row), mCols(col) {
+    Matrix(size_t row, size_t col): mRows(row), mCols(col) {
         buffer.assign(row*col, 0);
-        for(int i = 0; i < mRows * mCols; i++)
+        for(size_t i = 0; i < mRows * mCols; i++)
             buffer[i] = 0;
         trans = false;
     }
@@ -51,16 +51,13 @@ struct Matrix {
         buffer.assign(mat.mRows * mat.mCols, 0);
         if(!mat.trans)
         {            
-            // for(int i = 0; i < mat.mRows * mat.mCols; i++)
-            //     cout << mat.buffer[i] << " ";
-            //     cout << endl;
             copy(mat.buffer.begin(), mat.buffer.begin()+(mat.mRows * mat.mCols), buffer.begin());
         }
         else
         {
-            for(int i = 0; i < mat.mRows; i++)
+            for(size_t i = 0; i < mat.mRows; i++)
             {
-                for(int j = 0; j < mat.mCols; j++)
+                for(size_t j = 0; j < mat.mCols; j++)
                 {
                     buffer[i * mat.mCols + j] = mat(i, j);                
                 }
@@ -68,14 +65,14 @@ struct Matrix {
         }
     }
 
-    Matrix(int row, int col, std::initializer_list<double> l): mRows(row), mCols(col) {
+    Matrix(size_t row, size_t col, std::initializer_list<double> l): mRows(row), mCols(col) {
         vector<double> v(l);
         buffer.assign(mRows * mCols, 0);
         std::copy(v.begin(), v.end(), buffer.begin());
         trans = false;
     }
 
-    Matrix(int row, int col, vector<double> v): mRows(row), mCols(col) {        
+    Matrix(size_t row, size_t col, vector<double> v): mRows(row), mCols(col) {        
         buffer.assign(mRows * mCols, 0);
         std::copy(v.begin(), v.end(), buffer.begin());
         trans = false;
@@ -87,13 +84,13 @@ struct Matrix {
         return *this;
     }
 
-    double operator()(int row, int col) const {
+    double operator()(size_t row, size_t col) const {
         if(trans)
             return buffer[row + mRows * col];
         return buffer[row * mCols + col];
     }
 
-    double& operator()(int row, int col) {
+    double& operator()(size_t row, size_t col) {
         if(trans)
             return buffer[row + mRows * col];
         return buffer[row * mCols + col];
@@ -101,7 +98,7 @@ struct Matrix {
 
     void clean()
     {
-        for(int i = 0; i < mRows * mCols; i++)
+        for(size_t i = 0; i < mRows * mCols; i++)
             buffer[i] = 0;   
         trans = false;         
     }
@@ -121,8 +118,8 @@ struct Matrix {
     
     void show(string name=""){
         cout << "Matrix<" << mRows << ", " << mCols << ">" << " " << name << endl;
-        for (int i = 0; i < mRows; i++) {
-            for (int j = 0; j < mCols; j++) {
+        for (size_t i = 0; i < mRows; i++) {
+            for (size_t j = 0; j < mCols; j++) {
                 cout << this->operator()(i, j) << " ";
             }
             cout << endl;
@@ -132,8 +129,8 @@ struct Matrix {
 
     void brief(string name=""){
         cout << "Matrix<" << mRows << ", " << mCols << ">" << " " << name << endl;
-        for (int i = 0; i < std::min(mRows, 5); i++) {
-            for (int j = 0; j < std::min(mCols, 10); j++) {
+        for (size_t i = 0; i < std::min(mRows, size_t(5)); i++) {
+            for (size_t j = 0; j < std::min(mCols, size_t(10)); j++) {
                 cout << this->operator()(i, j) << " ";
             }
             if(mCols > 10)
@@ -149,9 +146,9 @@ struct Matrix {
 
     vector<int> operator*(const vector<int> &v){
         vector<int> res;        
-        for(int i = 0; i < mRows; i++){
+        for(size_t i = 0; i < mRows; i++){
             int accu = 0;
-            for(int j = 0; j < mCols; j++){
+            for(size_t j = 0; j < mCols; j++){
                 accu += (this->operator()(i, j) * v[j]);
             }
             res.push_back(accu);
@@ -160,8 +157,8 @@ struct Matrix {
     }
 
     void operator+=(const Matrix &mat){
-        for(int i = 0; i < mRows; i++){
-            for(int j = 0; j < mCols; j++){
+        for(size_t i = 0; i < mRows; i++){
+            for(size_t j = 0; j < mCols; j++){
                 this->operator()(i, j) += mat(i, j);
             }
         }
@@ -172,10 +169,10 @@ struct Matrix {
             throw "Matrixs are not compatible";
         }        
         Matrix res(this->mRows, mat.mCols);
-        for(int i = 0; i < res.mRows; i++){            
-            for(int j = 0; j < res.mCols; j++){
+        for(size_t i = 0; i < res.mRows; i++){            
+            for(size_t j = 0; j < res.mCols; j++){
                 double accu = 0;      
-                for(int k = 0; k < mat.mRows; k++){         
+                for(size_t k = 0; k < mat.mRows; k++){         
                     accu += this->operator()(i, k) * mat(k, j);
                 }
                 res(i, j) = accu;
@@ -197,8 +194,8 @@ struct Matrix {
     bool operator==(const Matrix &mat) const{
         if(this->mRows != mat.mRows || this->mCols != mat.mCols)
             return false;
-        for(int i = 0; i < mRows; i++){
-            for(int j = 0; j < mCols; j++){
+        for(size_t i = 0; i < mRows; i++){
+            for(size_t j = 0; j < mCols; j++){
                 if(this->operator()(i, j) != mat(i, j))
                     return false;
             }
@@ -209,17 +206,17 @@ struct Matrix {
     Matrix tiled_mul(const Matrix &mat, int tile_size);
     double* data(){return buffer.data();}    
 
-    static Matrix* multiply_naive(Matrix &mat1, Matrix &mat2)
+    static Matrix* _multiply_naive(Matrix &mat1, Matrix &mat2)
     {         
         if(mat1.mCols != mat2.mRows){
             throw "Matrixs are not compatible";
         }        
         Matrix* mult = new Matrix(mat1.mRows, mat2.mCols);
         Matrix& res = *mult;
-        for(int i = 0; i < res.mRows; i++){            
-            for(int j = 0; j < res.mCols; j++){
+        for(size_t i = 0; i < res.mRows; i++){            
+            for(size_t j = 0; j < res.mCols; j++){
                 double accu = 0;      
-                for(int k = 0; k < mat2.mRows; k++){         
+                for(size_t k = 0; k < mat2.mRows; k++){         
                     accu += mat1(i, k) * mat2(k, j);
                 }
                 res(i, j) = accu;
@@ -228,14 +225,14 @@ struct Matrix {
         return mult;       
     }
 
-    static Matrix multiply_tile(Matrix &mat1, Matrix &mat2, int tsize)
+    static Matrix _multiply_tile(Matrix &mat1, Matrix &mat2, int tsize)
     {
         return mat1.tiled_mul(mat2, tsize);
     }
 
     void direct_mul(const Matrix& mat1, int row1, int col1, const Matrix& mat2, int row2, int col2, Matrix &tile_res, int tile_size, Matrix &mat2_tmp);
 
-    static Matrix* multiply_mkl(Matrix &mat1, Matrix &mat2)
+    static Matrix* _multiply_mkl(Matrix &mat1, Matrix &mat2)
     {
         Matrix &mat = mat1;
         Matrix &b = mat2;
@@ -259,12 +256,19 @@ struct Matrix {
         );
         return mult;
     }
+
+    static bool __eq__(Matrix const & self, Matrix const & other) { 
+        return self == other; 
+    }
+    static double __getitem__(Matrix const & self, std::tuple<size_t, size_t> idx)
+    { return self(std::get<0>(idx), std::get<1>(idx)); }
+    static double __setitem__(Matrix & self, std::tuple<size_t, size_t> idx, double value)
+    { return self(std::get<0>(idx), std::get<1>(idx)) = value; }
 };  
 
-auto multiply_mkl = &Matrix::multiply_mkl;
-auto multiply_tile = &Matrix::multiply_tile;
-auto multiply_naive = &Matrix::multiply_naive;
-
+Matrix* multiply_mkl(Matrix &mat1, Matrix &mat2);
+Matrix* multiply_naive(Matrix &mat1, Matrix &mat2);
+Matrix multiply_tile(Matrix &mat1, Matrix &mat2, int tsize);
 
 #endif // define MATRIX_H
 
