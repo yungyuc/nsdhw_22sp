@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Matrix.hpp"
+#include "matrix.hpp"
 #include "Util.h"
 
 long long Tracker::tile_res_time = 0; 

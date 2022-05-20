@@ -1,6 +1,6 @@
 #ifndef TILER_H
 #define TILER_H
-#include "Matrix.hpp"
+#include "matrix.hpp"
 
 struct Matrix;
 struct Tiler {

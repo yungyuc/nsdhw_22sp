@@ -6,7 +6,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include "Tiler.h"
-#include "Matrix.hpp"
+#include "matrix.hpp"
 #include "Util.h"
 using std::cout, std::endl;
 using std::setw;

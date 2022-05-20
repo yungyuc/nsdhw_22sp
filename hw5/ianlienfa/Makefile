@@ -7,9 +7,9 @@ LINK_FLAG = -lpython$(PYTHON_VERSION_SUFFIX) $(MKL_LAPACK_LINK_FLAG)
 PY_LIB_SUFFIX := $(shell python3-config --extension-suffix)
 
 all:
-	c++ -shared -fPIC -DFORPYBIND $(CXX_COMPILE_FLAG) $(INCLUDE_DIR_FLAG) $(LINK_FLAG) mod.cpp Matrix.cpp Tiler.cpp -o _matrix$(PY_LIB_SUFFIX)		
+	c++ -shared -fPIC -DFORPYBIND $(CXX_COMPILE_FLAG) $(INCLUDE_DIR_FLAG) $(LINK_FLAG) mod.cpp matrix.cpp Tiler.cpp -o _matrix$(PY_LIB_SUFFIX)		
 main:
-	c++ $(CXX_COMPILE_FLAG) $(INCLUDE_DIR_FLAG) $(LINK_FLAG) main.cpp Allocator.cpp Matrix.cpp Tiler.cpp -o main 
+	c++ $(CXX_COMPILE_FLAG) $(INCLUDE_DIR_FLAG) $(LINK_FLAG) main.cpp Allocator.cpp matrix.cpp Tiler.cpp -o main 
 
 .PHONY: clean
 clean:
