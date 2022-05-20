@@ -229,6 +229,29 @@ WrapMatrix
               , [](Matrix & self, std::tuple<size_t, size_t> idx, double value)
                 { return self(std::get<0>(idx), std::get<1>(idx)) = value; }
             )
+            .def("trans", &Matrix::isTrans)
+            .def_property("array", [](Matrix & self) {
+                size_t rows = self.nrow();
+                size_t cols = self.ncol();
+                if(self.trans == false)
+                {                    
+                    return py::array_t<double>(
+                        {rows, cols}, // shape
+                        {sizeof(double) * cols, sizeof(double)}, // strides
+                        self.buffer.data(), // data 
+                        py::none()     
+                    );
+                }
+                else
+                {
+                    return py::array_t<double>(
+                        {rows, cols}, // shape
+                        {sizeof(double) * rows, sizeof(double)}, // strides
+                        self.buffer.data(), // data   
+                        py::none()     
+                    );
+                }
+            }, nullptr);
         ;
 
         mod.def("multiply_mkl", &multiply_mkl);

@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <mkl.h>
 #include <pybind11/pybind11.h>
+#include <pybind11/attr.h>
+#include <pybind11/numpy.h>
 #include <pybind11/stl.h>
 #include <pybind11/operators.h>
 #include "Tiler.h"
@@ -26,10 +28,11 @@ struct Matrix {
     bool trans;
     bool col_maj;    
     size_t mRows, mCols;    
+    pybind11::array_t<double> np_view;
 
     Matrix(){
         mRows = 0;
-        mCols = 0;        
+        mCols = 0;   
     }
 
     ~Matrix(){
@@ -41,6 +44,11 @@ struct Matrix {
         for(size_t i = 0; i < mRows * mCols; i++)
             buffer[i] = 0;
         trans = false;
+        // np_view = pybind11::array_t<double>(
+        //     {mRows, mCols}, // shape
+        //     {sizeof(float) * mCols, sizeof(float)}, // strides
+        //     buffer.data() // data                        
+        // );     
     }
     
     Matrix(const Matrix & mat): Matrix(mat.mRows, mat.mCols)
@@ -78,6 +86,14 @@ struct Matrix {
     Matrix& transpose(){
         std::swap(mRows, mCols);
         trans = (trans) ? false: true;
+        // if(trans)
+        // {
+        // np_view =  pybind11::array_t<double>(
+        //                 {mRows, mCols}, // shape
+        //                 {sizeof(float) * mRows, sizeof(float)}, // strides
+        //                 buffer.data() // data                        
+        //             );
+        // }
         return *this;
     }
 
@@ -264,6 +280,7 @@ struct Matrix {
     { return self(std::get<0>(idx), std::get<1>(idx)); }
     static double __setitem__(Matrix & self, std::tuple<size_t, size_t> idx, double value)
     { return self(std::get<0>(idx), std::get<1>(idx)) = value; }
+
 };  
 
 Matrix* multiply_mkl(Matrix &mat1, Matrix &mat2);
