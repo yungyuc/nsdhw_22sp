@@ -28,7 +28,6 @@ struct Matrix {
     bool trans;
     bool col_maj;    
     size_t mRows, mCols;    
-    pybind11::array_t<double> np_view;
 
     Matrix(){
         mRows = 0;
@@ -44,11 +43,6 @@ struct Matrix {
         for(size_t i = 0; i < mRows * mCols; i++)
             buffer[i] = 0;
         trans = false;
-        // np_view = pybind11::array_t<double>(
-        //     {mRows, mCols}, // shape
-        //     {sizeof(float) * mCols, sizeof(float)}, // strides
-        //     buffer.data() // data                        
-        // );     
     }
     
     Matrix(const Matrix & mat): Matrix(mat.mRows, mat.mCols)
@@ -86,14 +80,6 @@ struct Matrix {
     Matrix& transpose(){
         std::swap(mRows, mCols);
         trans = (trans) ? false: true;
-        // if(trans)
-        // {
-        // np_view =  pybind11::array_t<double>(
-        //                 {mRows, mCols}, // shape
-        //                 {sizeof(float) * mRows, sizeof(float)}, // strides
-        //                 buffer.data() // data                        
-        //             );
-        // }
         return *this;
     }
 
