@@ -207,9 +207,9 @@ Matrix multiply_naive(Matrix const & mat1, Matrix const & mat2){
     validate_multiplication(mat1, mat2);
     Matrix result(mat1.nrow(), mat2.ncol());
     
-    for (int i = 0; i < mat1.nrow(); i++){
-        for (int j = 0; j < mat2.ncol(); j++){
-            for (int k = 0; k < mat1.ncol(); k++){
+    for (size_t i = 0; i < mat1.nrow(); i++){
+        for (size_t j = 0; j < mat2.ncol(); j++){
+            for (size_t k = 0; k < mat1.ncol(); k++){
                 result(i, j) += mat1(i, k) * mat2(k, j);
             }
         }
@@ -229,18 +229,18 @@ Matrix multiple_tile(Matrix const & mat1, Matrix const & mat2, size_t tileSize){
     double *mat2Buffer = mat2.buffer();
     double *resultBuffer = result.buffer();
 
-    for (int i = 0; i < mrow; i += tileSize){
-        for (int j = 0; j < mcol; j += tileSize){
-            for (int k = 0; k < mcol; k += tileSize ){
+    for (size_t i = 0; i < mrow; i += tileSize){
+        for (size_t j = 0; j < mcol; j += tileSize){
+            for (size_t k = 0; k < mcol; k += tileSize ){
                 //int xRange = std::min(i+tileSize, mrow);
-                int xRange = ((i+tileSize) < mrow) ? (i+tileSize) : mrow;
-                for (int x = i; x < xRange; x++){
-                    //int yRange = std::min(j+tileSize, mcol);
-                    int yRange = ((j+tileSize) < mcol) ? (j+tileSize) : mcol;
-                    for (int y = j; y < yRange; y++){
-                        //int zRange = std::min(k+tileSize, mrow);
-                        int zRange = ((k+tileSize) < mrow) ? (k+tileSize) : mrow;
-                        for (int z = k; z < zRange; z++){
+                size_t xRange = ((i+tileSize) < mrow) ? (i+tileSize) : mrow;
+                for (size_t x = i; x < xRange; x++){
+                    //size_t yRange = std::min(j+tileSize, mcol);
+                    size_t yRange = ((j+tileSize) < mcol) ? (j+tileSize) : mcol;
+                    for (size_t y = j; y < yRange; y++){
+                        //size_t zRange = std::min(k+tileSize, mrow);
+                        size_t zRange = ((k+tileSize) < mrow) ? (k+tileSize) : mrow;
+                        for (size_t z = k; z < zRange; z++){
                             //result(x, y) += mat1(x, z) * mat2(z, y);
                             resultBuffer[x*mcol + y] += mat1Buffer[x*mcol + z] * mat2Buffer[z*mcol + y];
                         }

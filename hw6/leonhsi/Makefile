@@ -1,20 +1,23 @@
 CXX = g++
-SRC = _matrix.cpp
-EXE = _matrix$(shell python3-config --extension-suffix)
+CFLAGS = -shared -std=c++11 -Wall -fPIC -m64
+PWD = $(shell pwd)
+MKL_Flags = -L/usr/include/mkl/intel64 -I/usr/include/mkl/ -lmkl_rt -Wl,--no-as-needed -lpthread -lm -ldl -lblas
+MKL_DIR := /usr/lib/x86_64-linux-gnu
+MKL_LIBS := ${MKL_DIR}/libmkl_def.so \
+		        ${MKL_DIR}/libmkl_avx2.so \
+		        ${MKL_DIR}/libmkl_core.so \
+		        ${MKL_DIR}/libmkl_intel_lp64.so \
+		        ${MKL_DIR}/libmkl_sequential.so
 
-FLAGS = -O3 -Wall -shared -fPIC -std=c++17 
-PYBD11 = -I /usr/include/python3.8 -lpython3.8 -I /usr/include/pybind11 `python3 -m pybind11 --includes` `python3-config --includes`
-NUMPY = -I`python3 -c 'import numpy;print(numpy.get_include())'`
-BLAS = -I /usr/include/mkl/ -L /usr/lib/ -I/usr/include/openblas/openblas/ -lblas -I/opt/intel/oneapi/mkl/2022.0.2/include/
+INC = -I/usr/include/python3.8 -I/usr/include/pybind11 -lpython3.8
 
-.PHONY: clean
+_matrix:
+	$(CXX) $(CFLAGS) $(MKL_Flags) $(MKL_LIBS) `python3 -m pybind11 --includes` _matrix.cpp -o _matrix`python3-config --extension-suffix` $(INC)
 
-# SRC must put before BLAS #
-all: $(SRC)
-	$(CXX) $(SRC) $(FLAGS) $(PYBD11) $(BLAS) $(NUMPY) -o $(EXE) 
+.PHONY: test clean
 
-test: all
-	python3 -m pytest test_matrix.py
+test: _matrix
+	python3 -m pytest
 
 clean:
-	rm -rf *.so .pytest_cache __pycache__
+	rm -rf *.so __pycache__ .pytest_cache 
