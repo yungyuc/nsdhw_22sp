@@ -118,6 +118,16 @@ public:
         (*this)(index.first, index.second) = value;
     }
 
+    py::array_t<double> array()
+    {
+        return py::array_t<double>(
+                vector<size_t>{nrow(), ncol()},
+                vector<size_t>{sizeof(double) * ncol(), sizeof(double)},
+                m_vec.data(),
+                py::cast(this)
+            );
+    }
+
 private:
     vector<double> m_vec;
     size_t m_rows;
@@ -235,5 +245,6 @@ PYBIND11_MODULE(_matrix, m)
         .def_property_readonly("nrow", &Matrix::nrow)
         .def_property_readonly("ncol", &Matrix::ncol)
         .def("__getitem__", &Matrix::getitem)
-        .def("__setitem__", &Matrix::setitem);
+        .def("__setitem__", &Matrix::setitem)
+        .def_property("array", &Matrix::array, nullptr);
 }
