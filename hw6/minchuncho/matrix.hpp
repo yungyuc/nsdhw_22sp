@@ -63,7 +63,7 @@ Matrix multiply_tile(Matrix const& mat1, Matrix const& mat2, size_t tsize);
 Matrix multiply_mkl(Matrix& ma, Matrix& mb);
 
 PYBIND11_MODULE(_matrix, m) {
-    py::class_<Matrix>(m, "Matrix", py::buffer_protocol())
+    py::class_<Matrix>(m, "Matrix")
         .def(py::init<size_t const&, size_t const&>())
         .def(py::init<size_t const&, size_t const&, std::vector<double> const&>())
         .def(py::self == py::self)                              // operator overloading
@@ -72,15 +72,16 @@ PYBIND11_MODULE(_matrix, m) {
         .def("__setitem__", &Matrix::set_element)
         .def("__getitem__", &Matrix::get_element)
         .def("__repr__", &Matrix::get_matrix_str)
-        .def("array", [](Matrix &m) -> py::array_t<double>
+        .def_property("array", [](Matrix &n) -> py::array_t<double>
         {
             return py::array_t<double>(
-                { m.row(), m.col() },                               // Buffer dimensions
-                { sizeof(double) * m.col(), sizeof(double) },       // Strides (in bytes) for each index
-                m.addr()                                            // Pointer to buffer
+                { n.row(), n.col() },                               // Buffer dimensions
+                { sizeof(double) * n.col(), sizeof(double) },       // Strides (in bytes) for each index
+                n.addr(),                                            // Pointer to buffer
+                py::cast(n)
             );
-        });
-        
+        }, nullptr);
+
     m.def("multiply_naive", &multiply_naive);
     m.def("multiply_tile", &multiply_tile);
     m.def("multiply_mkl", &multiply_mkl);
