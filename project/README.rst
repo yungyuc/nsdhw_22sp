@@ -80,8 +80,8 @@ Time Table
     - `YABLAS <PY-Chang/README.md>`__: https://github.com/PY-Chang/YABLAS
   * - A6
     - 09:05 - 09:30
-    - `YuChiehLiu <https://github.com/YuChiehLiu>`__
-    - `OBST <YuChiehLiu/README.md>`__:
+    - N/A
+    - N/A
   * - A7
     - 09:30 - 09:55
     - `ianlienfa <https://github.com/ianlienfa/BBGym>`__
@@ -143,9 +143,6 @@ Project List by Account Name
 
 #. `PY-Chang <https://github.com/PY-Chang>`__ for
    `YABLAS <PY-Chang/README.md>`__: https://github.com/PY-Chang/YABLAS
-
-#. `YuChiehLiu <https://github.com/YuChiehLiu>`__ for
-   `OBST <YuChiehLiu/README.md>`__:
 
 #. `ianlienfa <https://github.com/ianlienfa/BBGym>`__ for
    `BBGym <ianlienfa/README.md>`__: https://github.com/ianlienfa/BBGym
